@@ -55,6 +55,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  lists         List[]
 }
 
 model VerificationToken {
@@ -63,4 +64,22 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model ListItem {
+  id          String  @id @default(uuid())
+  title       String
+  description String
+  checked     Boolean @default(false)
+  listId      String
+  list        List    @relation(fields: [listId], references: [id])
+}
+
+model List {
+  id          String     @id @default(uuid())
+  title       String
+  description String
+  items       ListItem[]
+  ownerId     String
+  owner       User       @relation(fields: [ownerId], references: [id])
 }
