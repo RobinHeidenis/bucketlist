@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@next-auth/prisma-adapter': ^1.0.4
   '@prisma/client': ^4.5.0
+  '@tailwindcss/line-clamp': ^0.4.2
   '@tanstack/react-query': ^4.16.0
   '@trpc/client': ^10.0.0
   '@trpc/next': ^10.0.0
@@ -33,6 +34,7 @@ specifiers:
 dependencies:
   '@next-auth/prisma-adapter': 1.0.5_o53gfpk3vz2btjrokqfjjwwn3m
   '@prisma/client': 4.6.1_prisma@4.6.1
+  '@tailwindcss/line-clamp': 0.4.2_tailwindcss@3.2.4
   '@tanstack/react-query': 4.17.1_biqbaboplfbrettd7655fr4n2y
   '@trpc/client': 10.2.0_@trpc+server@10.2.0
   '@trpc/next': 10.2.0_w5v7mbzjg5zbog3ywlzwhuq6sy
@@ -304,6 +306,14 @@ packages:
     resolution: {integrity: sha512-rEUrBSGIoSFuYxwBYtlUFMlE2CwGhmW+w9355/5oduSw8e5h2+Tj4UrAGNNgP9915++wj5vkQo0UuOBqOAq4nw==}
     dependencies:
       tslib: 2.4.1
+    dev: false
+
+  /@tailwindcss/line-clamp/0.4.2_tailwindcss@3.2.4:
+    resolution: {integrity: sha512-HFzAQuqYCjyy/SX9sLGB1lroPzmcnWv1FHkIpmypte10hptf4oPUfucryMKovZh2u0uiS9U5Ty3GghWfEJGwVw==}
+    peerDependencies:
+      tailwindcss: '>=2.0.0 || >=3.0.0 || >=3.0.0-alpha.1'
+    dependencies:
+      tailwindcss: 3.2.4_postcss@8.4.19
     dev: false
 
   /@tanstack/query-core/4.15.1:

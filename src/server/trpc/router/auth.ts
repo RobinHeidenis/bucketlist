@@ -1,4 +1,4 @@
-import { router, publicProcedure, protectedProcedure } from "../trpc";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const authRouter = router({
   getSession: publicProcedure.query(({ ctx }) => {
@@ -6,5 +6,11 @@ export const authRouter = router({
   }),
   getSecretMessage: protectedProcedure.query(() => {
     return "you can now see this secret message!";
+  }),
+  getLists: protectedProcedure.query(({ ctx }) => {
+    return ctx.prisma.list.findMany({
+      where: { ownerId: ctx.session.user.id },
+      include: { items: true },
+    });
   }),
 });

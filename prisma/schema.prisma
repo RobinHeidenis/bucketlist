@@ -2,13 +2,13 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["referentialIntegrity"]
 }
 
 datasource db {
-  provider = "mysql"
-  url = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
@@ -67,7 +67,7 @@ model VerificationToken {
 model ListItem {
   id          String  @id @default(uuid())
   title       String
-  description String
+  description String  @db.Text
   checked     Boolean @default(false)
   listId      String
   list        List    @relation(fields: [listId], references: [id])
@@ -76,7 +76,7 @@ model ListItem {
 model List {
   id          String     @id @default(uuid())
   title       String
-  description String
+  description String     @db.Text
   items       ListItem[]
   ownerId     String
   owner       User       @relation(fields: [ownerId], references: [id])
