@@ -21,7 +21,7 @@ export const TextArea = ({
       </label>
       <textarea
         placeholder={placeholder}
-        className={`input-bordered input h-40 w-full max-w-xs resize-none p-2 ${
+        className={`input-bordered input h-40 w-full max-w-xs resize-none p-3 ${
           error && 'input-error'
         }`}
         {...props}
