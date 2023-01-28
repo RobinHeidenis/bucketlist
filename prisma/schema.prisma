@@ -71,6 +71,8 @@ model ListItem {
   checked     Boolean @default(false)
   listId      String
   list        List    @relation(fields: [listId], references: [id])
+
+  @@index([listId])
 }
 
 model List {
@@ -80,4 +82,6 @@ model List {
   items       ListItem[]
   ownerId     String
   owner       User       @relation(fields: [ownerId], references: [id])
+
+  @@index([ownerId])
 }
