@@ -5,8 +5,10 @@ import { ListCardWrapper } from '../components/lists/ListCardWrapper';
 import { PlusSVG } from '../components/lists/PlusSVG';
 import NiceModal from '@ebay/nice-modal-react';
 import { CreateListModal } from '../components/modals/CreateListModal';
+import { useRequireSignin } from '../hooks/useRequireSignin';
 
 const Lists = () => {
+  useRequireSignin();
   const { data: lists } = trpc.lists.getLists.useQuery();
   const showCreateModal = () => {
     void NiceModal.show(CreateListModal);
