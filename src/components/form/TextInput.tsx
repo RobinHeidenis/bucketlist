@@ -23,7 +23,7 @@ export const TextInput = ({
         type="text"
         placeholder={placeholder}
         className={`input-bordered input w-full max-w-xs ${
-          error && 'input-error'
+          error ? 'input-error' : ''
         }`}
         {...props}
       />
