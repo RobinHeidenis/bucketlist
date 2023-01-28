@@ -18,7 +18,7 @@ export const CreateListModal = NiceModal.create(() => {
     },
     validate: zodResolver(zNewListSchema),
   });
-  const { mutate } = trpc.lists.createList.useMutation({
+  const { mutate, isLoading } = trpc.lists.createList.useMutation({
     onSuccess: () => {
       void modal.remove();
       void utils.lists.getLists.invalidate();
@@ -55,7 +55,9 @@ export const CreateListModal = NiceModal.create(() => {
               {...form.getInputProps('description')}
             />
             <button
-              className="btn-primary btn mt-5 mr-3 self-end"
+              className={`btn-primary btn mt-5 mr-3 self-end ${
+                isLoading && 'loading'
+              }`}
               type="submit"
             >
               Create
