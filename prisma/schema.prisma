@@ -76,7 +76,7 @@ model ListItem {
 model List {
   id          String     @id @default(uuid())
   title       String
-  description String     @db.Text
+  description String?    @db.Text
   items       ListItem[]
   ownerId     String
   owner       User       @relation(fields: [ownerId], references: [id])
