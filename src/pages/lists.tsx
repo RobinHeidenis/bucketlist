@@ -1,8 +1,16 @@
 import { trpc } from '../utils/trpc';
 import { Navbar } from '../components/nav/Navbar';
+import { ListCard } from '../components/lists/ListCard';
+import { ListCardWrapper } from '../components/lists/ListCardWrapper';
+import { PlusSVG } from '../components/lists/PlusSVG';
+import NiceModal from '@ebay/nice-modal-react';
+import { CreateListModal } from '../components/modals/CreateListModal';
 
 const Lists = () => {
-  const { data: lists } = trpc.auth.getLists.useQuery();
+  const { data: lists } = trpc.lists.getLists.useQuery();
+  const showCreateModal = () => {
+    void NiceModal.show(CreateListModal);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c]">
@@ -11,22 +19,14 @@ const Lists = () => {
         <h1 className="text-4xl">Lists</h1>
         <div className="mt-12 grid grid-cols-1 gap-10 lg:grid-cols-3">
           {lists?.map((list) => (
-            <article
-              key={list.id}
-              className="card h-48 w-72 transform cursor-pointer bg-base-100 shadow-xl transition duration-300 hover:scale-110"
-            >
-              <div className="card-body">
-                <h2 className="card-title">{list.title}</h2>
-                <p className="line-clamp-3">{list.description}</p>
-                <div className="card-actions">
-                  <p>
-                    {list.items?.length} items |{' '}
-                    {list.items.filter((item) => item.checked).length} checked
-                  </p>
-                </div>
-              </div>
-            </article>
+            <ListCard list={list} key={list.id} />
           ))}
+          <ListCardWrapper onClick={showCreateModal}>
+            <div className="flex flex-col items-center justify-center">
+              <h2 className="card-title">Create new list</h2>
+              <PlusSVG />
+            </div>
+          </ListCardWrapper>
         </div>
       </main>
     </div>
