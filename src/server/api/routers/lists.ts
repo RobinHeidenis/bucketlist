@@ -1,7 +1,7 @@
-import { protectedProcedure, router } from '../trpc';
 import { zNewListSchema } from '../../../schemas/newListSchema';
+import { createTRPCRouter, protectedProcedure } from '../trpc';
 
-export const listsRouter = router({
+export const listsRouter = createTRPCRouter({
   getLists: protectedProcedure.query(({ ctx }) => {
     return ctx.prisma.list.findMany({
       where: { ownerId: ctx.session.user.id },

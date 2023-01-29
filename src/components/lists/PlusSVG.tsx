@@ -5,7 +5,7 @@ export const PlusSVG = ({ className }: { className?: string }) => (
     viewBox="0 0 24 24"
     strokeWidth={1.5}
     stroke="currentColor"
-    className={`h-32 w-32 ${className}`}
+    className={`h-32 w-32 ${className ?? ''}`}
   >
     <path
       strokeLinecap="round"
