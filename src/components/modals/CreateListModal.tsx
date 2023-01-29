@@ -9,7 +9,7 @@ import { TextArea } from '../form/TextArea';
 
 export const CreateListModal = NiceModal.create(() => {
   const modal = useModal();
-  const ref = useClickOutside(() => modal.hide());
+  const ref = useClickOutside(() => void modal.hide());
   const utils = api.useContext();
   const form = useForm<z.infer<typeof zNewListSchema>>({
     initialValues: {
@@ -26,11 +26,11 @@ export const CreateListModal = NiceModal.create(() => {
   });
 
   return (
-    <div className={`modal ${modal.visible && 'modal-open'}`}>
+    <div className={`modal ${modal.visible ? 'modal-open' : ''}`}>
       <div className="modal-box relative" ref={ref}>
         <label
           className="btn-sm btn-circle btn absolute right-2 top-2"
-          onClick={() => modal.hide()}
+          onClick={() => void modal.hide()}
         >
           ✕
         </label>
@@ -56,7 +56,7 @@ export const CreateListModal = NiceModal.create(() => {
             />
             <button
               className={`btn-primary btn mt-5 mr-3 self-end ${
-                isLoading && 'loading'
+                isLoading ? 'loading' : ''
               }`}
               type="submit"
             >

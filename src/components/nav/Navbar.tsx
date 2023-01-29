@@ -35,14 +35,14 @@ export const Navbar = () => {
               <li className="disabled">
                 <a>Settings</a>
               </li>
-              <li onClick={() => signOut()} className="text-error">
+              <li onClick={() => void signOut()} className="text-error">
                 <span>Sign out</span>
               </li>
             </ul>
           </div>
         </>
       ) : (
-        <button className="btn-primary btn" onClick={() => signIn()}>
+        <button className="btn-primary btn" onClick={() => void signIn()}>
           Get started
         </button>
       )}
