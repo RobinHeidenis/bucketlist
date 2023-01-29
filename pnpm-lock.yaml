@@ -47,7 +47,6 @@ dependencies:
   '@trpc/next': 10.9.0_o4vjr5433zf4lxe7zgyoyoztjm
   '@trpc/react-query': 10.9.0_22wgxldzdfxutowffn2dykkd3i
   '@trpc/server': 10.9.0
-  '@types/prettier': 2.7.2
   daisyui: 2.49.0_gbtt6ss3tbiz4yjtvdr6fbrj44
   next: 13.1.6_biqbaboplfbrettd7655fr4n2y
   next-auth: 4.18.10_3vryta7zmbcsw4rrqf4axjqggm
@@ -58,6 +57,7 @@ dependencies:
 
 devDependencies:
   '@types/node': 18.11.18
+  '@types/prettier': 2.7.2
   '@types/react': 18.0.27
   '@types/react-dom': 18.0.10
   '@typescript-eslint/eslint-plugin': 5.49.0_rsaczafy73x3xqauzesvzbsgzy
@@ -449,7 +449,7 @@ packages:
 
   /@types/prettier/2.7.2:
     resolution: {integrity: sha512-KufADq8uQqo1pYKVIYzfKbJfBAc0sOeXqGbFaSpv8MRmC/zXgowNZmFcbngndGk922QDmOASEXUZCaY48gs4cg==}
-    dev: false
+    dev: true
 
   /@types/prop-types/15.7.5:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
