@@ -1,4 +1,4 @@
-import { trpc } from '../utils/trpc';
+import { api } from '../utils/api';
 import { Navbar } from '../components/nav/Navbar';
 import { ListCard } from '../components/lists/ListCard';
 import { ListCardWrapper } from '../components/lists/ListCardWrapper';
@@ -9,7 +9,7 @@ import { useRequireSignin } from '../hooks/useRequireSignin';
 
 const Lists = () => {
   useRequireSignin();
-  const { data: lists } = trpc.lists.getLists.useQuery();
+  const { data: lists } = api.lists.getLists.useQuery();
   const showCreateModal = () => {
     void NiceModal.show(CreateListModal);
   };

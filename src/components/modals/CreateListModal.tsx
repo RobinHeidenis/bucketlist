@@ -3,14 +3,14 @@ import { useForm, zodResolver } from '@mantine/form';
 import { useClickOutside } from '@mantine/hooks';
 import type { z } from 'zod';
 import { zNewListSchema } from '../../schemas/newListSchema';
-import { trpc } from '../../utils/trpc';
+import { api } from '../../utils/api';
 import { TextInput } from '../form/TextInput';
 import { TextArea } from '../form/TextArea';
 
 export const CreateListModal = NiceModal.create(() => {
   const modal = useModal();
   const ref = useClickOutside(() => modal.hide());
-  const utils = trpc.useContext();
+  const utils = api.useContext();
   const form = useForm<z.infer<typeof zNewListSchema>>({
     initialValues: {
       title: '',
@@ -18,7 +18,7 @@ export const CreateListModal = NiceModal.create(() => {
     },
     validate: zodResolver(zNewListSchema),
   });
-  const { mutate, isLoading } = trpc.lists.createList.useMutation({
+  const { mutate, isLoading } = api.lists.createList.useMutation({
     onSuccess: () => {
       void modal.remove();
       void utils.lists.getLists.invalidate();
