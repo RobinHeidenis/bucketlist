@@ -40,13 +40,15 @@ export const CreateListModal = NiceModal.create(() => {
             onSubmit={form.onSubmit(({ title, description }) =>
               mutate({ title, description }),
             )}
-            className="flex w-3/4 flex-col items-center"
+            className="flex w-3/4 max-w-xs flex-col items-center"
           >
             <TextInput
               label="Title"
               placeholder="Before dying"
               required
               error={form.errors.title}
+              inputClassName="max-w-xs"
+              className="mt-3"
               {...form.getInputProps('title')}
             />
             <TextArea

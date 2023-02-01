@@ -1,13 +1,16 @@
 import type { List, ListItem } from '@prisma/client';
 import { ListCardWrapper } from './ListCardWrapper';
+import { useRouter } from 'next/router';
 
 interface ListCardProps {
   list: List & { items: ListItem[] };
 }
 
 export const ListCard = ({ list }: ListCardProps) => {
+  const router = useRouter();
+
   return (
-    <ListCardWrapper>
+    <ListCardWrapper onClick={() => void router.push(`/lists/${list.id}`)}>
       <h2 className="card-title">{list.title}</h2>
       <p className="line-clamp-3">{list.description}</p>
       <div className="card-actions">

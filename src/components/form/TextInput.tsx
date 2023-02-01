@@ -1,8 +1,10 @@
 interface TextInputProps {
-  label: string;
+  label?: string;
   placeholder: string;
   required?: boolean;
   error?: string;
+  inputClassName?: string;
+  className?: string;
 }
 
 export const TextInput = ({
@@ -10,20 +12,24 @@ export const TextInput = ({
   placeholder,
   required,
   error,
+  inputClassName,
+  className,
   ...props
 }: TextInputProps) => {
   return (
-    <div className="form-control mt-3 w-full max-w-xs">
-      <label className="label">
-        <span className="label-text">
-          {label} {required && <span className="text-red-500">*</span>}
-        </span>
-      </label>
+    <div className={`form-control w-full ${className ?? ''}`}>
+      {label && (
+        <label className="label">
+          <span className="label-text">
+            {label} {required && <span className="text-red-500">*</span>}
+          </span>
+        </label>
+      )}
       <input
         type="text"
         placeholder={placeholder}
-        className={`input-bordered input w-full max-w-xs ${
-          error ? 'input-error' : ''
+        className={`input-bordered input w-full ${error ? 'input-error' : ''} ${
+          inputClassName ?? ''
         }`}
         {...props}
       />
