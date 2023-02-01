@@ -36,9 +36,16 @@ export const listsRouter = createTRPCRouter({
         where: { id: input },
       });
 
-      if (!requestedList) throw new TRPCError({ code: 'NOT_FOUND' });
+      if (!requestedList)
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: "The list you're requesting to delete cannot be found.",
+        });
       if (requestedList.ownerId !== ctx.session.user.id)
-        throw new TRPCError({ code: 'UNAUTHORIZED' });
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'You do not have access to delete this list.',
+        });
 
       return ctx.prisma.list.delete({
         where: { id: input },

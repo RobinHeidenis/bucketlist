@@ -15,7 +15,7 @@ const Lists = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+    <div className="min-h-screen bg-gradient-to-tr from-transparent to-blue-900">
       <Navbar />
       <main className="mt-10 flex flex-col items-center justify-center">
         <h1 className="text-4xl">Lists</h1>

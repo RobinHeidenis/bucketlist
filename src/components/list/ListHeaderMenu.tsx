@@ -2,6 +2,9 @@ import type { List, ListItem, User } from '@prisma/client';
 import { DropdownMenu } from './DropdownMenu';
 import { api } from '../../utils/api';
 import { useRouter } from 'next/router';
+import toast from 'react-hot-toast';
+import { ErrorToast } from '../toasts/ErrorToast';
+import { SuccessToast } from '../toasts/SuccessToast';
 
 export const ListHeaderMenu = ({
   id,
@@ -11,7 +14,13 @@ export const ListHeaderMenu = ({
   const router = useRouter();
   const context = api.useContext();
   const { mutateAsync: deleteList } = api.lists.deleteList.useMutation({
-    onSuccess: () => context.lists.getLists.invalidate(),
+    onSuccess: () => {
+      toast.custom(<SuccessToast message="List deleted!" />);
+      return context.lists.getLists.invalidate();
+    },
+    onError: ({ message }) => {
+      toast.custom(<ErrorToast message={message} />);
+    },
   });
 
   return (

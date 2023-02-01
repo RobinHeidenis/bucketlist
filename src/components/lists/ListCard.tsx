@@ -11,11 +11,13 @@ export const ListCard = ({ list }: ListCardProps) => {
 
   return (
     <ListCardWrapper onClick={() => void router.push(`/lists/${list.id}`)}>
-      <h2 className="card-title">{list.title}</h2>
-      <p className="line-clamp-3">{list.description}</p>
+      <h2 className="card-title line-clamp-2">{list.title}</h2>
+      <p className={`line-clamp-${list.title.length > 21 ? '2' : '3'}`}>
+        {list.description}
+      </p>
       <div className="card-actions">
         <p>
-          {list.items?.length} items |{' '}
+          {list.items?.length} items •{' '}
           {list.items.filter((item) => item.checked).length} checked
         </p>
       </div>
