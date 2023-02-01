@@ -6,6 +6,7 @@ import { api } from '../utils/api';
 
 import '../styles/globals.css';
 import NiceModal from '@ebay/nice-modal-react';
+import { Toaster } from 'react-hot-toast';
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -13,6 +14,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
+      <Toaster position="bottom-right" />
       <NiceModal.Provider>
         <Component {...pageProps} />
       </NiceModal.Provider>

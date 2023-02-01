@@ -1,19 +1,30 @@
 import type { ListItem as ListItemType } from '@prisma/client';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { api } from '../../utils/api';
 import { DropdownMenu } from './DropdownMenu';
+import toast from 'react-hot-toast';
+import { ErrorToast } from '../toasts/ErrorToast';
 
 export const ListItem = ({ id, checked, title, description }: ListItemType) => {
   const [showDescription, setShowDescription] = useState(false);
   const context = api.useContext();
+  const ref = useRef<HTMLInputElement>(null);
   const { mutate } = api.listItem.setItemChecked.useMutation({
     onSuccess: () => context.lists.getList.invalidate(),
+    onError: () => {
+      if (!ref.current) return;
+      ref.current.checked = !ref.current.checked;
+      toast.custom(
+        <ErrorToast message="Something went wrong checking or unchecking this item. Please try again later!" />,
+      );
+    },
   });
 
   return (
     <div className="mb-3 flex flex-row justify-between">
       <div className="flex flex-row">
         <input
+          ref={ref}
           type="checkbox"
           defaultChecked={checked}
           className="checkbox mr-3 mt-2"

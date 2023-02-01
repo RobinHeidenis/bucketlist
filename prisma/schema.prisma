@@ -72,7 +72,7 @@ model ListItem {
   description String  @db.Text
   checked     Boolean @default(false)
   listId      String
-  list        List    @relation(fields: [listId], references: [id])
+  list        List    @relation(fields: [listId], references: [id], onDelete: Cascade)
 
   @@index([listId])
 }
@@ -83,7 +83,7 @@ model List {
   description String?    @db.Text
   items       ListItem[]
   ownerId     String
-  owner       User       @relation(fields: [ownerId], references: [id])
+  owner       User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
   @@index([ownerId])
 }

@@ -7,9 +7,9 @@ export const Navbar = () => {
 
   return (
     <nav className="navbar bg-base-100">
-      <NavbarLink href="/" name="BucketList" />
       {session?.user ? (
         <>
+          <NavbarLink href="/lists" name="BucketList" />
           <div className="mr-3">Hey, {session.user.name}</div>
           <div className="dropdown-end dropdown">
             <label tabIndex={0} className="btn-ghost btn-circle avatar btn">
@@ -42,9 +42,12 @@ export const Navbar = () => {
           </div>
         </>
       ) : (
-        <button className="btn-primary btn" onClick={() => void signIn()}>
-          Get started
-        </button>
+        <>
+          <NavbarLink href="/" name="BucketList" />
+          <button className="btn-primary btn" onClick={() => void signIn()}>
+            Get started
+          </button>
+        </>
       )}
     </nav>
   );
