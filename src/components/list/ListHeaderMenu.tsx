@@ -8,7 +8,7 @@ export const ListHeaderMenu = ({
   return (
     <div className="flex w-full flex-row items-center justify-between">
       <p className="m-0">
-        List by {owner.name} • {items.length} todo&apos;s
+        List by {owner.name} • {items.length} to-do&apos;s
       </p>
       <DropdownMenu
         editOnClick={() => console.log()}
