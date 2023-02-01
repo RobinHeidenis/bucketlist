@@ -1,11 +1,11 @@
-import { api } from '../utils/api';
-import { Navbar } from '../components/nav/Navbar';
-import { ListCard } from '../components/lists/ListCard';
-import { ListCardWrapper } from '../components/lists/ListCardWrapper';
-import { PlusSVG } from '../components/lists/PlusSVG';
+import { api } from '../../utils/api';
+import { Navbar } from '../../components/nav/Navbar';
+import { ListCard } from '../../components/lists/ListCard';
+import { ListCardWrapper } from '../../components/lists/ListCardWrapper';
+import { PlusSVG } from '../../components/lists/PlusSVG';
 import NiceModal from '@ebay/nice-modal-react';
-import { CreateListModal } from '../components/modals/CreateListModal';
-import { useRequireSignin } from '../hooks/useRequireSignin';
+import { CreateListModal } from '../../components/modals/CreateListModal';
+import { useRequireSignin } from '../../hooks/useRequireSignin';
 
 const Lists = () => {
   useRequireSignin();
