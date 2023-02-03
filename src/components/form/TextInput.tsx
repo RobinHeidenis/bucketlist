@@ -31,6 +31,7 @@ export const TextInput = ({
         className={`input-bordered input w-full ${error ? 'input-error' : ''} ${
           inputClassName ?? ''
         }`}
+        autoFocus
         {...props}
       />
       {error && (

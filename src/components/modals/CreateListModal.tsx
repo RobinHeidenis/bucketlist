@@ -2,7 +2,7 @@ import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { useForm, zodResolver } from '@mantine/form';
 import { useClickOutside } from '@mantine/hooks';
 import type { z } from 'zod';
-import { zNewListSchema } from '../../schemas/newListSchema';
+import { zNewListSchema } from '../../schemas/listSchemas';
 import { api } from '../../utils/api';
 import { TextInput } from '../form/TextInput';
 import { TextArea } from '../form/TextArea';
