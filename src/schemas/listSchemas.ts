@@ -10,3 +10,7 @@ export const zNewListItemSchema = z.object({
   description: z.string().max(500).optional(),
   listId: z.string().uuid(),
 });
+
+export const zIdSchema = z.object({
+  id: z.string().uuid(),
+});

@@ -4,19 +4,26 @@ import { api } from '../../utils/api';
 import { DropdownMenu } from './DropdownMenu';
 import toast from 'react-hot-toast';
 import { ErrorToast } from '../toasts/ErrorToast';
+import { SuccessToast } from "../toasts/SuccessToast";
 
-export const ListItem = ({ id, checked, title, description }: ListItemType) => {
+export const ListItem = ({ id, checked, title, description, listId }: ListItemType) => {
   const [showDescription, setShowDescription] = useState(false);
   const context = api.useContext();
   const ref = useRef<HTMLInputElement>(null);
-  const { mutate } = api.listItem.setItemChecked.useMutation({
-    onSuccess: () => context.lists.getList.invalidate(),
+  const setItemCheckedMutation = api.listItem.setItemChecked.useMutation({
+    onSuccess: () => context.lists.getList.invalidate({ id: listId }),
     onError: () => {
       if (!ref.current) return;
       ref.current.checked = !ref.current.checked;
       toast.custom(
         <ErrorToast message="Something went wrong checking or unchecking this item. Please try again later!" />,
       );
+    },
+  });
+  const deleteItemMutation = api.listItem.deleteItem.useMutation({
+    onSuccess: () => context.lists.getList.invalidate({ id: listId }),
+    onError: ({ message }) => {
+      toast.custom(<ErrorToast message={message} />);
     },
   });
 
@@ -29,7 +36,7 @@ export const ListItem = ({ id, checked, title, description }: ListItemType) => {
           defaultChecked={checked}
           className="checkbox mr-3 mt-2"
           onChange={(event) =>
-            mutate({
+            setItemCheckedMutation.mutate({
               id,
               checked: event.target.checked,
             })
@@ -53,7 +60,7 @@ export const ListItem = ({ id, checked, title, description }: ListItemType) => {
       </div>
       <DropdownMenu
         editOnClick={() => console.log()}
-        deleteOnClick={() => console.log()}
+        deleteOnClick={() => deleteItemMutation.mutate({ id })}
         className="self-center"
       />
     </div>
