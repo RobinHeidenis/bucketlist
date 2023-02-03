@@ -1,17 +1,25 @@
-import { useRouter } from 'next/router';
-import { api } from '../../utils/api';
-import { Navbar } from '../../components/nav/Navbar';
-import { ListHeaderMenu } from '../../components/list/ListHeaderMenu';
-import { ListItem } from '../../components/list/ListItem';
-import { Fragment } from 'react';
+import { useRouter } from "next/router";
+import { api } from "../../utils/api";
+import { Navbar } from "../../components/nav/Navbar";
+import { ListHeaderMenu } from "../../components/list/ListHeaderMenu";
+import { ListItem } from "../../components/list/ListItem";
+import { Fragment } from "react";
+import { useRequireSignin } from "../../hooks/useRequireSignin";
+import NiceModal from "@ebay/nice-modal-react";
+import { CreateItemModal } from "../../components/modals/CreateItemModal";
 
 const List = () => {
+  useRequireSignin();
   const router = useRouter();
   const { list: listId } = router.query;
   const { data: listData, isLoading } = api.lists.getList.useQuery(
     listId as string,
     { enabled: !!listId },
   );
+
+  const showCreateModal = () => {
+    void NiceModal.show(CreateItemModal, {listId: listId as string});
+  };
 
   if (!listData && !isLoading) return <div>404</div>;
 
@@ -41,6 +49,9 @@ const List = () => {
                 <h4 className="m-0">Click the button below to add one!</h4>
               </>
             )}
+          </div>
+          <div className="mb-10 flex w-full flex-row justify-end">
+            <button className="btn-primary btn" onClick={showCreateModal}>Add to-do</button>
           </div>
         </div>
       </main>

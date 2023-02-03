@@ -1,4 +1,4 @@
-import { zNewListSchema } from '../../../schemas/newListSchema';
+import { zNewListSchema } from '../../../schemas/listSchemas';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';

@@ -11,12 +11,6 @@ datasource db {
   relationMode = "prisma"
 }
 
-model Example {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
@@ -68,8 +62,8 @@ model VerificationToken {
 
 model ListItem {
   id          String  @id @default(uuid())
-  title       String
-  description String  @db.Text
+  title       String  @db.VarChar(46)
+  description String? @db.VarChar(500)
   checked     Boolean @default(false)
   listId      String
   list        List    @relation(fields: [listId], references: [id], onDelete: Cascade)
@@ -79,8 +73,8 @@ model ListItem {
 
 model List {
   id          String     @id @default(uuid())
-  title       String
-  description String?    @db.Text
+  title       String     @db.VarChar(100)
+  description String?    @db.VarChar(500)
   items       ListItem[]
   ownerId     String
   owner       User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
