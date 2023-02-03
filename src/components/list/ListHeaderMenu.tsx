@@ -31,7 +31,7 @@ export const ListHeaderMenu = ({
       <DropdownMenu
         editOnClick={() => console.log()}
         deleteOnClick={() => {
-          void deleteList(id).then(() => router.push('/lists'));
+          void deleteList({ id }).then(() => router.push('/lists'));
         }}
       />
     </div>

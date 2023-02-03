@@ -27,7 +27,7 @@ export const CreateItemModal = NiceModal.create(
     const { mutate, isLoading } = api.listItem.createItem.useMutation({
       onSuccess: () => {
         void modal.remove();
-        void utils.lists.getList.invalidate(listId);
+        void utils.lists.getList.invalidate({ id: listId });
       },
     });
 

@@ -1,24 +1,24 @@
-import { useRouter } from "next/router";
-import { api } from "../../utils/api";
-import { Navbar } from "../../components/nav/Navbar";
-import { ListHeaderMenu } from "../../components/list/ListHeaderMenu";
-import { ListItem } from "../../components/list/ListItem";
-import { Fragment } from "react";
-import { useRequireSignin } from "../../hooks/useRequireSignin";
-import NiceModal from "@ebay/nice-modal-react";
-import { CreateItemModal } from "../../components/modals/CreateItemModal";
+import { useRouter } from 'next/router';
+import { api } from '../../utils/api';
+import { Navbar } from '../../components/nav/Navbar';
+import { ListHeaderMenu } from '../../components/list/ListHeaderMenu';
+import { ListItem } from '../../components/list/ListItem';
+import { Fragment } from 'react';
+import { useRequireSignin } from '../../hooks/useRequireSignin';
+import NiceModal from '@ebay/nice-modal-react';
+import { CreateItemModal } from '../../components/modals/CreateItemModal';
 
 const List = () => {
   useRequireSignin();
   const router = useRouter();
   const { list: listId } = router.query;
   const { data: listData, isLoading } = api.lists.getList.useQuery(
-    listId as string,
+    { id: listId as string },
     { enabled: !!listId },
   );
 
   const showCreateModal = () => {
-    void NiceModal.show(CreateItemModal, {listId: listId as string});
+    void NiceModal.show(CreateItemModal, { listId: listId as string });
   };
 
   if (!listData && !isLoading) return <div>404</div>;
@@ -51,7 +51,9 @@ const List = () => {
             )}
           </div>
           <div className="mb-10 flex w-full flex-row justify-end">
-            <button className="btn-primary btn" onClick={showCreateModal}>Add to-do</button>
+            <button className="btn-primary btn" onClick={showCreateModal}>
+              Add to-do
+            </button>
           </div>
         </div>
       </main>

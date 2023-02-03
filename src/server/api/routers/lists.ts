@@ -1,6 +1,5 @@
-import { zNewListSchema } from '../../../schemas/listSchemas';
+import { zIdSchema, zNewListSchema } from '../../../schemas/listSchemas';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 
 export const listsRouter = createTRPCRouter({
@@ -21,19 +20,17 @@ export const listsRouter = createTRPCRouter({
         },
       });
     }),
-  getList: protectedProcedure
-    .input(z.string().uuid())
-    .query(({ ctx, input }) => {
-      return ctx.prisma.list.findUnique({
-        where: { id: input },
-        include: { items: true, owner: true },
-      });
-    }),
+  getList: protectedProcedure.input(zIdSchema).query(({ ctx, input }) => {
+    return ctx.prisma.list.findUnique({
+      where: { id: input.id },
+      include: { items: true, owner: true },
+    });
+  }),
   deleteList: protectedProcedure
-    .input(z.string().uuid())
+    .input(zIdSchema)
     .mutation(async ({ ctx, input }) => {
       const requestedList = await ctx.prisma.list.findUnique({
-        where: { id: input },
+        where: { id: input.id },
       });
 
       if (!requestedList)
@@ -48,7 +45,7 @@ export const listsRouter = createTRPCRouter({
         });
 
       return ctx.prisma.list.delete({
-        where: { id: input },
+        where: { id: input.id },
       });
     }),
 });
