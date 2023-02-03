@@ -44,7 +44,7 @@ export const Navbar = () => {
       ) : (
         <>
           <NavbarLink href="/" name="BucketList" />
-          <button className="btn-primary btn" onClick={() => void signIn()}>
+          <button className="btn-primary btn" onClick={() => void signIn("discord", { callbackUrl: '/lists' })}>
             Get started
           </button>
         </>
