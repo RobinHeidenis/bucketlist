@@ -16,7 +16,7 @@ export const ListCard = ({ list }: ListCardProps) => {
         {list.description}
       </p>
       <div className="card-actions">
-        <p>
+        <p className="line-clamp-3">
           {list.items?.length} items •{' '}
           {list.items.filter((item) => item.checked).length} checked
         </p>
