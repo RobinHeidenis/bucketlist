@@ -15,9 +15,7 @@ const Lists = () => {
     void NiceModal.show(CreateListModal);
   };
 
-  if(!lists && !isLoading) return <div>404</div>;
-
-  if(!lists) return <ListIndexSkeleton />;
+  if(!lists && isLoading) return <ListIndexSkeleton />;
 
   return (
     <div className="min-h-screen bg-gradient-to-tr from-transparent to-blue-900">
