@@ -6,13 +6,18 @@ import { PlusSVG } from '../../components/lists/PlusSVG';
 import NiceModal from '@ebay/nice-modal-react';
 import { CreateListModal } from '../../components/modals/CreateListModal';
 import { useRequireSignin } from '../../hooks/useRequireSignin';
+import { ListIndexSkeleton } from "../../components/skeletons/ListIndexSkeleton";
 
 const Lists = () => {
   useRequireSignin();
-  const { data: lists } = api.lists.getLists.useQuery();
+  const { data: lists, isLoading } = api.lists.getLists.useQuery();
   const showCreateModal = () => {
     void NiceModal.show(CreateListModal);
   };
+
+  if(!lists && !isLoading) return <div>404</div>;
+
+  if(!lists) return <ListIndexSkeleton />;
 
   return (
     <div className="min-h-screen bg-gradient-to-tr from-transparent to-blue-900">
