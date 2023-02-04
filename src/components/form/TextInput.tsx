@@ -1,10 +1,11 @@
 interface TextInputProps {
   label?: string;
-  placeholder: string;
+  placeholder?: string;
   required?: boolean;
   error?: string;
   inputClassName?: string;
   className?: string;
+  defaultValue?: string;
 }
 
 export const TextInput = ({
@@ -14,6 +15,7 @@ export const TextInput = ({
   error,
   inputClassName,
   className,
+  defaultValue,
   ...props
 }: TextInputProps) => {
   return (
@@ -31,6 +33,7 @@ export const TextInput = ({
         className={`input-bordered input w-full ${error ? 'input-error' : ''} ${
           inputClassName ?? ''
         }`}
+        defaultValue={defaultValue}
         autoFocus
         {...props}
       />
