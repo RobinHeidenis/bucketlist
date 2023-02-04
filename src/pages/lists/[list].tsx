@@ -7,6 +7,8 @@ import { Fragment } from 'react';
 import { useRequireSignin } from '../../hooks/useRequireSignin';
 import NiceModal from '@ebay/nice-modal-react';
 import { CreateItemModal } from '../../components/modals/CreateItemModal';
+import { SkeletonText } from "../../components/loading/SkeletonText";
+import { ListSkeleton } from "../../components/skeletons/ListSkeleton";
 
 const List = () => {
   useRequireSignin();
@@ -23,7 +25,7 @@ const List = () => {
 
   if (!listData && !isLoading) return <div>404</div>;
 
-  if (!listData) return <div>Loading...</div>;
+  if (!listData) return <ListSkeleton />;
 
   return (
     <div className="min-h-screen bg-gradient-to-tr from-transparent to-blue-900">
