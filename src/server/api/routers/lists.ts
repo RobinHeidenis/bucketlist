@@ -1,4 +1,4 @@
-import { zIdSchema, zNewListSchema } from '../../../schemas/listSchemas';
+import { zEditListSchema, zIdSchema, zNewListSchema } from "../../../schemas/listSchemas";
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { TRPCError } from '@trpc/server';
 
@@ -46,6 +46,32 @@ export const listsRouter = createTRPCRouter({
 
       return ctx.prisma.list.delete({
         where: { id: input.id },
+      });
+    }),
+  updateList: protectedProcedure
+    .input(zEditListSchema)
+    .mutation(async ({ ctx, input }) => {
+      const requestedList = await ctx.prisma.list.findUnique({
+        where: { id: input.id },
+      });
+
+      if (!requestedList)
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: "The list you're requesting to update cannot be found.",
+        });
+      if (requestedList.ownerId !== ctx.session.user.id)
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'You do not have access to update this list.',
+        });
+
+      return ctx.prisma.list.update({
+        where: { id: input.id },
+        data: {
+          title: input.title,
+          description: input.description,
+        },
       });
     }),
 });
