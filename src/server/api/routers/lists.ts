@@ -1,4 +1,8 @@
-import { zEditListSchema, zIdSchema, zNewListSchema } from "../../../schemas/listSchemas";
+import {
+  zEditListSchema,
+  zIdSchema,
+  zNewListSchema,
+} from '../../../schemas/listSchemas';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { TRPCError } from '@trpc/server';
 
@@ -7,6 +11,13 @@ export const listsRouter = createTRPCRouter({
     return ctx.prisma.list.findMany({
       where: { ownerId: ctx.session.user.id },
       include: { items: true },
+      orderBy: { title: 'asc' },
+    });
+  }),
+  getList: protectedProcedure.input(zIdSchema).query(({ ctx, input }) => {
+    return ctx.prisma.list.findUnique({
+      where: { id: input.id },
+      include: { items: { orderBy: { title: 'asc' } }, owner: true },
     });
   }),
   createList: protectedProcedure
@@ -20,12 +31,6 @@ export const listsRouter = createTRPCRouter({
         },
       });
     }),
-  getList: protectedProcedure.input(zIdSchema).query(({ ctx, input }) => {
-    return ctx.prisma.list.findUnique({
-      where: { id: input.id },
-      include: { items: true, owner: true },
-    });
-  }),
   deleteList: protectedProcedure
     .input(zIdSchema)
     .mutation(async ({ ctx, input }) => {
