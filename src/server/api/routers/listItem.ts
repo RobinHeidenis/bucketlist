@@ -1,6 +1,6 @@
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { z } from "zod";
-import { zIdSchema, zNewListItemSchema } from "../../../schemas/listSchemas";
+import { zEditListItemSchema, zIdSchema, zNewListItemSchema } from "../../../schemas/listSchemas";
 import { TRPCError } from "@trpc/server";
 
 export const listItemRouter = createTRPCRouter({
@@ -49,5 +49,31 @@ export const listItemRouter = createTRPCRouter({
       return ctx.prisma.listItem.delete({
         where: { id: input.id }
       });
-    })
+    }),
+  updateItem: protectedProcedure
+    .input(zEditListItemSchema)
+    .mutation(async ({ ctx, input }) => {
+      const listItem = await ctx.prisma.listItem.findUnique({
+        where: { id: input.id },
+        select: { list: { select: { ownerId: true } } }
+      });
+
+      if (!listItem)
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: "The item you're requesting to update cannot be found.",
+        });
+      if (listItem?.list.ownerId !== ctx.session.user.id) throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "You are not allowed to update this item"
+      });
+
+      return ctx.prisma.listItem.update({
+        where: { id: input.id },
+        data: {
+          title: input.title,
+          description: input.description,
+        }
+      });
+    }),
 });

@@ -1,6 +1,6 @@
 interface TextInputProps {
   label: string;
-  placeholder: string;
+  placeholder?: string;
   required?: boolean;
   error?: string;
 }

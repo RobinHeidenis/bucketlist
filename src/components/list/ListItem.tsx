@@ -4,9 +4,16 @@ import { api } from '../../utils/api';
 import { DropdownMenu } from './DropdownMenu';
 import toast from 'react-hot-toast';
 import { ErrorToast } from '../toasts/ErrorToast';
-import { SuccessToast } from "../toasts/SuccessToast";
+import NiceModal from "@ebay/nice-modal-react";
+import { EditItemModal } from "../modals/EditItemModal";
 
-export const ListItem = ({ id, checked, title, description, listId }: ListItemType) => {
+export const ListItem = ({
+  id,
+  checked,
+  title,
+  description,
+  listId,
+}: ListItemType) => {
   const [showDescription, setShowDescription] = useState(false);
   const context = api.useContext();
   const ref = useRef<HTMLInputElement>(null);
@@ -26,6 +33,9 @@ export const ListItem = ({ id, checked, title, description, listId }: ListItemTy
       toast.custom(<ErrorToast message={message} />);
     },
   });
+  const openEditItemModal = () => {
+    void NiceModal.show(EditItemModal, { id, title, description, listId });
+  }
 
   return (
     <div className="mb-3 flex flex-row justify-between">
@@ -59,7 +69,7 @@ export const ListItem = ({ id, checked, title, description, listId }: ListItemTy
         </div>
       </div>
       <DropdownMenu
-        editOnClick={() => console.log()}
+        editOnClick={() => openEditItemModal()}
         deleteOnClick={() => deleteItemMutation.mutate({ id })}
         className="self-center"
       />
