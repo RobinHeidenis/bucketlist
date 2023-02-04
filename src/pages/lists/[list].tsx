@@ -50,8 +50,17 @@ const List = () => {
               </>
             )}
           </div>
-          <div className="mb-10 flex w-full flex-row justify-end">
-            <button className="btn-primary btn" onClick={showCreateModal}>
+          <div
+            className={`mb-10 flex w-full flex-row ${
+              listData.items.length === 0 ? 'justify-start' : 'justify-end'
+            }`}
+          >
+            <button
+              className={`btn-primary btn ${
+                listData.items.length === 0 ? 'mt-5' : ''
+              }`}
+              onClick={showCreateModal}
+            >
               Add to-do
             </button>
           </div>
