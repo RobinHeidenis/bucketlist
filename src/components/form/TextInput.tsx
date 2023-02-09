@@ -1,3 +1,5 @@
+import type { DetailedHTMLProps, InputHTMLAttributes } from 'react';
+
 interface TextInputProps {
   label?: string;
   placeholder?: string;
@@ -17,7 +19,8 @@ export const TextInput = ({
   className,
   defaultValue,
   ...props
-}: TextInputProps) => {
+}: DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> &
+  TextInputProps) => {
   return (
     <div className={`form-control w-full ${className ?? ''}`}>
       {label && (
