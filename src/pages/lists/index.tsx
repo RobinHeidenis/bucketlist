@@ -19,7 +19,10 @@ const Lists = () => {
 
   return (
     <StandardPage>
-      <h1 className="text-4xl">Lists</h1>
+      <div className="prose">
+        <h1>Your lists</h1>
+        <div className="divider" />
+      </div>
       <div className="mt-12 grid grid-cols-1 gap-10 lg:grid-cols-3">
         {lists?.map((list) => (
           <ListCard list={list} key={list.id} />
