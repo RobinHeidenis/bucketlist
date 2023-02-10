@@ -4,8 +4,8 @@ import { api } from '../../utils/api';
 import { DropdownMenu } from './DropdownMenu';
 import toast from 'react-hot-toast';
 import { ErrorToast } from '../toasts/ErrorToast';
-import NiceModal from "@ebay/nice-modal-react";
-import { EditItemModal } from "../modals/EditItemModal";
+import NiceModal from '@ebay/nice-modal-react';
+import { EditItemModal } from '../modals/EditItemModal';
 
 export const ListItem = ({
   id,
@@ -13,7 +13,8 @@ export const ListItem = ({
   title,
   description,
   listId,
-}: ListItemType) => {
+  isOwner,
+}: ListItemType & { isOwner: boolean }) => {
   const [showDescription, setShowDescription] = useState(false);
   const context = api.useContext();
   const ref = useRef<HTMLInputElement>(null);
@@ -35,7 +36,7 @@ export const ListItem = ({
   });
   const openEditItemModal = () => {
     void NiceModal.show(EditItemModal, { id, title, description, listId });
-  }
+  };
 
   return (
     <div className="mb-3 flex flex-row justify-between">
@@ -45,12 +46,17 @@ export const ListItem = ({
           type="checkbox"
           defaultChecked={checked}
           className="checkbox mr-3 mt-2"
-          onChange={(event) =>
+          onChange={(event) => {
+            if (!isOwner) {
+              event.preventDefault();
+              event.target.checked = checked;
+              return;
+            }
             setItemCheckedMutation.mutate({
               id,
               checked: event.target.checked,
-            })
-          }
+            });
+          }}
         />
         <div className="flex flex-col">
           <h3 className={`m-0 ${checked ? 'text-slate-500 line-through' : ''}`}>
@@ -68,11 +74,13 @@ export const ListItem = ({
           </p>
         </div>
       </div>
-      <DropdownMenu
-        editOnClick={() => openEditItemModal()}
-        deleteOnClick={() => deleteItemMutation.mutate({ id })}
-        className="self-center"
-      />
+      {isOwner && (
+        <DropdownMenu
+          editOnClick={() => openEditItemModal()}
+          deleteOnClick={() => deleteItemMutation.mutate({ id })}
+          className="self-center"
+        />
+      )}
     </div>
   );
 };

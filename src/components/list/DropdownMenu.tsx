@@ -4,6 +4,7 @@ import {
   TrashIcon,
 } from '@heroicons/react/24/outline';
 import type { PropsWithClassName } from '../../types/PropsWithClassName';
+import type { PropsWithChildren } from 'react';
 
 interface DropdownMenuProps {
   editOnClick: () => void;
@@ -14,7 +15,8 @@ export const DropdownMenu = ({
   editOnClick,
   deleteOnClick,
   className,
-}: PropsWithClassName<DropdownMenuProps>) => {
+  children,
+}: PropsWithChildren<PropsWithClassName<DropdownMenuProps>>) => {
   return (
     <div className={`dropdown justify-self-end ${className ?? ''}`}>
       <label tabIndex={0} className="btn-ghost btn-xs btn-circle btn m-1">
@@ -22,7 +24,7 @@ export const DropdownMenu = ({
       </label>
       <ul
         tabIndex={0}
-        className="dropdown-content menu rounded-box w-32 items-start bg-base-100 p-2 shadow"
+        className="dropdown-content menu rounded-box w-40 items-start bg-base-100 p-2 shadow"
       >
         <li className="w-full">
           <button
@@ -33,6 +35,7 @@ export const DropdownMenu = ({
             Edit
           </button>
         </li>
+        {children}
         <li className="w-full">
           <button
             className="btn-ghost btn-sm btn w-full justify-start gap-2 p-0 text-error"
