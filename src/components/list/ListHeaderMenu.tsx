@@ -1,14 +1,14 @@
-import type { List, ListItem, User } from '@prisma/client';
-import { DropdownMenu } from './DropdownMenu';
-import { api } from '../../utils/api';
-import { useRouter } from 'next/router';
-import toast from 'react-hot-toast';
-import { ErrorToast } from '../toasts/ErrorToast';
-import { SuccessToast } from '../toasts/SuccessToast';
-import NiceModal from '@ebay/nice-modal-react';
-import { EditListModal } from '../modals/EditListModal';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
-import { useSession } from 'next-auth/react';
+import type { List, ListItem, User } from "@prisma/client";
+import { DropdownMenu } from "./DropdownMenu";
+import { api } from "../../utils/api";
+import { useRouter } from "next/router";
+import toast from "react-hot-toast";
+import { ErrorToast } from "../toasts/ErrorToast";
+import { SuccessToast } from "../toasts/SuccessToast";
+import NiceModal from "@ebay/nice-modal-react";
+import { EditListModal } from "../modals/EditListModal";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { useSession } from "next-auth/react";
 
 export const ListHeaderMenu = ({
   id,
@@ -17,7 +17,7 @@ export const ListHeaderMenu = ({
   title,
   description,
   isPublic,
-}: List & { owner: User; items: ListItem[] }) => {
+}: List & { owner: User; items: ListItem[], collaborators: User[] }) => {
   const router = useRouter();
   const { data } = useSession();
   const context = api.useContext();
@@ -40,7 +40,6 @@ export const ListHeaderMenu = ({
     },
   });
   const isOwner = data?.user?.id === owner.id;
-
   const showEditListModal = () => {
     void NiceModal.show(EditListModal, { id, title, description });
   };

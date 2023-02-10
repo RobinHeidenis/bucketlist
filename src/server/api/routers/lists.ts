@@ -18,7 +18,7 @@ export const listsRouter = createTRPCRouter({
   getList: protectedProcedure.input(zIdSchema).query(async ({ ctx, input }) => {
     const list = await ctx.prisma.list.findUnique({
       where: { id: input.id },
-      include: { items: { orderBy: { title: 'asc' } }, owner: true },
+      include: { items: { orderBy: { title: 'asc' } }, owner: true, collaborators: true },
     });
 
     if (!list)

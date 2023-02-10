@@ -50,6 +50,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   lists         List[]
+  collaborator  List[]    @relation("ListCollaborators")
 }
 
 model VerificationToken {
@@ -72,13 +73,14 @@ model ListItem {
 }
 
 model List {
-  id          String     @id @default(uuid())
-  title       String     @db.VarChar(100)
-  description String?    @db.VarChar(500)
-  isPublic    Boolean    @default(false)
-  items       ListItem[]
-  ownerId     String
-  owner       User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  id            String     @id @default(uuid())
+  title         String     @db.VarChar(100)
+  description   String?    @db.VarChar(500)
+  isPublic      Boolean    @default(false)
+  items         ListItem[]
+  ownerId       String
+  owner         User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  collaborators User[]     @relation("ListCollaborators")
 
   @@index([ownerId])
 }
