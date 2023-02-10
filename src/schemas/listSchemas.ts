@@ -23,3 +23,7 @@ export const zEditListItemSchema = zNewListItemSchema.extend({
 export const zIdSchema = z.object({
   id: z.string().uuid(),
 });
+
+export const zSetIsPublicSchema = zIdSchema.extend({
+  isPublic: z.boolean(),
+});

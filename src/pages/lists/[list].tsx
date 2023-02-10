@@ -8,10 +8,12 @@ import NiceModal from '@ebay/nice-modal-react';
 import { CreateItemModal } from '../../components/modals/CreateItemModal';
 import { ListSkeleton } from '../../components/skeletons/ListSkeleton';
 import { StandardPage } from '../../components/page/StandardPage';
+import { useSession } from 'next-auth/react';
 
 const List = () => {
   useRequireSignin();
   const router = useRouter();
+  const { data } = useSession();
   const { list: listId } = router.query;
   const {
     data: listData,
@@ -19,7 +21,7 @@ const List = () => {
     error,
   } = api.lists.getList.useQuery(
     { id: listId as string },
-    { enabled: !!listId },
+    { enabled: !!listId, retry: false },
   );
 
   const showCreateModal = () => {
@@ -32,13 +34,20 @@ const List = () => {
     return (
       <StandardPage>
         <div className="alert prose flex flex-col shadow-xl">
-            <h1>Not Found</h1>
-            <h3>That list was not found :(</h3>
-            <h3>Please check if the URL is correct and try again</h3>
-          <button className="btn btn-primary" onClick={() => void router.push('/lists')}>Go back </button>
+          <h1>Not Found</h1>
+          <h3>That list was not found :(</h3>
+          <h3>Please check if the URL is correct and try again</h3>
+          <button
+            className="btn-primary btn"
+            onClick={() => void router.push('/lists')}
+          >
+            Go back
+          </button>
         </div>
       </StandardPage>
     );
+
+  const isOwner = data?.user?.id === listData.owner.id;
 
   return (
     <StandardPage>
@@ -50,33 +59,41 @@ const List = () => {
         <div className="mt-5">
           {listData.items.map((item) => (
             <Fragment key={item.id}>
-              <ListItem {...item} />
+              <ListItem isOwner={isOwner} {...item} />
               <div className="divider" />
             </Fragment>
           ))}
           {listData.items.length === 0 && (
             <>
-              <h3 className="m-0">
-                Oh no! You don&apos;t have any items on this list :(
-              </h3>
-              <h4 className="m-0">Click the button below to add one!</h4>
+              {isOwner ? (
+                <>
+                  <h3 className="m-0">
+                    Oh no! You don&apos;t have any items on this list :(
+                  </h3>
+                  <h4 className="m-0">Click the button below to add one!</h4>
+                </>
+              ) : (
+                <h3 className="m-0">Oh no! This list is empty :(</h3>
+              )}
             </>
           )}
         </div>
-        <div
-          className={`mb-10 flex w-full flex-row ${
-            listData.items.length === 0 ? 'justify-start' : 'justify-end'
-          }`}
-        >
-          <button
-            className={`btn-primary btn ${
-              listData.items.length === 0 ? 'mt-5' : ''
+        {isOwner && (
+          <div
+            className={`mb-10 flex w-full flex-row ${
+              listData.items.length === 0 ? 'justify-start' : 'justify-end'
             }`}
-            onClick={showCreateModal}
           >
-            Add to-do
-          </button>
-        </div>
+            <button
+              className={`btn-primary btn ${
+                listData.items.length === 0 ? 'mt-5' : ''
+              }`}
+              onClick={showCreateModal}
+            >
+              Add to-do
+            </button>
+          </div>
+        )}
       </div>
     </StandardPage>
   );
