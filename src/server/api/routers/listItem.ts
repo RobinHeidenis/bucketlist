@@ -1,3 +1,4 @@
+import type { createTRPCContext } from '../trpc';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { z } from 'zod';
 import {
@@ -6,13 +7,14 @@ import {
   zNewListItemSchema,
 } from '../../../schemas/listSchemas';
 import { TRPCError } from '@trpc/server';
-import type { User } from '@prisma/client';
+import type { List, User } from '@prisma/client';
 
 const checkAccess = (
-  sessionId: string,
-  ownerId: string,
-  collaborators: User[],
-) => ownerId === sessionId || collaborators.some((c) => c.id === sessionId);
+  ctx: Awaited<ReturnType<typeof createTRPCContext>>,
+  list: Partial<List & { collaborators: User[] }>,
+) =>
+  list.ownerId === ctx.session?.user?.id ||
+  list.collaborators?.some((c) => c.id === ctx.session?.user?.id);
 
 export const listItemRouter = createTRPCRouter({
   setItemChecked: protectedProcedure
@@ -36,7 +38,7 @@ export const listItemRouter = createTRPCRouter({
             "The list you're trying to update an item on cannot be found.",
         });
 
-      if (!checkAccess(ctx.session.user.id, list.ownerId, list.collaborators))
+      if (!checkAccess(ctx, list))
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You are not allowed to update this item.',
@@ -61,7 +63,7 @@ export const listItemRouter = createTRPCRouter({
           message: "The list you're trying to add an item to cannot be found.",
         });
 
-      if (!checkAccess(ctx.session.user.id, list.ownerId, list.collaborators))
+      if (!checkAccess(ctx, list))
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You are not allowed to add items to this list.',
@@ -89,13 +91,7 @@ export const listItemRouter = createTRPCRouter({
           message: "The item you're requesting to delete cannot be found.",
         });
 
-      if (
-        !checkAccess(
-          ctx.session.user.id,
-          listItem.list.ownerId,
-          listItem.list.collaborators,
-        )
-      )
+      if (!checkAccess(ctx, listItem.list))
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You are not allowed to delete this item',
@@ -119,13 +115,7 @@ export const listItemRouter = createTRPCRouter({
           message: "The item you're requesting to update cannot be found.",
         });
 
-      if (
-        !checkAccess(
-          ctx.session.user.id,
-          listItem.list.ownerId,
-          listItem.list.collaborators,
-        )
-      )
+      if (!checkAccess(ctx, listItem.list))
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You are not allowed to update this item',
