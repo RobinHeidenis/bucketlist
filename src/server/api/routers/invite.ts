@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { zIdSchema } from '../../../schemas/listSchemas';
 import { TRPCError } from '@trpc/server';
+import { getBaseUrl } from "../../../utils/api";
 
 export const inviteRouter = createTRPCRouter({
   create: protectedProcedure
@@ -23,7 +24,7 @@ export const inviteRouter = createTRPCRouter({
             "The list you're trying to create an invite for cannot be found.",
         });
 
-      if (list.ownerId !== ctx.session?.user?.id)
+      if (list.ownerId !== ctx.session.user.id)
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You are not allowed to create an invite for this list.',
@@ -46,7 +47,7 @@ export const inviteRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const invite = await ctx.prisma.inviteLink.findUnique({
         where: { code: input.code },
-        include: { list: true },
+        include: { list: { include: { owner: true, collaborators: true } } },
       });
 
       if (!invite)
@@ -61,14 +62,30 @@ export const inviteRouter = createTRPCRouter({
           message: 'This invite has expired.',
         });
 
+      if (invite.list.ownerId === ctx.session.user.id)
+        throw new TRPCError({
+          code: 'PRECONDITION_FAILED',
+          message: "You can't join your own list.",
+        });
+
+      if (invite.list.collaborators.some((c) => c.id === ctx.session.user.id))
+        throw new TRPCError({
+          code: 'PRECONDITION_FAILED',
+          message: 'You are already a collaborator on this list.',
+        });
+
       return invite;
     }),
   getInvitesByListId: protectedProcedure
     .input(zIdSchema)
     .query(async ({ ctx, input }) => {
-      return await ctx.prisma.inviteLink.findMany({
+      const invites = await ctx.prisma.inviteLink.findMany({
         where: { listId: input.id },
       });
+      return invites.map((i) => ({
+        ...i,
+        url: `${getBaseUrl()}/invite/${i.code}`,
+      }));
     }),
   deleteInvite: protectedProcedure
     .input(zIdSchema)
@@ -84,7 +101,7 @@ export const inviteRouter = createTRPCRouter({
           message: "The invite you're trying to delete cannot be found.",
         });
 
-      if (list.list.ownerId !== ctx.session?.user?.id)
+      if (list.list.ownerId !== ctx.session.user.id)
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You are not allowed to delete this invite.',

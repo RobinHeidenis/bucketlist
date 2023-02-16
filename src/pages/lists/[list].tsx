@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import { api } from '../../utils/api';
 import { ListHeaderMenu } from '../../components/list/ListHeaderMenu';
 import { ListItem } from '../../components/list/ListItem';
-import { Fragment, useMemo } from "react";
+import { Fragment, useMemo } from 'react';
 import { useRequireSignin } from '../../hooks/useRequireSignin';
 import NiceModal from '@ebay/nice-modal-react';
 import { CreateItemModal } from '../../components/modals/CreateItemModal';
@@ -26,8 +26,10 @@ const List = () => {
 
   const isCollaborator = useMemo(() => {
     if (!listData) return false;
-    return listData.collaborators.some((collaborator) => collaborator.id === data?.user?.id);
-  }, [listData, data?.user?.id])
+    return listData.collaborators.some(
+      (collaborator) => collaborator.id === data?.user?.id,
+    );
+  }, [listData, data?.user?.id]);
 
   const showCreateModal = () => {
     void NiceModal.show(CreateItemModal, { listId: listId as string });
@@ -64,7 +66,11 @@ const List = () => {
         <div className="mt-5">
           {listData.items.map((item) => (
             <Fragment key={item.id}>
-              <ListItem isOwner={isOwner} isCollaborator={isCollaborator} {...item} />
+              <ListItem
+                isOwner={isOwner}
+                isCollaborator={isCollaborator}
+                {...item}
+              />
               <div className="divider" />
             </Fragment>
           ))}
@@ -83,7 +89,7 @@ const List = () => {
             </>
           )}
         </div>
-        {isOwner || isCollaborator && (
+        {(isOwner || isCollaborator) && (
           <div
             className={`mb-10 flex w-full flex-row ${
               listData.items.length === 0 ? 'justify-start' : 'justify-end'
