@@ -2,7 +2,8 @@ import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { zIdSchema } from '../../../schemas/listSchemas';
 import { TRPCError } from '@trpc/server';
-import { getBaseUrl } from "../../../utils/api";
+import { getBaseUrl } from '../../../utils/api';
+import { env } from '../../../env/server.mjs';
 
 export const inviteRouter = createTRPCRouter({
   create: protectedProcedure
@@ -82,9 +83,10 @@ export const inviteRouter = createTRPCRouter({
       const invites = await ctx.prisma.inviteLink.findMany({
         where: { listId: input.id },
       });
+
       return invites.map((i) => ({
         ...i,
-        url: `${getBaseUrl()}/invite/${i.code}`,
+        url: `${env.BASE_URL ?? getBaseUrl()}/invite/${i.code}`,
       }));
     }),
   deleteInvite: protectedProcedure
