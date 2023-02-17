@@ -1,21 +1,39 @@
-import type { List, ListItem } from '@prisma/client';
+import type { List, ListItem, User } from '@prisma/client';
 import { ListCardWrapper } from './ListCardWrapper';
+import { useSession } from 'next-auth/react';
+import React from 'react';
+import { UsersIcon } from '@heroicons/react/24/outline';
 
 interface ListCardProps {
-  list: List & { items: ListItem[] };
+  list: List & { items: ListItem[]; collaborators: User[] };
 }
 
-export const ListCard = ({ list }: ListCardProps) => (
-  <ListCardWrapper href={`/lists/${list.id}`}>
-    <h2 className="card-title line-clamp-2">{list.title}</h2>
-    <p className={`line-clamp-${list.title.length > 21 ? '2' : '3'}`}>
-      {list.description}
-    </p>
-    <div className="card-actions">
-      <p className="line-clamp-3">
-        {list.items?.length} items •{' '}
-        {list.items.filter((item) => item.checked).length} checked
-      </p>
-    </div>
-  </ListCardWrapper>
-);
+export const ListCard = ({ list }: ListCardProps) => {
+  const { data } = useSession();
+
+  return (
+    <ListCardWrapper href={`/lists/${list.id}`}>
+      <div className="flex h-full flex-col justify-between">
+        <div>
+          <h2 className="card-title line-clamp-2">{list.title}</h2>
+          <p
+            className={`line-clamp-${list.title.length > 21 ? '2' : '3'} mt-1`}
+          >
+            {list.description}
+          </p>
+        </div>
+        <div className="card-actions flex items-center">
+          <p className="line-clamp-3">
+            {list.items?.length} items •{' '}
+            {list.items.filter((item) => item.checked).length} checked
+          </p>
+          {list.collaborators?.some((collaborator) => collaborator.id === data?.user?.id) && (
+            <div className="tooltip" data-tip="Collaborator">
+              <UsersIcon className="ml-2 h-6 w-6" />
+            </div>
+          )}
+        </div>
+      </div>
+    </ListCardWrapper>
+  );
+};

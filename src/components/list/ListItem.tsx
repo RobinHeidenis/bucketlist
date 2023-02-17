@@ -14,7 +14,8 @@ export const ListItem = ({
   description,
   listId,
   isOwner,
-}: ListItemType & { isOwner: boolean }) => {
+  isCollaborator,
+}: ListItemType & { isOwner: boolean, isCollaborator: boolean }) => {
   const [showDescription, setShowDescription] = useState(false);
   const context = api.useContext();
   const ref = useRef<HTMLInputElement>(null);
@@ -47,13 +48,14 @@ export const ListItem = ({
           defaultChecked={checked}
           className="checkbox mr-3 mt-2"
           onChange={(event) => {
-            if (!isOwner) {
+            if (!isOwner && !isCollaborator) {
               event.preventDefault();
               event.target.checked = checked;
               return;
             }
             setItemCheckedMutation.mutate({
               id,
+              listId,
               checked: event.target.checked,
             });
           }}
@@ -74,7 +76,7 @@ export const ListItem = ({
           </p>
         </div>
       </div>
-      {isOwner && (
+      {(isOwner || isCollaborator) && (
         <DropdownMenu
           editOnClick={() => openEditItemModal()}
           deleteOnClick={() => deleteItemMutation.mutate({ id })}

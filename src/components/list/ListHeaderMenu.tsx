@@ -7,8 +7,9 @@ import { ErrorToast } from '../toasts/ErrorToast';
 import { SuccessToast } from '../toasts/SuccessToast';
 import NiceModal from '@ebay/nice-modal-react';
 import { EditListModal } from '../modals/EditListModal';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, EyeSlashIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { useSession } from 'next-auth/react';
+import { CreateInviteLinkModal } from "../modals/CreateInviteLinkModal";
 
 export const ListHeaderMenu = ({
   id,
@@ -17,7 +18,7 @@ export const ListHeaderMenu = ({
   title,
   description,
   isPublic,
-}: List & { owner: User; items: ListItem[] }) => {
+}: List & { owner: User; items: ListItem[]; collaborators: User[] }) => {
   const router = useRouter();
   const { data } = useSession();
   const context = api.useContext();
@@ -40,9 +41,12 @@ export const ListHeaderMenu = ({
     },
   });
   const isOwner = data?.user?.id === owner.id;
-
   const showEditListModal = () => {
     void NiceModal.show(EditListModal, { id, title, description });
+  };
+
+  const showCreateInviteLinkModal = () => {
+    void NiceModal.show(CreateInviteLinkModal, { listId: id })
   };
 
   return (
@@ -78,6 +82,15 @@ export const ListHeaderMenu = ({
                 <EyeIcon className="h-6 w-6" />
               )}
               Make {isPublic ? 'Private' : 'Public'}
+            </button>
+          </li>
+          <li className="w-full">
+            <button
+              className="btn-ghost btn-sm btn w-full justify-start gap-2 p-0"
+              onClick={() => showCreateInviteLinkModal()}
+            >
+              <PlusIcon className="h-6 w-6" />
+              Invite Collaborators
             </button>
           </li>
         </DropdownMenu>

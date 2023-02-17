@@ -10,15 +10,24 @@ import { TRPCError } from '@trpc/server';
 export const listsRouter = createTRPCRouter({
   getLists: protectedProcedure.query(({ ctx }) => {
     return ctx.prisma.list.findMany({
-      where: { ownerId: ctx.session.user.id },
-      include: { items: true },
+      where: {
+        OR: [
+          { ownerId: ctx.session.user.id },
+          { collaborators: { some: { id: ctx.session.user.id } } },
+        ],
+      },
+      include: { items: true, collaborators: true },
       orderBy: { title: 'asc' },
     });
   }),
   getList: protectedProcedure.input(zIdSchema).query(async ({ ctx, input }) => {
     const list = await ctx.prisma.list.findUnique({
       where: { id: input.id },
-      include: { items: { orderBy: { title: 'asc' } }, owner: true },
+      include: {
+        items: { orderBy: { title: 'asc' } },
+        owner: true,
+        collaborators: true,
+      },
     });
 
     if (!list)
@@ -27,7 +36,13 @@ export const listsRouter = createTRPCRouter({
         message: "The list you're requesting cannot be found.",
       });
 
-    if (list.ownerId !== ctx.session.user.id && !list.isPublic)
+    if (
+      list.ownerId !== ctx.session.user.id &&
+      !list.isPublic &&
+      !list.collaborators.find(
+        (collaborator) => collaborator.id === ctx.session.user.id,
+      )
+    )
       throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'You do not have access to view this list.',
