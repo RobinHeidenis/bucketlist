@@ -20,7 +20,8 @@ export const serverSchema = z.object({
     process.env.VERCEL ? z.string() : z.string().url()
   ),
   DISCORD_CLIENT_ID: z.string(),
-  DISCORD_CLIENT_SECRET: z.string()
+  DISCORD_CLIENT_SECRET: z.string(),
+  BASE_URL: z.string().url().optional()
 });
 
 /**
@@ -34,7 +35,8 @@ export const serverEnv = {
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
   NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
-  DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET
+  DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
+  BASE_URL: process.env.BASE_URL
 };
 
 /**
