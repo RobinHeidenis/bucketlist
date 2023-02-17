@@ -16,8 +16,8 @@ export const ListCardWrapper = ({
     onClick={onClick}
   >
     {href ? (
-      <Link href={href}>
-        <div className="card-body">{children}</div>
+      <Link href={href} className="h-full">
+        <div className="card-body h-full">{children}</div>
       </Link>
     ) : (
       <div className="card-body">{children}</div>

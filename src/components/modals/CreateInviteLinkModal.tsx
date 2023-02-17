@@ -1,9 +1,8 @@
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
-import { formatDistance, isPast } from 'date-fns';
+import { isPast } from 'date-fns';
 import { api } from '../../utils/api';
 import { ModalHeader } from './ModalHeader';
-import { ClipboardIcon } from '@heroicons/react/24/outline';
-import { useClipboard } from '@mantine/hooks';
+import { InviteLinkRow } from '../inviteLinks/InviteLinkRow';
 
 interface CreateInviteLinkModalProps {
   listId: string;
@@ -13,7 +12,6 @@ export const CreateInviteLinkModal = NiceModal.create(
   ({ listId }: CreateInviteLinkModalProps) => {
     const modal = useModal();
     const utils = api.useContext();
-    const clipboard = useClipboard();
     const { mutate, isLoading } = api.invite.create.useMutation({
       onSuccess: () => {
         void utils.invite.getInvitesByListId.invalidate({ id: listId });
@@ -31,40 +29,17 @@ export const CreateInviteLinkModal = NiceModal.create(
       <ModalHeader title="Create invite link" modal={modal}>
         <div>
           {filteredInvites && filteredInvites.length > 0 && (
-            <table className="table table-fixed">
+            <table className="mt-5 table table-fixed">
               <thead>
                 <tr>
                   <th>Link</th>
                   <th>Expires</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 {filteredInvites.map((invite) => (
-                  <tr key={invite.id}>
-                    <td className="flex flex-row items-center">
-                      <a href={invite.url} target="_blank" rel="noreferrer">
-                        {invite.url}
-                      </a>
-                      <div
-                        className={`tooltip tooltip-bottom ${
-                          clipboard.copied ? 'open' : ''
-                        }`}
-                        data-tip={`${
-                          clipboard.copied ? 'Copied!' : 'Copy to clipboard'
-                        }`}
-                      >
-                        <ClipboardIcon
-                          onClick={() => clipboard.copy(invite.url)}
-                          className="ml-2 h-5 w-5 cursor-pointer"
-                        />
-                      </div>
-                    </td>
-                    <td>
-                      {formatDistance(new Date(invite.expiresAt), new Date(), {
-                        addSuffix: true,
-                      })}
-                    </td>
-                  </tr>
+                  <InviteLinkRow invite={invite} key={invite.id} />
                 ))}
               </tbody>
             </table>

@@ -10,8 +10,13 @@ import { TRPCError } from '@trpc/server';
 export const listsRouter = createTRPCRouter({
   getLists: protectedProcedure.query(({ ctx }) => {
     return ctx.prisma.list.findMany({
-      where: { ownerId: ctx.session.user.id },
-      include: { items: true },
+      where: {
+        OR: [
+          { ownerId: ctx.session.user.id },
+          { collaborators: { some: { id: ctx.session.user.id } } },
+        ],
+      },
+      include: { items: true, collaborators: true },
       orderBy: { title: 'asc' },
     });
   }),
