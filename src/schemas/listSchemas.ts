@@ -6,8 +6,10 @@ export const zNewListSchema = z.object({
   type: z.enum(['BUCKET', 'MOVIE']),
 });
 
-export const zEditListSchema = zNewListSchema.extend({
+export const zEditListSchema = z.object({
   id: z.string().uuid(),
+  title: z.string().min(1).max(100),
+  description: z.string().max(500).optional(),
 });
 
 export const zNewListItemSchema = z.object({

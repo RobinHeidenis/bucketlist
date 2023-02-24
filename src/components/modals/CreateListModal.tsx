@@ -14,6 +14,7 @@ export const CreateListModal = NiceModal.create(() => {
     initialValues: {
       title: '',
       description: '',
+      type: 'BUCKET',
     },
     validate: zodResolver(zNewListSchema),
   });
@@ -27,11 +28,27 @@ export const CreateListModal = NiceModal.create(() => {
   return (
     <ModalHeader title="Create a new list" modal={modal}>
       <form
-        onSubmit={form.onSubmit(({ title, description }) =>
-          mutate({ title, description }),
+        onSubmit={form.onSubmit(({ title, description, type }) =>
+          mutate({ title, description, type }),
         )}
         className="flex w-3/4 max-w-xs flex-col items-center"
       >
+        <div className="form-control w-full">
+          <label className="label">
+            <span className="label-text">
+              List type <span className="text-red-500">*</span>
+            </span>
+          </label>
+          <select
+            className="select-bordered select w-full max-w-xs"
+            {...form.getInputProps('type')}
+          >
+            <option selected value="BUCKET">
+              Bucket list
+            </option>
+            <option value="MOVIE">Movie list</option>
+          </select>
+        </div>
         <TextInput
           label="Title"
           placeholder="Before dying"
