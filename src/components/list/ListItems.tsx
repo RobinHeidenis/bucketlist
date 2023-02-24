@@ -17,6 +17,8 @@ export const ListItems = ({
       (collaborator) => collaborator.id === data?.user?.id,
     );
   }, [listData, data?.user?.id]);
+  const length =
+    listData.type === 'BUCKET' ? listData.items.length : listData.movies.length;
 
   return (
     <>
@@ -31,12 +33,12 @@ export const ListItems = ({
               <div className="divider" />
             </Fragment>
           ))
-        : listData.movies.map(({ movie, checked }) => (
+        : listData.movies.map(({ movie, checked, id, listId }) => (
             <Fragment key={movie.id}>
-              <Movie checked={checked} {...movie} />
+              <Movie checked={checked} itemId={id} listId={listId} {...movie} />
             </Fragment>
           ))}
-      {listData.items.length === 0 && (
+      {length === 0 && (
         <>
           {isOwner ? (
             <>

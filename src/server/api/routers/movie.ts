@@ -23,6 +23,7 @@ const createDBMovieFromTMDBMovie = (
   description: movie.overview,
   genres: movie.genres.map((g) => g.name).join(', '),
   runtime: movie.runtime,
+  releaseDate: movie.release_date,
   rating: movie.vote_average,
 });
 
@@ -72,30 +73,33 @@ export const movieRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string().uuid(),
-        listId: z.string().uuid(),
         checked: z.boolean(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const list = await ctx.prisma.list.findUnique({
-        where: { id: input.listId },
-        select: { ownerId: true, collaborators: true, type: true },
+      const listItem = await ctx.prisma.movieListItem.findUnique({
+        where: { id: input.id },
+        select: {
+          list: {
+            include: { collaborators: true },
+          },
+        },
       });
 
-      if (!list)
+      if (!listItem || !listItem.list)
         throw new TRPCError({
           code: 'NOT_FOUND',
           message:
             "The list you're trying to update an item on cannot be found.",
         });
 
-      if (!checkAccess(ctx, list))
+      if (!checkAccess(ctx, listItem.list))
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You are not allowed to update this item.',
         });
 
-      if (list.type !== 'MOVIE')
+      if (listItem.list.type !== 'MOVIE')
         throw new TRPCError({
           code: 'BAD_REQUEST',
           message: 'You can only check movies using this endpoint.',

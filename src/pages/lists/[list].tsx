@@ -55,6 +55,8 @@ const List = () => {
     );
 
   const isOwner = data?.user?.id === listData.owner.id;
+  const length =
+    listData.type === 'BUCKET' ? listData.items.length : listData.movies.length;
 
   return (
     <StandardPage>
@@ -69,13 +71,11 @@ const List = () => {
         {(isOwner || isCollaborator) && (
           <div
             className={`mb-10 flex w-full flex-row ${
-              listData.items.length === 0 ? 'justify-start' : 'justify-end'
+              length === 0 ? 'justify-start' : 'justify-end'
             }`}
           >
             <button
-              className={`btn-primary btn ${
-                listData.items.length === 0 ? 'mt-5' : ''
-              }`}
+              className={`btn-primary btn ${length === 0 ? 'mt-5' : ''}`}
               onClick={showCreateModal}
             >
               Add to-do
