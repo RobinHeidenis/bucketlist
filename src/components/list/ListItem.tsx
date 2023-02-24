@@ -1,7 +1,7 @@
 import type { ListItem as ListItemType } from '@prisma/client';
 import { useRef, useState } from 'react';
 import { api } from '../../utils/api';
-import { DropdownMenu } from './DropdownMenu';
+import { DropdownMenu } from '../dropdown/DropdownMenu';
 import toast from 'react-hot-toast';
 import { ErrorToast } from '../toasts/ErrorToast';
 import NiceModal from '@ebay/nice-modal-react';
@@ -15,7 +15,7 @@ export const ListItem = ({
   listId,
   isOwner,
   isCollaborator,
-}: ListItemType & { isOwner: boolean, isCollaborator: boolean }) => {
+}: ListItemType & { isOwner: boolean; isCollaborator: boolean }) => {
   const [showDescription, setShowDescription] = useState(false);
   const context = api.useContext();
   const ref = useRef<HTMLInputElement>(null);

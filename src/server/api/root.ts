@@ -3,6 +3,7 @@ import { listsRouter } from "./routers/lists";
 import { createTRPCRouter } from "./trpc";
 import { listItemRouter } from "./routers/listItem";
 import { inviteRouter } from "./routers/invite";
+import { movieRouter } from "./routers/movie";
 
 /**
  * This is the primary router for your server.
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   lists: listsRouter,
   listItem: listItemRouter,
   invite: inviteRouter,
+  movies: movieRouter,
 });
 
 // export type definition of API

@@ -24,7 +24,7 @@ const Lists = () => {
         <div className="divider" />
       </div>
       <div className="mt-12 grid grid-cols-1 gap-10 lg:grid-cols-3">
-        {lists?.map((list) => (
+        {lists?.lists.map((list) => (
           <ListCard list={list} key={list.id} />
         ))}
         <ListCardWrapper onClick={showCreateModal}>

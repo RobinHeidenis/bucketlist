@@ -32,3 +32,5 @@ contributions are welcome!
 Follow our deployment guides
 for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify)
 and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+
+skeleton by [@julien](https://github.com/julienzd)

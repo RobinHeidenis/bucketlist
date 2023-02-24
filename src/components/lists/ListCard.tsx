@@ -1,11 +1,14 @@
-import type { List, ListItem, User } from '@prisma/client';
+import type { List, ListItem, User, MovieList, Movie } from '@prisma/client';
 import { ListCardWrapper } from './ListCardWrapper';
 import { useSession } from 'next-auth/react';
 import React from 'react';
 import { UsersIcon } from '@heroicons/react/24/outline';
 
+type BucketListType = List & { items: ListItem[]; collaborators: User[] };
+type MovieListType = MovieList & { items: Movie[]; collaborators: User[] };
+
 interface ListCardProps {
-  list: List & { items: ListItem[]; collaborators: User[] };
+  list: BucketListType | MovieListType;
 }
 
 export const ListCard = ({ list }: ListCardProps) => {

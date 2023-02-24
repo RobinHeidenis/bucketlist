@@ -28,7 +28,7 @@ export const listItemRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const list = await ctx.prisma.list.findUnique({
         where: { id: input.listId },
-        select: { ownerId: true, collaborators: true },
+        select: { ownerId: true, collaborators: true, type: true },
       });
 
       if (!list)
@@ -42,6 +42,12 @@ export const listItemRouter = createTRPCRouter({
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You are not allowed to update this item.',
+        });
+
+      if (list.type !== 'BUCKET')
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'You can only check bucket list items using this endpoint.',
         });
 
       return ctx.prisma.listItem.update({

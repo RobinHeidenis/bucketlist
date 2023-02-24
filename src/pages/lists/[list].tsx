@@ -1,14 +1,14 @@
 import { useRouter } from 'next/router';
 import { api } from '../../utils/api';
 import { ListHeaderMenu } from '../../components/list/ListHeaderMenu';
-import { ListItem } from '../../components/list/ListItem';
-import { Fragment, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useRequireSignin } from '../../hooks/useRequireSignin';
 import NiceModal from '@ebay/nice-modal-react';
 import { CreateItemModal } from '../../components/modals/CreateItemModal';
 import { ListSkeleton } from '../../components/skeletons/ListSkeleton';
 import { StandardPage } from '../../components/page/StandardPage';
 import { useSession } from 'next-auth/react';
+import { ListItems } from '../../components/list/ListItems';
 
 const List = () => {
   useRequireSignin();
@@ -64,30 +64,7 @@ const List = () => {
         <ListHeaderMenu {...listData} />
         <div className="divider" />
         <div className="mt-5">
-          {listData.items.map((item) => (
-            <Fragment key={item.id}>
-              <ListItem
-                isOwner={isOwner}
-                isCollaborator={isCollaborator}
-                {...item}
-              />
-              <div className="divider" />
-            </Fragment>
-          ))}
-          {listData.items.length === 0 && (
-            <>
-              {isOwner ? (
-                <>
-                  <h3 className="m-0">
-                    Oh no! You don&apos;t have any items on this list :(
-                  </h3>
-                  <h4 className="m-0">Click the button below to add one!</h4>
-                </>
-              ) : (
-                <h3 className="m-0">Oh no! This list is empty :(</h3>
-              )}
-            </>
-          )}
+          <ListItems listData={listData} />
         </div>
         {(isOwner || isCollaborator) && (
           <div
