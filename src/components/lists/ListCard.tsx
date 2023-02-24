@@ -1,14 +1,18 @@
-import type { List, ListItem, User, MovieList, Movie } from '@prisma/client';
+import type { List, ListItem, MovieListItem, User } from '@prisma/client';
 import { ListCardWrapper } from './ListCardWrapper';
 import { useSession } from 'next-auth/react';
 import React from 'react';
 import { UsersIcon } from '@heroicons/react/24/outline';
 
-type BucketListType = List & { items: ListItem[]; collaborators: User[] };
-type MovieListType = MovieList & { items: Movie[]; collaborators: User[] };
+type BucketListType = List & {
+  items: ListItem[];
+  movies: MovieListItem[];
+  amountChecked: number;
+  collaborators: User[];
+};
 
 interface ListCardProps {
-  list: BucketListType | MovieListType;
+  list: BucketListType;
 }
 
 export const ListCard = ({ list }: ListCardProps) => {
@@ -27,10 +31,12 @@ export const ListCard = ({ list }: ListCardProps) => {
         </div>
         <div className="card-actions flex items-center">
           <p className="line-clamp-3">
-            {list.items?.length} items •{' '}
-            {list.items.filter((item) => item.checked).length} checked
+            {list.items?.length || list.movies?.length} items •{' '}
+            {list.amountChecked} checked
           </p>
-          {list.collaborators?.some((collaborator) => collaborator.id === data?.user?.id) && (
+          {list.collaborators?.some(
+            (collaborator) => collaborator.id === data?.user?.id,
+          ) && (
             <div className="tooltip" data-tip="Collaborator">
               <UsersIcon className="ml-2 h-6 w-6" />
             </div>
