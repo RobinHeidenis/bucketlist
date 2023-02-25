@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 export type TMDBMovie = {
   adult: boolean;
   backdrop_path: string | null;
@@ -45,3 +47,27 @@ export type TMDBMovie = {
   vote_average: number;
   vote_count: number;
 };
+
+export const TMDBSearchMovie = z.object({
+  id: z.number(),
+  adult: z.boolean(),
+  poster_path: z.string().optional().nullable(),
+  overview: z.string(),
+  release_date: z.string(),
+  genre_ids: z.array(z.number()),
+  original_title: z.string(),
+  original_language: z.string(),
+  title: z.string(),
+  backdrop_path: z.string().optional().nullable(),
+  popularity: z.number(),
+  vote_count: z.number(),
+  video: z.boolean(),
+  vote_average: z.number(),
+});
+
+export const TMDBSearchResult = z.object({
+  page: z.number(),
+  results: z.array(TMDBSearchMovie),
+  total_pages: z.number(),
+  total_results: z.number(),
+});

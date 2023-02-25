@@ -6,6 +6,7 @@ import { TRPCError } from '@trpc/server';
 import type { List, Movie, User } from '@prisma/client';
 import { env } from '../../../env/server.mjs';
 import type { TMDBMovie } from '../../../types/TMDBMovie';
+import { TMDBSearchResult } from '../../../types/TMDBMovie';
 
 const checkAccess = (
   ctx: Awaited<ReturnType<typeof createTRPCContext>>,
@@ -24,7 +25,7 @@ const createDBMovieFromTMDBMovie = (
   genres: movie.genres.map((g) => g.name).join(', '),
   runtime: movie.runtime,
   releaseDate: movie.release_date,
-  rating: movie.vote_average,
+  rating: movie.vote_average.toFixed(1),
 });
 
 const checkAndUpdateMovie = async (
@@ -50,7 +51,7 @@ const checkAndUpdateMovie = async (
   }
 };
 
-const getTMDBMovie = async (id: string): Promise<TMDBMovie | null> => {
+const getTMDBMovie = async (id: number | string): Promise<TMDBMovie | null> => {
   const res = await fetch(
     `https://api.themoviedb.org/3/movie/${id}&language=en-US`,
     {
@@ -131,7 +132,7 @@ export const movieRouter = createTRPCRouter({
         });
 
       let movie = await ctx.prisma.movie.findUnique({
-        where: { id: input.externalId },
+        where: { id: input.externalId.toString() },
       });
 
       if (!movie) {
@@ -181,5 +182,40 @@ export const movieRouter = createTRPCRouter({
       return ctx.prisma.movieListItem.delete({
         where: { id: input.id },
       });
+    }),
+  search: protectedProcedure
+    .input(
+      z.object({
+        query: z.string().min(1),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const res = await fetch(
+        `https://api.themoviedb.org/3/search/movie?query=${input.query}&language=en-US`,
+        {
+          headers: {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+            Authorization: `Bearer ${env.TMDB_API_KEY ?? ''}`,
+          },
+        },
+      );
+
+      if (!res.ok) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Something went wrong searching TMDB.',
+        });
+      }
+
+      try {
+        const parsed = TMDBSearchResult.parse(await res.json());
+        return parsed.results;
+      } catch (e) {
+        console.error(e);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Something went wrong searching TMDB.',
+        });
+      }
     }),
 });

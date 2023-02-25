@@ -9,6 +9,7 @@ import { ListSkeleton } from '../../components/skeletons/ListSkeleton';
 import { StandardPage } from '../../components/page/StandardPage';
 import { useSession } from 'next-auth/react';
 import { ListItems } from '../../components/list/ListItems';
+import { MovieListHeader } from '../../components/list/MovieListHeader';
 
 const List = () => {
   useRequireSignin();
@@ -64,11 +65,12 @@ const List = () => {
         <h1 className="m-0 text-4xl">{listData.title}</h1>
         <p className="mt-3 text-xl">{listData.description}</p>
         <ListHeaderMenu {...listData} />
+        {listData.type === 'MOVIE' && <MovieListHeader listId={listData.id} />}
         <div className="divider" />
         <div className="mt-5">
           <ListItems listData={listData} />
         </div>
-        {(isOwner || isCollaborator) && (
+        {(isOwner || isCollaborator) && listData.type === 'BUCKET' && (
           <div
             className={`mb-10 flex w-full flex-row ${
               length === 0 ? 'justify-start' : 'justify-end'

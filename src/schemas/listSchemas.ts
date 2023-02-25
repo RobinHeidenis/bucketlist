@@ -28,7 +28,7 @@ export const zIdSchema = z.object({
 });
 
 export const zExternalIdSchema = z.object({
-  externalId: z.string(),
+  externalId: z.number(),
 });
 
 export const zNewMovieSchema = zExternalIdSchema.extend({

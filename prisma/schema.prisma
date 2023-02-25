@@ -98,7 +98,7 @@ model Movie {
   title          String          @db.VarChar(200)
   description    String?         @db.VarChar(500)
   releaseDate    String?         @db.VarChar(50)
-  rating         Int?            @db.TinyInt
+  rating         String?         @db.VarChar(10)
   runtime        Int?            @db.TinyInt
   genres         String?         @db.VarChar(200)
   posterUrl      String?         @db.VarChar(200)
