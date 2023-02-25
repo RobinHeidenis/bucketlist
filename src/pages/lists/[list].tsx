@@ -1,14 +1,15 @@
 import { useRouter } from 'next/router';
 import { api } from '../../utils/api';
 import { ListHeaderMenu } from '../../components/list/ListHeaderMenu';
-import { ListItem } from '../../components/list/ListItem';
-import { Fragment, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useRequireSignin } from '../../hooks/useRequireSignin';
 import NiceModal from '@ebay/nice-modal-react';
 import { CreateItemModal } from '../../components/modals/CreateItemModal';
 import { ListSkeleton } from '../../components/skeletons/ListSkeleton';
 import { StandardPage } from '../../components/page/StandardPage';
 import { useSession } from 'next-auth/react';
+import { ListItems } from '../../components/list/ListItems';
+import { MovieListHeader } from '../../components/list/MovieListHeader';
 
 const List = () => {
   useRequireSignin();
@@ -55,6 +56,8 @@ const List = () => {
     );
 
   const isOwner = data?.user?.id === listData.owner.id;
+  const length =
+    listData.type === 'BUCKET' ? listData.items.length : listData.movies.length;
 
   return (
     <StandardPage>
@@ -62,43 +65,19 @@ const List = () => {
         <h1 className="m-0 text-4xl">{listData.title}</h1>
         <p className="mt-3 text-xl">{listData.description}</p>
         <ListHeaderMenu {...listData} />
+        {listData.type === 'MOVIE' && <MovieListHeader listId={listData.id} />}
         <div className="divider" />
         <div className="mt-5">
-          {listData.items.map((item) => (
-            <Fragment key={item.id}>
-              <ListItem
-                isOwner={isOwner}
-                isCollaborator={isCollaborator}
-                {...item}
-              />
-              <div className="divider" />
-            </Fragment>
-          ))}
-          {listData.items.length === 0 && (
-            <>
-              {isOwner ? (
-                <>
-                  <h3 className="m-0">
-                    Oh no! You don&apos;t have any items on this list :(
-                  </h3>
-                  <h4 className="m-0">Click the button below to add one!</h4>
-                </>
-              ) : (
-                <h3 className="m-0">Oh no! This list is empty :(</h3>
-              )}
-            </>
-          )}
+          <ListItems listData={listData} />
         </div>
-        {(isOwner || isCollaborator) && (
+        {(isOwner || isCollaborator) && listData.type === 'BUCKET' && (
           <div
             className={`mb-10 flex w-full flex-row ${
-              listData.items.length === 0 ? 'justify-start' : 'justify-end'
+              length === 0 ? 'justify-start' : 'justify-end'
             }`}
           >
             <button
-              className={`btn-primary btn ${
-                listData.items.length === 0 ? 'mt-5' : ''
-              }`}
+              className={`btn-primary btn ${length === 0 ? 'mt-5' : ''}`}
               onClick={showCreateModal}
             >
               Add to-do

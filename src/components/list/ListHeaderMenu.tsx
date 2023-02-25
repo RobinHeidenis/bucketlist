@@ -1,5 +1,5 @@
 import type { List, ListItem, User } from '@prisma/client';
-import { DropdownMenu } from './DropdownMenu';
+import { DropdownMenu } from '../dropdown/DropdownMenu';
 import { api } from '../../utils/api';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
@@ -9,7 +9,8 @@ import NiceModal from '@ebay/nice-modal-react';
 import { EditListModal } from '../modals/EditListModal';
 import { EyeIcon, EyeSlashIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { useSession } from 'next-auth/react';
-import { CreateInviteLinkModal } from "../modals/CreateInviteLinkModal";
+import { CreateInviteLinkModal } from '../modals/CreateInviteLinkModal';
+import { DropdownItem } from '../dropdown/DropdownItem';
 
 export const ListHeaderMenu = ({
   id,
@@ -46,7 +47,7 @@ export const ListHeaderMenu = ({
   };
 
   const showCreateInviteLinkModal = () => {
-    void NiceModal.show(CreateInviteLinkModal, { listId: id })
+    void NiceModal.show(CreateInviteLinkModal, { listId: id });
   };
 
   return (
@@ -66,33 +67,25 @@ export const ListHeaderMenu = ({
       </div>
       {isOwner && (
         <DropdownMenu
-          editOnClick={() => showEditListModal()}
+          editOnClick={showEditListModal}
           deleteOnClick={() => {
             void deleteList({ id }).then(() => router.push('/lists'));
           }}
         >
-          <li className="w-full">
-            <button
-              className="btn-ghost btn-sm btn w-full justify-start gap-2 p-0"
-              onClick={() => void togglePublic({ id, isPublic: !isPublic })}
-            >
-              {isPublic ? (
-                <EyeSlashIcon className="h-6 w-6" />
-              ) : (
-                <EyeIcon className="h-6 w-6" />
-              )}
-              Make {isPublic ? 'Private' : 'Public'}
-            </button>
-          </li>
-          <li className="w-full">
-            <button
-              className="btn-ghost btn-sm btn w-full justify-start gap-2 p-0"
-              onClick={() => showCreateInviteLinkModal()}
-            >
-              <PlusIcon className="h-6 w-6" />
-              Invite Collaborators
-            </button>
-          </li>
+          <DropdownItem
+            onClick={() => void togglePublic({ id, isPublic: !isPublic })}
+          >
+            {isPublic ? (
+              <EyeSlashIcon className="h-6 w-6" />
+            ) : (
+              <EyeIcon className="h-6 w-6" />
+            )}
+            Make {isPublic ? 'Private' : 'Public'}
+          </DropdownItem>
+          <DropdownItem onClick={showCreateInviteLinkModal}>
+            <PlusIcon className="h-6 w-6" />
+            Invite Collaborators
+          </DropdownItem>
         </DropdownMenu>
       )}
     </div>

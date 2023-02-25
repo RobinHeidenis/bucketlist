@@ -21,7 +21,8 @@ export const serverSchema = z.object({
   ),
   DISCORD_CLIENT_ID: z.string(),
   DISCORD_CLIENT_SECRET: z.string(),
-  BASE_URL: z.string().url().optional()
+  BASE_URL: z.string().url().optional(),
+  TMDB_API_KEY: z.string()
 });
 
 /**
@@ -36,7 +37,8 @@ export const serverEnv = {
   NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
   DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
-  BASE_URL: process.env.BASE_URL
+  BASE_URL: process.env.BASE_URL,
+  TMDB_API_KEY: process.env.TMDB_API_KEY
 };
 
 /**

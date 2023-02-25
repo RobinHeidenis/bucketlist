@@ -8,17 +8,26 @@ import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { TRPCError } from '@trpc/server';
 
 export const listsRouter = createTRPCRouter({
-  getLists: protectedProcedure.query(({ ctx }) => {
-    return ctx.prisma.list.findMany({
+  getLists: protectedProcedure.query(async ({ ctx }) => {
+    const lists = await ctx.prisma.list.findMany({
       where: {
         OR: [
           { ownerId: ctx.session.user.id },
           { collaborators: { some: { id: ctx.session.user.id } } },
         ],
       },
-      include: { items: true, collaborators: true },
+      include: { items: true, collaborators: true, movies: true },
       orderBy: { title: 'asc' },
     });
+
+    return {
+      lists: lists.map((list) => ({
+        ...list,
+        amountChecked:
+          list.items.filter((i) => i.checked).length ||
+          list.movies.filter((m) => m.checked).length,
+      })),
+    };
   }),
   getList: protectedProcedure.input(zIdSchema).query(async ({ ctx, input }) => {
     const list = await ctx.prisma.list.findUnique({
@@ -27,6 +36,10 @@ export const listsRouter = createTRPCRouter({
         items: { orderBy: { title: 'asc' } },
         owner: true,
         collaborators: true,
+        movies: {
+          include: { movie: true },
+          orderBy: { movie: { title: 'asc' } },
+        },
       },
     });
 
@@ -58,6 +71,7 @@ export const listsRouter = createTRPCRouter({
           title: input.title,
           description: input.description,
           ownerId: ctx.session.user.id,
+          type: input.type,
         },
       });
     }),
@@ -79,9 +93,7 @@ export const listsRouter = createTRPCRouter({
           message: 'You do not have access to delete this list.',
         });
 
-      return ctx.prisma.list.delete({
-        where: { id: input.id },
-      });
+      return await ctx.prisma.list.delete({ where: { id: input.id } });
     }),
   updateList: protectedProcedure
     .input(zEditListSchema)

@@ -72,18 +72,50 @@ model ListItem {
   @@index([listId])
 }
 
+enum ListType {
+  MOVIE
+  BUCKET
+}
+
 model List {
-  id            String       @id @default(uuid())
-  title         String       @db.VarChar(100)
-  description   String?      @db.VarChar(500)
-  isPublic      Boolean      @default(false)
+  id            String          @id @default(uuid())
+  title         String          @db.VarChar(100)
+  description   String?         @db.VarChar(500)
+  isPublic      Boolean         @default(false)
   items         ListItem[]
+  movies        MovieListItem[]
+  type          ListType        @default(BUCKET)
   ownerId       String
-  owner         User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  collaborators User[]       @relation("ListCollaborators")
+  owner         User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  collaborators User[]          @relation("ListCollaborators")
   InviteLink    InviteLink[]
 
   @@index([ownerId])
+}
+
+model Movie {
+  id             String          @id
+  title          String          @db.VarChar(200)
+  description    String?         @db.VarChar(500)
+  releaseDate    String?         @db.VarChar(50)
+  rating         String?         @db.VarChar(10)
+  runtime        Int?            @db.TinyInt
+  genres         String?         @db.VarChar(200)
+  posterUrl      String?         @db.VarChar(200)
+  updatedAt      DateTime        @default(now())
+  movieListItems MovieListItem[]
+}
+
+model MovieListItem {
+  id      String  @id @default(uuid())
+  checked Boolean @default(false)
+  movieId String
+  movie   Movie   @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  listId  String
+  list    List    @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  @@index([movieId])
+  @@index([listId])
 }
 
 model InviteLink {
@@ -93,5 +125,6 @@ model InviteLink {
   list      List     @relation(fields: [listId], references: [id], onDelete: Cascade)
   expiresAt DateTime
 
-  @@index([listId, code])
+  @@index([listId])
+  @@index([code])
 }
