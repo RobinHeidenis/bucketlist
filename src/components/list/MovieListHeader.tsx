@@ -54,7 +54,7 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
               </div>
               <div className="flex flex-row items-center">
                 <StarIcon className="mr-1 h-5 w-5 text-amber-500" />{' '}
-                {selectedMovie.vote_average}
+                {selectedMovie.vote_average.toFixed(1)}
                 <CalendarIcon className="mr-1 ml-2 h-5 w-5" />{' '}
                 {selectedMovie.release_date}
               </div>
