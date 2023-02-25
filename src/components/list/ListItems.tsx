@@ -43,9 +43,15 @@ export const ListItems = ({
           {isOwner ? (
             <>
               <h3 className="m-0">
-                Oh no! You don&apos;t have any items on this list :(
+                Oh no! You don&apos;t have any{' '}
+                {listData.type === 'BUCKET' ? 'items' : 'movies'} on this list
+                :(
               </h3>
-              <h4 className="m-0">Click the button below to add one!</h4>
+              <h4 className="m-0">
+                {listData.type === 'BUCKET'
+                  ? 'Click the button below to add one!'
+                  : 'Go find some movies in the search bar above!'}
+              </h4>
             </>
           ) : (
             <h3 className="m-0">Oh no! This list is empty :(</h3>
