@@ -24,8 +24,16 @@ export const Movie = ({
   listId,
   itemId,
   checked,
+  isOwner,
+  isCollaborator,
   ...movie
-}: MovieType & { checked: boolean; itemId: string; listId: string }) => {
+}: MovieType & {
+  checked: boolean;
+  itemId: string;
+  listId: string;
+  isOwner: boolean;
+  isCollaborator: boolean;
+}) => {
   const context = api.useContext();
   const { mutate: setWatched } = api.movies.setMovieWatched.useMutation({
     onSuccess: () => {
@@ -89,30 +97,32 @@ export const Movie = ({
             </div>
           </div>
         </div>
-        <DropdownHeader>
-          <DropdownItem
-            onClick={() =>
-              setWatched({
-                id: itemId,
-                checked: !checked,
-              })
-            }
-          >
-            {checked ? (
-              <>
-                <EyeSlashIcon className="h-6 w-6" /> Mark as unseen
-              </>
-            ) : (
-              <>
-                <EyeIcon className="h-6 w-6" /> mark as seen
-              </>
-            )}
-          </DropdownItem>
-          <DropdownItem onClick={() => deleteMovie({ id: itemId })} danger>
-            <TrashIcon className="h-6 w-6" />
-            Delete
-          </DropdownItem>
-        </DropdownHeader>
+        {(isOwner || isCollaborator) && (
+          <DropdownHeader>
+            <DropdownItem
+              onClick={() =>
+                setWatched({
+                  id: itemId,
+                  checked: !checked,
+                })
+              }
+            >
+              {checked ? (
+                <>
+                  <EyeSlashIcon className="h-6 w-6" /> Mark as unseen
+                </>
+              ) : (
+                <>
+                  <EyeIcon className="h-6 w-6" /> mark as seen
+                </>
+              )}
+            </DropdownItem>
+            <DropdownItem onClick={() => deleteMovie({ id: itemId })} danger>
+              <TrashIcon className="h-6 w-6" />
+              Delete
+            </DropdownItem>
+          </DropdownHeader>
+        )}
       </div>
       <div className="divider mt-2 mb-2" />
     </div>

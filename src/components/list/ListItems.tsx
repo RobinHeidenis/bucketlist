@@ -35,7 +35,14 @@ export const ListItems = ({
           ))
         : listData.movies.map(({ movie, checked, id, listId }) => (
             <Fragment key={movie.id}>
-              <Movie checked={checked} itemId={id} listId={listId} {...movie} />
+              <Movie
+                checked={checked}
+                itemId={id}
+                listId={listId}
+                isOwner={isOwner}
+                isCollaborator={isCollaborator}
+                {...movie}
+              />
             </Fragment>
           ))}
       {length === 0 && (
