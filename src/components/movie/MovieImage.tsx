@@ -22,6 +22,7 @@ export const MovieImage = ({
         width={width}
         height={height}
         className={`m-0 mr-4 aspect-[2/3] p-0 ${className ?? ''}`}
+        unoptimized
       />
     );
 
