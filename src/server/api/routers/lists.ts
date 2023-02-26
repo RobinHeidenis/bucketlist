@@ -38,7 +38,7 @@ export const listsRouter = createTRPCRouter({
         collaborators: true,
         movies: {
           include: { movie: true },
-          orderBy: { movie: { title: 'asc' } },
+          orderBy: [{ checked: 'asc' }, { movie: { title: 'asc' } }],
         },
       },
     });

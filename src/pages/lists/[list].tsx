@@ -65,7 +65,9 @@ const List = () => {
         <h1 className="m-0 text-4xl">{listData.title}</h1>
         <p className="mt-3 text-xl">{listData.description}</p>
         <ListHeaderMenu {...listData} />
-        {listData.type === 'MOVIE' && <MovieListHeader listId={listData.id} />}
+        {listData.type === 'MOVIE' && (isOwner || isCollaborator) && (
+          <MovieListHeader listId={listData.id} />
+        )}
         <div className="divider" />
         <div className="mt-5">
           <ListItems listData={listData} />
