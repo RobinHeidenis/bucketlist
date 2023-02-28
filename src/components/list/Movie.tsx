@@ -35,12 +35,12 @@ export const Movie = ({
   isCollaborator: boolean;
 }) => {
   const context = api.useContext();
-  const { mutate: setWatched } = api.movies.setMovieWatched.useMutation({
+  const { mutate: setWatched } = api.listItem.setItemChecked.useMutation({
     onSuccess: () => {
       void context.lists.getList.invalidate({ id: listId });
     },
   });
-  const { mutate: deleteMovie } = api.movies.deleteMovie.useMutation({
+  const { mutate: deleteMovie } = api.listItem.deleteItem.useMutation({
     onSuccess: () => {
       void context.lists.getList.invalidate({ id: listId });
     },
@@ -103,6 +103,7 @@ export const Movie = ({
               onClick={() =>
                 setWatched({
                   id: itemId,
+                  listId,
                   checked: !checked,
                 })
               }

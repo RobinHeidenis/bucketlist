@@ -65,6 +65,15 @@ export const TMDBSearchMovie = z.object({
   vote_average: z.number(),
 });
 
+export const TMDBCollection = z.object({
+  id: z.number(),
+  name: z.string(),
+  overview: z.string(),
+  poster_path: z.string().optional().nullable(),
+  backdrop_path: z.string().optional().nullable(),
+  parts: z.array(TMDBSearchMovie),
+});
+
 export const TMDBSearchResult = z.object({
   page: z.number(),
   results: z.array(TMDBSearchMovie),

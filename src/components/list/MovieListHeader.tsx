@@ -21,7 +21,7 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
     { enabled: !!searchValue && searchValue.length > 2 },
   );
 
-  const { mutate } = api.movies.createMovie.useMutation({
+  const { mutate } = api.listItem.createMovie.useMutation({
     onSuccess: () => {
       setSearchValue('');
       setSelectedMovie(null);

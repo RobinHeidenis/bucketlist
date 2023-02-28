@@ -17,35 +17,31 @@ export const ListItems = ({
       (collaborator) => collaborator.id === data?.user?.id,
     );
   }, [listData, data?.user?.id]);
-  const length =
-    listData.type === 'BUCKET' ? listData.items.length : listData.movies.length;
 
   return (
     <>
-      {listData.type === 'BUCKET'
-        ? listData.items.map((item) => (
-            <Fragment key={item.id}>
-              <ListItem
-                isOwner={isOwner}
-                isCollaborator={isCollaborator}
-                {...item}
-              />
-              <div className="divider" />
-            </Fragment>
-          ))
-        : listData.movies.map(({ movie, checked, id, listId }) => (
-            <Fragment key={movie.id}>
-              <Movie
-                checked={checked}
-                itemId={id}
-                listId={listId}
-                isOwner={isOwner}
-                isCollaborator={isCollaborator}
-                {...movie}
-              />
-            </Fragment>
-          ))}
-      {length === 0 && (
+      {listData.items.map((item) => (
+        <Fragment key={item.id}>
+          {listData.type === 'MOVIE' && item.movie && (
+            <Movie
+              checked={item.checked}
+              itemId={item.id}
+              listId={listData.id}
+              isOwner={isOwner}
+              isCollaborator={isCollaborator}
+              {...item.movie}
+            />
+          )}
+          {listData.type === 'BUCKET' && (
+            <ListItem
+              isOwner={isOwner}
+              isCollaborator={isCollaborator}
+              {...item}
+            />
+          )}
+        </Fragment>
+      ))}
+      {listData.items.length === 0 && (
         <>
           {isOwner ? (
             <>

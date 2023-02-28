@@ -5,9 +5,13 @@ import {
   zEditListItemSchema,
   zIdSchema,
   zNewListItemSchema,
+  zNewMovieSchema,
 } from '../../../schemas/listSchemas';
 import { TRPCError } from '@trpc/server';
-import type { List, User } from '@prisma/client';
+import type { List, Movie, User } from '@prisma/client';
+import type { TMDBMovie } from '../../../types/TMDBMovie';
+import { TMDBCollection } from '../../../types/TMDBMovie';
+import { env } from '../../../env/server.mjs';
 
 const checkAccess = (
   ctx: Awaited<ReturnType<typeof createTRPCContext>>,
@@ -15,6 +19,80 @@ const checkAccess = (
 ) =>
   list.ownerId === ctx.session?.user?.id ||
   list.collaborators?.some((c) => c.id === ctx.session?.user?.id);
+
+const createDBMovieFromTMDBMovie = (
+  movie: TMDBMovie,
+): Omit<Movie, 'updatedAt'> => ({
+  id: movie.id,
+  title: movie.title,
+  posterUrl: movie.poster_path,
+  description: movie.overview,
+  genres: movie.genres.map((g) => g.name).join(', '),
+  runtime: movie.runtime,
+  releaseDate: movie.release_date,
+  rating: movie.vote_average.toFixed(1),
+});
+
+const checkAndUpdateMovie = async (
+  ctx: Awaited<ReturnType<typeof createTRPCContext>>,
+  movie: Pick<Movie, 'id' | 'updatedAt'>,
+) => {
+  // if movie data is at least 1 day old, update it
+  if (movie.updatedAt < new Date(Date.now() - 1000 * 60 * 60 * 24)) {
+    const tmdbMovie = await getTMDBMovie(movie.id);
+    if (!tmdbMovie)
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Something went wrong finding that movie on TMDB.',
+      });
+
+    await ctx.prisma.movie.update({
+      where: { id: movie.id },
+      data: {
+        ...createDBMovieFromTMDBMovie(tmdbMovie),
+        updatedAt: new Date(),
+      },
+    });
+  }
+};
+
+const getTMDBMovie = async (id: number | string): Promise<TMDBMovie | null> => {
+  const res = await fetch(
+    `https://api.themoviedb.org/3/movie/${id}&language=en-US`,
+    {
+      headers: {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        Authorization: `Bearer ${env.TMDB_API_KEY ?? ''}`,
+      },
+    },
+  );
+
+  if (!res.ok) {
+    return null;
+  }
+
+  return (await res.json()) as TMDBMovie;
+};
+
+const getTMDBCollection = async (
+  id: number | string,
+): Promise<z.infer<typeof TMDBCollection>> => {
+  const res = await fetch(
+    `https://api.themoviedb.org/3/collection/${id}?language=en-US`,
+    {
+      headers: {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        Authorization: `Bearer ${env.TMDB_API_KEY ?? ''}`,
+      },
+    },
+  );
+
+  if (!res.ok) {
+    throw new Error('TMDB_FETCH_ERROR');
+  }
+
+  return TMDBCollection.parse(await res.json());
+};
 
 export const listItemRouter = createTRPCRouter({
   setItemChecked: protectedProcedure
@@ -28,7 +106,7 @@ export const listItemRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const list = await ctx.prisma.list.findUnique({
         where: { id: input.listId },
-        select: { ownerId: true, collaborators: true, type: true },
+        select: { ownerId: true, collaborators: true },
       });
 
       if (!list)
@@ -42,12 +120,6 @@ export const listItemRouter = createTRPCRouter({
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You are not allowed to update this item.',
-        });
-
-      if (list.type !== 'BUCKET')
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'You can only check bucket list items using this endpoint.',
         });
 
       return ctx.prisma.listItem.update({
@@ -82,6 +154,154 @@ export const listItemRouter = createTRPCRouter({
           list: { connect: { id: input.listId } },
         },
       });
+    }),
+  createMovie: protectedProcedure
+    .input(zNewMovieSchema)
+    .mutation(async ({ ctx, input }) => {
+      const list = await ctx.prisma.list.findUnique({
+        where: { id: input.listId },
+        select: { ownerId: true, collaborators: true },
+      });
+
+      if (!list)
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: "The list you're trying to add an item to cannot be found.",
+        });
+
+      if (!checkAccess(ctx, list))
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'You are not allowed to add items to this list.',
+        });
+
+      let movie = await ctx.prisma.movie.findUnique({
+        where: { id: input.externalId },
+      });
+
+      if (!movie) {
+        const tmdbMovie = await getTMDBMovie(input.externalId);
+        if (!tmdbMovie)
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Something went wrong finding that movie on TMDB.',
+          });
+
+        movie = await ctx.prisma.movie.create({
+          data: {
+            ...createDBMovieFromTMDBMovie(tmdbMovie),
+          },
+        });
+      }
+
+      await checkAndUpdateMovie(ctx, movie);
+
+      return ctx.prisma.listItem.create({
+        data: {
+          list: { connect: { id: input.listId } },
+          movie: { connect: { id: movie.id } },
+        },
+      });
+    }),
+  createCollection: protectedProcedure
+    .input(zNewMovieSchema)
+    .mutation(async ({ ctx, input }) => {
+      const list = await ctx.prisma.list.findUnique({
+        where: { id: input.listId },
+        select: { ownerId: true, collaborators: true },
+      });
+
+      if (!list)
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: "The list you're trying to add an item to cannot be found.",
+        });
+
+      if (!checkAccess(ctx, list))
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'You are not allowed to add items to this list.',
+        });
+
+      let collection = await ctx.prisma.collection.findUnique({
+        where: { id: input.externalId },
+        include: { movies: { select: { id: true } } },
+      });
+
+      if (!collection) {
+        let tmdbCollection;
+        try {
+          tmdbCollection = await getTMDBCollection(input.externalId);
+        } catch (e) {
+          console.log(e);
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Something went wrong finding that collection on TMDB.',
+          });
+        }
+
+        if (!tmdbCollection)
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Something went wrong finding that collection on TMDB.',
+          });
+
+        const movies = await Promise.all(
+          tmdbCollection.parts.map(async (part) => {
+            let movie = await ctx.prisma.movie.findUnique({
+              where: { id: part.id },
+            });
+
+            if (!movie) {
+              const tmdbMovie = await getTMDBMovie(part.id);
+              if (!tmdbMovie)
+                throw new TRPCError({
+                  code: 'NOT_FOUND',
+                  message: 'Something went wrong finding that movie on TMDB.',
+                });
+
+              movie = await ctx.prisma.movie.create({
+                data: {
+                  ...createDBMovieFromTMDBMovie(tmdbMovie),
+                },
+              });
+            }
+
+            await checkAndUpdateMovie(ctx, movie);
+
+            return movie;
+          }),
+        );
+
+        collection = await ctx.prisma.collection.create({
+          data: {
+            id: tmdbCollection.id,
+            name: tmdbCollection.name,
+            overview: tmdbCollection.overview,
+            posterUrl: tmdbCollection.backdrop_path,
+            movies: { connect: movies.map((movie) => ({ id: movie.id })) },
+          },
+          include: { movies: { select: { id: true } } },
+        });
+      }
+
+      if (!collection)
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Something went wrong finding that collection on TMDB.',
+        });
+
+      return await Promise.all(
+        collection.movies.map(async (movie) => {
+          return await ctx.prisma.listItem.create({
+            data: {
+              list: { connect: { id: input.listId } },
+              collection: { connect: { id: collection?.id } },
+              movie: { connect: { id: movie.id } },
+            },
+          });
+        }),
+      );
     }),
   deleteItem: protectedProcedure
     .input(zIdSchema)

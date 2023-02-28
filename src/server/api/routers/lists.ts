@@ -16,16 +16,17 @@ export const listsRouter = createTRPCRouter({
           { collaborators: { some: { id: ctx.session.user.id } } },
         ],
       },
-      include: { items: true, collaborators: true, movies: true },
+      include: {
+        items: { include: { movie: true, collection: true } },
+        collaborators: true,
+      },
       orderBy: { title: 'asc' },
     });
 
     return {
       lists: lists.map((list) => ({
         ...list,
-        amountChecked:
-          list.items.filter((i) => i.checked).length ||
-          list.movies.filter((m) => m.checked).length,
+        amountChecked: list.items.filter((i) => i.checked).length,
       })),
     };
   }),
@@ -33,13 +34,16 @@ export const listsRouter = createTRPCRouter({
     const list = await ctx.prisma.list.findUnique({
       where: { id: input.id },
       include: {
-        items: { orderBy: { title: 'asc' } },
+        items: {
+          orderBy: [
+            { title: 'asc' },
+            { checked: 'asc' },
+            { movie: { title: 'asc' } },
+          ],
+          include: { movie: true },
+        },
         owner: true,
         collaborators: true,
-        movies: {
-          include: { movie: true },
-          orderBy: [{ checked: 'asc' }, { movie: { title: 'asc' } }],
-        },
       },
     });
 

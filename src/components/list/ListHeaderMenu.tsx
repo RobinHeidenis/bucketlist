@@ -1,4 +1,4 @@
-import type { List, ListItem, MovieListItem, User } from '@prisma/client';
+import type { List, ListItem, User } from '@prisma/client';
 import { DropdownMenu } from '../dropdown/DropdownMenu';
 import { api } from '../../utils/api';
 import { useRouter } from 'next/router';
@@ -20,11 +20,9 @@ export const ListHeaderMenu = ({
   description,
   isPublic,
   type,
-  movies,
 }: List & {
   owner: User;
   items: ListItem[];
-  movies: MovieListItem[];
   collaborators: User[];
 }) => {
   const router = useRouter();
@@ -61,10 +59,8 @@ export const ListHeaderMenu = ({
     <div className="flex w-full flex-row items-center justify-between">
       <div className="flex flex-row items-center">
         <p className="m-0">
-          List by {owner.name} •{' '}
-          {type === 'BUCKET'
-            ? `${items.length} to-do's`
-            : `${movies.length} movies`}
+          List by {owner.name} • {items.length}{' '}
+          {type === 'BUCKET' ? "to-do's" : 'movies'}
         </p>
         <span className="ml-3 mr-3">•</span>
         <div className="tooltip" data-tip={isPublic ? 'Public' : 'Private'}>

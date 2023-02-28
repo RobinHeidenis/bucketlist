@@ -20,7 +20,7 @@ export const EditItemModal = NiceModal.create(
     const form = useForm<z.infer<typeof zEditListItemSchema>>({
       initialValues: {
         id,
-        title,
+        title: title ?? '',
         description: description ?? '',
       },
       validate: zodResolver(zEditListItemSchema),
