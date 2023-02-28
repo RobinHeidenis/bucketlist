@@ -1,4 +1,4 @@
-import type { List, ListItem, MovieListItem, User } from '@prisma/client';
+import type { List, ListItem, User } from '@prisma/client';
 import { ListCardWrapper } from './ListCardWrapper';
 import { useSession } from 'next-auth/react';
 import React from 'react';
@@ -6,7 +6,6 @@ import { UsersIcon } from '@heroicons/react/24/outline';
 
 type BucketListType = List & {
   items: ListItem[];
-  movies: MovieListItem[];
   amountChecked: number;
   collaborators: User[];
 };
@@ -31,8 +30,7 @@ export const ListCard = ({ list }: ListCardProps) => {
         </div>
         <div className="card-actions flex items-center">
           <p className="line-clamp-3">
-            {list.items?.length || list.movies?.length} items •{' '}
-            {list.amountChecked} checked
+            {list.items?.length} items • {list.amountChecked} checked
           </p>
           {list.collaborators?.some(
             (collaborator) => collaborator.id === data?.user?.id,
