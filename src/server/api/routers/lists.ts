@@ -18,7 +18,7 @@ export const listsRouter = createTRPCRouter({
       },
       include: {
         items: { include: { movie: true, collection: true } },
-        collaborators: true,
+        collaborators: { select: { id: true } },
       },
       orderBy: { title: 'asc' },
     });
@@ -42,8 +42,8 @@ export const listsRouter = createTRPCRouter({
           ],
           include: { movie: true },
         },
-        owner: true,
-        collaborators: true,
+        owner: { select: { id: true, name: true } },
+        collaborators: { select: { id: true } },
       },
     });
 

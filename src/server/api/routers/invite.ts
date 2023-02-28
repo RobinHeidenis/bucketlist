@@ -48,7 +48,14 @@ export const inviteRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const invite = await ctx.prisma.inviteLink.findUnique({
         where: { code: input.code },
-        include: { list: { include: { owner: true, collaborators: true } } },
+        include: {
+          list: {
+            include: {
+              owner: { select: { id: true, name: true } },
+              collaborators: { select: { id: true } },
+            },
+          },
+        },
       });
 
       if (!invite)
@@ -118,7 +125,9 @@ export const inviteRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const invite = await ctx.prisma.inviteLink.findUnique({
         where: { id: input.id },
-        include: { list: { include: { collaborators: true } } },
+        include: {
+          list: { include: { collaborators: { select: { id: true } } } },
+        },
       });
 
       if (!invite)
