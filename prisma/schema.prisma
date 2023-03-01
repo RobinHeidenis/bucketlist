@@ -111,7 +111,7 @@ model Movie {
   id          Int          @id
   title       String       @db.VarChar(200)
   description String?      @db.VarChar(1000)
-  releaseDate String?      @db.VarChar(50)
+  releaseDate String       @db.VarChar(50)
   rating      String?      @db.VarChar(10)
   runtime     Int?         @db.SmallInt
   genres      String?      @db.VarChar(200)

@@ -26,6 +26,8 @@ export const Movie = ({
   checked,
   isOwner,
   isCollaborator,
+  dropdownLeft,
+  hideDivider,
   ...movie
 }: MovieType & {
   checked: boolean;
@@ -33,6 +35,8 @@ export const Movie = ({
   listId: string;
   isOwner: boolean;
   isCollaborator: boolean;
+  dropdownLeft?: boolean;
+  hideDivider?: boolean;
 }) => {
   const context = api.useContext();
   const { mutate: setWatched } = api.listItem.setItemChecked.useMutation({
@@ -98,7 +102,7 @@ export const Movie = ({
           </div>
         </div>
         {(isOwner || isCollaborator) && (
-          <DropdownHeader>
+          <DropdownHeader left={dropdownLeft}>
             <DropdownItem
               onClick={() =>
                 setWatched({
@@ -125,7 +129,7 @@ export const Movie = ({
           </DropdownHeader>
         )}
       </div>
-      <div className="divider mt-2 mb-2" />
+      {!hideDivider && <div className="divider mt-2 mb-2" />}
     </div>
   );
 };

@@ -21,15 +21,14 @@ export const ListItems = ({
 
   const collections = useMemo(() => {
     const collections = Object.values(listData.collections).sort((a, b) => {
-      console.info(a, b);
       if (a.title < b.title) return -1;
       if (a.title > b.title) return 1;
       return 0;
     });
     return collections.map((collection) => {
       collection.items = collection.items.sort((a, b) => {
-        if (a.movie.title < b.movie.title) return -1;
-        if (a.movie.title > b.movie.title) return 1;
+        if (a.movie.releaseDate < b.movie.releaseDate) return -1;
+        if (a.movie.releaseDate > b.movie.releaseDate) return 1;
         return 0;
       });
       const allChecked = collection.items.every((item) => item.checked);

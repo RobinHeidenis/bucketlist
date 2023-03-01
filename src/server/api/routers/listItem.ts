@@ -127,6 +127,38 @@ export const listItemRouter = createTRPCRouter({
         data: { checked: input.checked },
       });
     }),
+  setCollectionChecked: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        listId: z.string().uuid(),
+        checked: z.boolean(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const list = await ctx.prisma.list.findUnique({
+        where: { id: input.listId },
+        select: { ownerId: true, collaborators: { select: { id: true } } },
+      });
+
+      if (!list)
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message:
+            "The list you're trying to update an item on cannot be found.",
+        });
+
+      if (!checkAccess(ctx, list))
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'You are not allowed to update this item.',
+        });
+
+      return ctx.prisma.listItem.updateMany({
+        where: { collectionId: input.id },
+        data: { checked: input.checked },
+      });
+    }),
   createItem: protectedProcedure
     .input(zNewListItemSchema)
     .mutation(async ({ ctx, input }) => {
@@ -359,6 +391,30 @@ export const listItemRouter = createTRPCRouter({
 
       return ctx.prisma.listItem.delete({
         where: { id: input.id },
+      });
+    }),
+  deleteCollection: protectedProcedure
+    .input(z.object({ id: z.number(), listId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const list = await ctx.prisma.list.findUnique({
+        where: { id: input.listId },
+        select: { ownerId: true, collaborators: { select: { id: true } } },
+      });
+
+      if (!list)
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: "The list you're requesting to delete cannot be found.",
+        });
+
+      if (!checkAccess(ctx, list))
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'You are not allowed to delete this collection',
+        });
+
+      return ctx.prisma.listItem.deleteMany({
+        where: { collectionId: input.id, listId: input.listId },
       });
     }),
   updateItem: protectedProcedure

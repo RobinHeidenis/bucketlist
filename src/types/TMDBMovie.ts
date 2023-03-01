@@ -74,9 +74,23 @@ export const TMDBCollection = z.object({
   parts: z.array(TMDBSearchMovie),
 });
 
-export const TMDBSearchResult = z.object({
+export const GenericTMDBSearchResult = z.object({
   page: z.number(),
-  results: z.array(TMDBSearchMovie),
   total_pages: z.number(),
   total_results: z.number(),
+});
+
+export const TMDBSearchCollection = z.object({
+  id: z.number(),
+  name: z.string(),
+  poster_path: z.string().optional().nullable(),
+  backdrop_path: z.string().optional().nullable(),
+});
+
+export const TMDBMovieSearchResult = GenericTMDBSearchResult.extend({
+  results: z.array(TMDBSearchMovie),
+});
+
+export const TMDBCollectionSearchResult = GenericTMDBSearchResult.extend({
+  results: z.array(TMDBSearchCollection),
 });

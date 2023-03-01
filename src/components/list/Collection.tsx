@@ -9,8 +9,9 @@ import {
   FilmIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline';
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import { Movie } from './Movie';
+import { api } from '../../utils/api';
 
 interface CollectionProps {
   collection: {
@@ -32,10 +33,28 @@ export const Collection = ({
   isCollaborator,
   listId,
 }: CollectionProps) => {
+  const context = api.useContext();
   const [open, setOpen] = useState(false);
+  const { mutate: deleteCollection } =
+    api.listItem.deleteCollection.useMutation({
+      onSuccess: () => {
+        void context.lists.getList.invalidate({ id: listId });
+      },
+    });
+
+  const { mutate: setCollectionWatched } =
+    api.listItem.setCollectionChecked.useMutation({
+      onSuccess: () => {
+        void context.lists.getList.invalidate({ id: listId });
+      },
+    });
 
   return (
-    <div className={`collapse ${open ? 'collapse-open' : 'collapse-close'}`}>
+    <div
+      className={`collapse ${
+        open ? 'collapse-open' : 'collapse-close'
+      } overflow-visible`}
+    >
       <div
         className="collapse-title flex flex-row items-start justify-between p-0"
         onClick={() => setOpen(!open)}
@@ -77,7 +96,11 @@ export const Collection = ({
           <DropdownHeader>
             <DropdownItem
               onClick={() => {
-                console.log('');
+                setCollectionWatched({
+                  id: collection.id,
+                  listId,
+                  checked: !collection.allChecked,
+                });
               }}
             >
               {collection.allChecked ? (
@@ -90,25 +113,33 @@ export const Collection = ({
                 </>
               )}
             </DropdownItem>
-            <DropdownItem onClick={() => console.log('')} danger>
+            <DropdownItem
+              onClick={() => deleteCollection({ id: collection.id, listId })}
+              danger
+            >
               <TrashIcon className="h-6 w-6" />
               Delete
             </DropdownItem>
           </DropdownHeader>
         )}
       </div>
-      <div className="collapse-content mt-5 ml-24 p-0">
-        {collection.items.map((item) => (
-          <Fragment key={item.id}>
-            <Movie
-              checked={item.checked}
-              itemId={item.id}
-              listId={listId}
-              isOwner={isOwner}
-              isCollaborator={isCollaborator}
-              {...item.movie}
-            />
-          </Fragment>
+      <div
+        className={`collapse-content ${
+          open ? 'mt-5' : ''
+        } ml-24 overflow-x-visible p-0`}
+      >
+        {collection.items.map((item, index) => (
+          <Movie
+            key={item.id}
+            checked={item.checked}
+            itemId={item.id}
+            listId={listId}
+            isOwner={isOwner}
+            isCollaborator={isCollaborator}
+            dropdownLeft
+            hideDivider={index === collection.items.length - 1}
+            {...item.movie}
+          />
         ))}
       </div>
       <div className="divider mt-2 mb-2" />
