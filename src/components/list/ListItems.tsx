@@ -3,6 +3,7 @@ import { Fragment, useMemo } from 'react';
 import { ListItem } from './ListItem';
 import { useSession } from 'next-auth/react';
 import { Movie } from './Movie';
+import { Collection } from './Collection';
 
 export const ListItems = ({
   listData,
@@ -18,29 +19,82 @@ export const ListItems = ({
     );
   }, [listData, data?.user?.id]);
 
+  const collections = useMemo(() => {
+    const collections = Object.values(listData.collections).sort((a, b) => {
+      if (a.title < b.title) return -1;
+      if (a.title > b.title) return 1;
+      return 0;
+    });
+    return collections.map((collection) => {
+      collection.items = collection.items.sort((a, b) => {
+        if (a.movie.releaseDate < b.movie.releaseDate) return -1;
+        if (a.movie.releaseDate > b.movie.releaseDate) return 1;
+        return 0;
+      });
+      const allChecked = collection.items.every((item) => item.checked);
+      return { ...collection, allChecked };
+    });
+  }, [listData.collections]);
+
+  const movieItems = useMemo(() => {
+    return [...listData.movieItems, ...collections].sort((a, b) => {
+      let aTitle;
+      if ('movie' in a) {
+        aTitle = a.movie.title;
+      } else {
+        aTitle = a.title;
+      }
+
+      let bTitle;
+      if ('movie' in b) {
+        bTitle = b.movie.title;
+      } else {
+        bTitle = b.title;
+      }
+
+      if (aTitle < bTitle) return -1;
+      if (aTitle > bTitle) return 1;
+      return 0;
+    });
+  }, [listData.movieItems, collections]);
+
   return (
     <>
-      {listData.items.map((item) => (
-        <Fragment key={item.id}>
-          {listData.type === 'MOVIE' && item.movie && (
-            <Movie
-              checked={item.checked}
-              itemId={item.id}
-              listId={listData.id}
-              isOwner={isOwner}
-              isCollaborator={isCollaborator}
-              {...item.movie}
-            />
-          )}
-          {listData.type === 'BUCKET' && (
-            <ListItem
-              isOwner={isOwner}
-              isCollaborator={isCollaborator}
-              {...item}
-            />
-          )}
-        </Fragment>
-      ))}
+      {listData.type === 'BUCKET'
+        ? listData.items.map((item) => (
+            <Fragment key={item.id}>
+              <ListItem
+                isOwner={isOwner}
+                isCollaborator={isCollaborator}
+                {...item}
+              />
+            </Fragment>
+          ))
+        : movieItems.map((item) => {
+            if ('movie' in item) {
+              return (
+                <Movie
+                  key={item.id}
+                  checked={item.checked}
+                  itemId={item.id}
+                  listId={listData.id}
+                  isOwner={isOwner}
+                  isCollaborator={isCollaborator}
+                  {...item.movie}
+                />
+              );
+            } else {
+              return (
+                <Collection
+                  key={item.id}
+                  collection={item}
+                  isOwner={isOwner}
+                  isCollaborator={isCollaborator}
+                  listId={listData.id}
+                />
+              );
+            }
+          })}
       {listData.items.length === 0 && (
         <>
           {isOwner ? (

@@ -21,9 +21,9 @@ export const ListHeaderMenu = ({
   isPublic,
   type,
 }: List & {
-  owner: User;
+  owner: Pick<User, 'id' | 'name'>;
   items: ListItem[];
-  collaborators: User[];
+  collaborators: Pick<User, 'id'>[];
 }) => {
   const router = useRouter();
   const { data } = useSession();

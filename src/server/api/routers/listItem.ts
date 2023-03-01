@@ -15,7 +15,7 @@ import { env } from '../../../env/server.mjs';
 
 const checkAccess = (
   ctx: Awaited<ReturnType<typeof createTRPCContext>>,
-  list: Partial<List & { collaborators: User[] }>,
+  list: Partial<List & { collaborators: Pick<User, 'id'>[] }>,
 ) =>
   list.ownerId === ctx.session?.user?.id ||
   list.collaborators?.some((c) => c.id === ctx.session?.user?.id);
@@ -106,7 +106,7 @@ export const listItemRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const list = await ctx.prisma.list.findUnique({
         where: { id: input.listId },
-        select: { ownerId: true, collaborators: true },
+        select: { ownerId: true, collaborators: { select: { id: true } } },
       });
 
       if (!list)
@@ -127,12 +127,48 @@ export const listItemRouter = createTRPCRouter({
         data: { checked: input.checked },
       });
     }),
+  setCollectionChecked: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        listId: z.string().uuid(),
+        checked: z.boolean(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const list = await ctx.prisma.list.findUnique({
+        where: { id: input.listId },
+        select: { ownerId: true, collaborators: { select: { id: true } } },
+      });
+
+      if (!list)
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message:
+            "The list you're trying to update an item on cannot be found.",
+        });
+
+      if (!checkAccess(ctx, list))
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'You are not allowed to update this item.',
+        });
+
+      return ctx.prisma.listItem.updateMany({
+        where: { collectionId: input.id },
+        data: { checked: input.checked },
+      });
+    }),
   createItem: protectedProcedure
     .input(zNewListItemSchema)
     .mutation(async ({ ctx, input }) => {
       const list = await ctx.prisma.list.findUnique({
         where: { id: input.listId },
-        select: { ownerId: true, collaborators: true },
+        select: {
+          ownerId: true,
+          collaborators: { select: { id: true } },
+          type: true,
+        },
       });
 
       if (!list)
@@ -145,6 +181,12 @@ export const listItemRouter = createTRPCRouter({
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You are not allowed to add items to this list.',
+        });
+
+      if (list.type !== 'BUCKET')
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'You can only add bucket list items to this list.',
         });
 
       return ctx.prisma.listItem.create({
@@ -160,7 +202,11 @@ export const listItemRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const list = await ctx.prisma.list.findUnique({
         where: { id: input.listId },
-        select: { ownerId: true, collaborators: true },
+        select: {
+          ownerId: true,
+          collaborators: { select: { id: true } },
+          type: true,
+        },
       });
 
       if (!list)
@@ -173,6 +219,12 @@ export const listItemRouter = createTRPCRouter({
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You are not allowed to add items to this list.',
+        });
+
+      if (list.type !== 'MOVIE')
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'You can only add movie list items to this list.',
         });
 
       let movie = await ctx.prisma.movie.findUnique({
@@ -208,7 +260,11 @@ export const listItemRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const list = await ctx.prisma.list.findUnique({
         where: { id: input.listId },
-        select: { ownerId: true, collaborators: true },
+        select: {
+          ownerId: true,
+          collaborators: { select: { id: true } },
+          type: true,
+        },
       });
 
       if (!list)
@@ -221,6 +277,12 @@ export const listItemRouter = createTRPCRouter({
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You are not allowed to add items to this list.',
+        });
+
+      if (list.type !== 'MOVIE')
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'You can only add movie list items to this list.',
         });
 
       let collection = await ctx.prisma.collection.findUnique({
@@ -308,7 +370,11 @@ export const listItemRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const listItem = await ctx.prisma.listItem.findUnique({
         where: { id: input.id },
-        select: { list: { select: { ownerId: true, collaborators: true } } },
+        select: {
+          list: {
+            select: { ownerId: true, collaborators: { select: { id: true } } },
+          },
+        },
       });
 
       if (!listItem)
@@ -327,12 +393,40 @@ export const listItemRouter = createTRPCRouter({
         where: { id: input.id },
       });
     }),
+  deleteCollection: protectedProcedure
+    .input(z.object({ id: z.number(), listId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const list = await ctx.prisma.list.findUnique({
+        where: { id: input.listId },
+        select: { ownerId: true, collaborators: { select: { id: true } } },
+      });
+
+      if (!list)
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: "The list you're requesting to delete cannot be found.",
+        });
+
+      if (!checkAccess(ctx, list))
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'You are not allowed to delete this collection',
+        });
+
+      return ctx.prisma.listItem.deleteMany({
+        where: { collectionId: input.id, listId: input.listId },
+      });
+    }),
   updateItem: protectedProcedure
     .input(zEditListItemSchema)
     .mutation(async ({ ctx, input }) => {
       const listItem = await ctx.prisma.listItem.findUnique({
         where: { id: input.id },
-        select: { list: { select: { ownerId: true, collaborators: true } } },
+        select: {
+          list: {
+            select: { ownerId: true, collaborators: { select: { id: true } } },
+          },
+        },
       });
 
       if (!listItem)

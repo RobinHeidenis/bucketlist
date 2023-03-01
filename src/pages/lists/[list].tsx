@@ -59,7 +59,7 @@ const List = () => {
 
   return (
     <StandardPage>
-      <div className="prose w-1/2">
+      <div className="prose max-w-[35%]">
         <h1 className="m-0 text-4xl">{listData.title}</h1>
         <p className="mt-3 text-xl">{listData.description}</p>
         <ListHeaderMenu {...listData} />

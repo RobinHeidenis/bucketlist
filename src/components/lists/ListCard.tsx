@@ -7,7 +7,7 @@ import { UsersIcon } from '@heroicons/react/24/outline';
 type BucketListType = List & {
   items: ListItem[];
   amountChecked: number;
-  collaborators: User[];
+  collaborators: Pick<User, 'id'>[];
 };
 
 interface ListCardProps {

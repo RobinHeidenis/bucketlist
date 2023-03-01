@@ -1,13 +1,24 @@
 import { useState } from 'react';
 import type { z } from 'zod';
-import type { TMDBSearchMovie, TMDBSearchResult } from '../../types/TMDBMovie';
+import type {
+  TMDBSearchCollection,
+  TMDBSearchMovie,
+} from '../../types/TMDBMovie';
 import { MovieResult } from './MovieResult';
+import { CollectionResult } from './CollectionResult';
 
 interface AutocompleteProps {
   value: string;
   onChange: (value: string) => void;
-  setSelectedMovie: (value: z.infer<typeof TMDBSearchMovie>) => void;
-  items: z.infer<typeof TMDBSearchResult.shape.results>;
+  setSelectedMovie: (
+    value:
+      | z.infer<typeof TMDBSearchMovie>
+      | z.infer<typeof TMDBSearchCollection>,
+  ) => void;
+  items: (
+    | z.infer<typeof TMDBSearchMovie>
+    | z.infer<typeof TMDBSearchCollection>
+  )[];
   isLoading: boolean;
 }
 
@@ -56,13 +67,17 @@ export const Autocomplete = ({
                 key={index}
                 tabIndex={index + 1}
                 onClick={() => {
-                  onChange(item.title);
+                  onChange('title' in item ? item.title : item.name);
                   setSelectedMovie(item);
                   setOpen(false);
                 }}
                 className="m-0 w-full border-b border-b-base-content/10 p-0"
               >
-                <MovieResult movie={item} />
+                {'title' in item ? (
+                  <MovieResult movie={item} />
+                ) : (
+                  <CollectionResult collection={item} />
+                )}
               </li>
             );
           })}

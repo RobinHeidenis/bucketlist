@@ -2,7 +2,10 @@ import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { env } from '../../../env/server.mjs';
-import { TMDBSearchResult } from '../../../types/TMDBMovie';
+import {
+  TMDBCollectionSearchResult,
+  TMDBMovieSearchResult,
+} from '../../../types/TMDBMovie';
 
 export const movieRouter = createTRPCRouter({
   search: protectedProcedure
@@ -12,17 +15,29 @@ export const movieRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const res = await fetch(
-        `https://api.themoviedb.org/3/search/movie?query=${input.query}&language=en-US`,
-        {
-          headers: {
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            Authorization: `Bearer ${env.TMDB_API_KEY ?? ''}`,
+      // search for both movies and collections in tmdb
+      const [movieRes, collectionRes] = await Promise.all([
+        fetch(
+          `https://api.themoviedb.org/3/search/movie?query=${input.query}&language=en-US`,
+          {
+            headers: {
+              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+              Authorization: `Bearer ${env.TMDB_API_KEY ?? ''}`,
+            },
           },
-        },
-      );
+        ),
+        fetch(
+          `https://api.themoviedb.org/3/search/collection?query=${input.query}&language=en-US`,
+          {
+            headers: {
+              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+              Authorization: `Bearer ${env.TMDB_API_KEY ?? ''}`,
+            },
+          },
+        ),
+      ]);
 
-      if (!res.ok) {
+      if (!movieRes.ok || !collectionRes.ok) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Something went wrong searching TMDB.',
@@ -30,8 +45,26 @@ export const movieRouter = createTRPCRouter({
       }
 
       try {
-        const parsed = TMDBSearchResult.parse(await res.json());
-        return parsed.results;
+        const parsedMovies = TMDBMovieSearchResult.parse(
+          await movieRes.json(),
+        ).results;
+        const parsedCollections = TMDBCollectionSearchResult.parse(
+          await collectionRes.json(),
+        ).results;
+
+        return [...parsedMovies, ...parsedCollections].sort((a, b) => {
+          let aTitle;
+          if ('title' in a) aTitle = a.title;
+          else aTitle = a.name;
+
+          let bTitle;
+          if ('title' in b) bTitle = b.title;
+          else bTitle = b.name;
+
+          if (aTitle < bTitle) return -1;
+          if (aTitle > bTitle) return 1;
+          return 0;
+        });
       } catch (e) {
         console.error(e);
         throw new TRPCError({
