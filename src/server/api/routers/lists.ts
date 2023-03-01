@@ -6,6 +6,7 @@ import {
 } from '../../../schemas/listSchemas';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { TRPCError } from '@trpc/server';
+import type { ListItem, Movie } from '@prisma/client';
 
 export const listsRouter = createTRPCRouter({
   getLists: protectedProcedure.query(async ({ ctx }) => {
@@ -40,7 +41,7 @@ export const listsRouter = createTRPCRouter({
             { checked: 'asc' },
             { movie: { title: 'asc' } },
           ],
-          include: { movie: true },
+          include: { movie: true, collection: true },
         },
         owner: { select: { id: true, name: true } },
         collaborators: { select: { id: true } },
@@ -65,7 +66,40 @@ export const listsRouter = createTRPCRouter({
         message: 'You do not have access to view this list.',
       });
 
-    return list;
+    interface collection {
+      id: number;
+      title: string;
+      description: string | null;
+      posterUrl: string | null;
+      items: (ListItem & { movie: Movie })[];
+    }
+
+    const collections: Record<number, collection> = {};
+    list.items.forEach((item) => {
+      if (item.collection) {
+        if (!item.collection || !item.movie) return;
+        if (!collections[item.collection.id]) {
+          collections[item.collection.id] = {
+            id: item.collection.id,
+            title: item.collection.name,
+            description: item.collection.overview,
+            posterUrl: item.collection.posterUrl,
+            items: [],
+          };
+        }
+        collections[item.collection.id]?.items.push(
+          item as ListItem & { movie: Movie },
+        );
+      }
+    });
+
+    return {
+      ...list,
+      movieItems: list.items.filter(
+        (i) => i.movie && !i.collection,
+      ) as (ListItem & { movie: Movie })[],
+      collections,
+    };
   }),
   createList: protectedProcedure
     .input(zNewListSchema)
