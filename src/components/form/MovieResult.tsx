@@ -2,7 +2,7 @@ import { StarIcon } from '@heroicons/react/24/solid';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import type { z } from 'zod';
 import type { TMDBSearchMovie } from '../../types/TMDBMovie';
-import { MovieImage } from '../movie/MovieImage';
+import { PosterImage } from '../movie/PosterImage';
 
 export const MovieResult = ({
   movie,
@@ -11,7 +11,7 @@ export const MovieResult = ({
 }) => {
   return (
     <div className="flex flex-row items-start justify-start">
-      <MovieImage url={movie.poster_path} alt={movie.title} />
+      <PosterImage url={movie.poster_path} alt={movie.title} />
       <div className="items-between flex h-full flex-col">
         <div>
           <h3 className="m-0">{movie.title}</h3>

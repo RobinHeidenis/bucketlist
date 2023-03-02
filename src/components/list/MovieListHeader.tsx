@@ -6,13 +6,13 @@ import type {
   TMDBSearchCollection,
   TMDBSearchMovie,
 } from '../../types/TMDBMovie';
-import { MovieImage } from '../movie/MovieImage';
+import { PosterImage } from '../movie/PosterImage';
 import { StarIcon } from '@heroicons/react/24/solid';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 
 export const MovieListHeader = ({ listId }: { listId: string }) => {
   const [searchValue, setSearchValue] = useState('');
-  const [selectedMovie, setSelectedMovie] = useState<
+  const [selectedResult, setSelectedResult] = useState<
     | z.infer<typeof TMDBSearchMovie>
     | z.infer<typeof TMDBSearchCollection>
     | null
@@ -20,16 +20,14 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
   const context = api.useContext();
 
   const { data, isFetching } = api.movies.search.useQuery(
-    {
-      query: searchValue,
-    },
+    { query: searchValue },
     { enabled: !!searchValue && searchValue.length > 2 },
   );
 
   const { mutate: createMovie } = api.listItem.createMovie.useMutation({
     onSuccess: () => {
       setSearchValue('');
-      setSelectedMovie(null);
+      setSelectedResult(null);
       void context.lists.getList.invalidate({ id: listId });
     },
   });
@@ -37,10 +35,12 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
     api.listItem.createCollection.useMutation({
       onSuccess: () => {
         setSearchValue('');
-        setSelectedMovie(null);
+        setSelectedResult(null);
         void context.lists.getList.invalidate({ id: listId });
       },
     });
+
+  const isMovie = selectedResult && 'title' in selectedResult;
 
   return (
     <div>
@@ -48,39 +48,33 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
         value={searchValue}
         onChange={setSearchValue}
         items={data ?? []}
-        setSelectedMovie={setSelectedMovie}
+        setSelectedResult={setSelectedResult}
         isLoading={isFetching}
       />
-      {selectedMovie && (
+      {selectedResult && (
         <>
           <div className="mt-5 flex">
-            <MovieImage
-              alt={
-                'title' in selectedMovie
-                  ? selectedMovie.title
-                  : selectedMovie.name
-              }
-              url={selectedMovie.poster_path}
+            <PosterImage
+              alt={isMovie ? selectedResult.title : selectedResult.name}
+              url={selectedResult.poster_path}
               width={152}
               height={225}
             />
             <div className="flex flex-col justify-between">
               <div>
                 <h2 className="m-0">
-                  {'title' in selectedMovie
-                    ? selectedMovie.title
-                    : selectedMovie.name}
+                  {isMovie ? selectedResult.title : selectedResult.name}
                 </h2>
-                {'title' in selectedMovie && (
-                  <p className="mb-0 line-clamp-6">{selectedMovie.overview}</p>
+                {isMovie && (
+                  <p className="mb-0 line-clamp-6">{selectedResult.overview}</p>
                 )}
               </div>
-              {'title' in selectedMovie && (
+              {isMovie && (
                 <div className="flex flex-row items-center">
                   <StarIcon className="mr-1 h-5 w-5 text-amber-500" />{' '}
-                  {selectedMovie.vote_average.toFixed(1)}
+                  {selectedResult.vote_average.toFixed(1)}
                   <CalendarIcon className="mr-1 ml-2 h-5 w-5" />{' '}
-                  {selectedMovie.release_date}
+                  {selectedResult.release_date}
                 </div>
               )}
             </div>
@@ -89,11 +83,9 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
             <button
               className="btn-primary btn"
               onClick={() => {
-                if (!selectedMovie) return;
-                const params = { listId, externalId: selectedMovie?.id };
-                'title' in selectedMovie
-                  ? createMovie(params)
-                  : createCollection(params);
+                if (!selectedResult) return;
+                const params = { listId, externalId: selectedResult?.id };
+                isMovie ? createMovie(params) : createCollection(params);
               }}
             >
               Add movie

@@ -10,7 +10,7 @@ import { CollectionResult } from './CollectionResult';
 interface AutocompleteProps {
   value: string;
   onChange: (value: string) => void;
-  setSelectedMovie: (
+  setSelectedResult: (
     value:
       | z.infer<typeof TMDBSearchMovie>
       | z.infer<typeof TMDBSearchCollection>,
@@ -26,7 +26,7 @@ export const Autocomplete = ({
   value,
   onChange,
   items,
-  setSelectedMovie,
+  setSelectedResult,
   isLoading,
 }: AutocompleteProps) => {
   const [open, setOpen] = useState(false);
@@ -68,7 +68,7 @@ export const Autocomplete = ({
                 tabIndex={index + 1}
                 onClick={() => {
                   onChange('title' in item ? item.title : item.name);
-                  setSelectedMovie(item);
+                  setSelectedResult(item);
                   setOpen(false);
                 }}
                 className="m-0 w-full border-b border-b-base-content/10 p-0"

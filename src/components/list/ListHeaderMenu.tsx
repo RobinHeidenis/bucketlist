@@ -1,5 +1,5 @@
-import type { List, ListItem, User } from '@prisma/client';
 import { DropdownMenu } from '../dropdown/DropdownMenu';
+import type { RouterOutputs } from '../../utils/api';
 import { api } from '../../utils/api';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
@@ -8,26 +8,20 @@ import { SuccessToast } from '../toasts/SuccessToast';
 import NiceModal from '@ebay/nice-modal-react';
 import { EditListModal } from '../modals/EditListModal';
 import { EyeIcon, EyeSlashIcon, PlusIcon } from '@heroicons/react/24/outline';
-import { useSession } from 'next-auth/react';
 import { CreateInviteLinkModal } from '../modals/CreateInviteLinkModal';
 import { DropdownItem } from '../dropdown/DropdownItem';
+import { usePermissionsCheck } from '../../hooks/usePermissionsCheck';
 
 export const ListHeaderMenu = ({
-  id,
-  owner,
-  items,
-  title,
-  description,
-  isPublic,
-  type,
-}: List & {
-  owner: Pick<User, 'id' | 'name'>;
-  items: ListItem[];
-  collaborators: Pick<User, 'id'>[];
+  listData,
+}: {
+  listData: RouterOutputs['lists']['getList'];
 }) => {
   const router = useRouter();
-  const { data } = useSession();
+  const { id, owner, items, title, description, isPublic, type } = listData;
+  const { isOwner } = usePermissionsCheck(listData);
   const context = api.useContext();
+
   const { mutateAsync: deleteList } = api.lists.deleteList.useMutation({
     onSuccess: () => {
       toast.custom(<SuccessToast message="List deleted!" />);
@@ -46,7 +40,7 @@ export const ListHeaderMenu = ({
       toast.custom(<ErrorToast message={message} />);
     },
   });
-  const isOwner = data?.user?.id === owner.id;
+
   const showEditListModal = () => {
     void NiceModal.show(EditListModal, { id, title, description });
   };

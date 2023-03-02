@@ -1,20 +1,18 @@
 import { useRouter } from 'next/router';
 import { api } from '../../utils/api';
 import { ListHeaderMenu } from '../../components/list/ListHeaderMenu';
-import { useMemo } from 'react';
 import { useRequireSignin } from '../../hooks/useRequireSignin';
 import NiceModal from '@ebay/nice-modal-react';
 import { CreateItemModal } from '../../components/modals/CreateItemModal';
 import { ListSkeleton } from '../../components/skeletons/ListSkeleton';
 import { StandardPage } from '../../components/page/StandardPage';
-import { useSession } from 'next-auth/react';
 import { ListItems } from '../../components/list/ListItems';
 import { MovieListHeader } from '../../components/list/MovieListHeader';
+import { usePermissionsCheck } from '../../hooks/usePermissionsCheck';
 
 const List = () => {
   useRequireSignin();
   const router = useRouter();
-  const { data } = useSession();
   const { list: listId } = router.query;
   const {
     data: listData,
@@ -24,13 +22,7 @@ const List = () => {
     { id: listId as string },
     { enabled: !!listId, retry: false },
   );
-
-  const isCollaborator = useMemo(() => {
-    if (!listData) return false;
-    return listData.collaborators.some(
-      (collaborator) => collaborator.id === data?.user?.id,
-    );
-  }, [listData, data?.user?.id]);
+  const { isOwner, isCollaborator } = usePermissionsCheck(listData);
 
   const showCreateModal = () => {
     void NiceModal.show(CreateItemModal, { listId: listId as string });
@@ -55,14 +47,12 @@ const List = () => {
       </StandardPage>
     );
 
-  const isOwner = data?.user?.id === listData.owner.id;
-
   return (
     <StandardPage>
       <div className="prose max-w-[35%]">
         <h1 className="m-0 text-4xl">{listData.title}</h1>
         <p className="mt-3 text-xl">{listData.description}</p>
-        <ListHeaderMenu {...listData} />
+        <ListHeaderMenu listData={listData} />
         {listData.type === 'MOVIE' && (isOwner || isCollaborator) && (
           <MovieListHeader listId={listData.id} />
         )}

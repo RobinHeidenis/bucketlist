@@ -11,7 +11,7 @@ import {
 import { DropdownHeader } from '../dropdown/DropdownHeader';
 import { DropdownItem } from '../dropdown/DropdownItem';
 import { api } from '../../utils/api';
-import { MovieImage } from '../movie/MovieImage';
+import { PosterImage } from '../movie/PosterImage';
 
 const toHoursAndMinutes = (totalMinutes: number) => {
   if (totalMinutes === 0) return '0';
@@ -19,6 +19,16 @@ const toHoursAndMinutes = (totalMinutes: number) => {
   const minutes = totalMinutes % 60;
   return `${hours ? `${hours}h` : ''} ${minutes > 0 ? ` ${minutes}m` : ''}`;
 };
+
+interface MovieProps {
+  checked: boolean;
+  itemId: string;
+  listId: string;
+  isOwner: boolean;
+  isCollaborator: boolean;
+  dropdownLeft?: boolean;
+  hideDivider?: boolean;
+}
 
 export const Movie = ({
   listId,
@@ -29,15 +39,7 @@ export const Movie = ({
   dropdownLeft,
   hideDivider,
   ...movie
-}: MovieType & {
-  checked: boolean;
-  itemId: string;
-  listId: string;
-  isOwner: boolean;
-  isCollaborator: boolean;
-  dropdownLeft?: boolean;
-  hideDivider?: boolean;
-}) => {
+}: MovieType & MovieProps) => {
   const context = api.useContext();
   const { mutate: setWatched } = api.listItem.setItemChecked.useMutation({
     onSuccess: () => {
@@ -54,7 +56,7 @@ export const Movie = ({
     <div>
       <div className="flex flex-row items-start justify-between">
         <div className="flex flex-row items-start">
-          <MovieImage
+          <PosterImage
             alt={movie.title}
             url={movie.posterUrl}
             width={80}

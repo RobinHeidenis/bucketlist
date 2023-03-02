@@ -2,15 +2,15 @@ import Image from 'next/image';
 import { PhotoIcon } from '@heroicons/react/24/outline';
 import type { PropsWithClassName } from '../../types/PropsWithClassName';
 
-export const MovieImage = ({
+export const PosterImage = ({
   url,
   alt,
   width = 64,
   height = 91,
   className,
 }: PropsWithClassName<{
-  url?: string | null;
   alt: string;
+  url?: string | null;
   width?: number;
   height?: number;
 }>) => {
