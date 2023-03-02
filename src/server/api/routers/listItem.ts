@@ -8,7 +8,12 @@ import {
   zNewMovieSchema,
 } from '../../../schemas/listSchemas';
 import { TRPCError } from '@trpc/server';
-import type { List, Movie, User } from '@prisma/client';
+import type {
+  Collection as CollectionType,
+  List,
+  Movie,
+  User,
+} from '@prisma/client';
 import type { TMDBMovie } from '../../../types/TMDBMovie';
 import { TMDBCollection } from '../../../types/TMDBMovie';
 import { env } from '../../../env/server.mjs';
@@ -56,6 +61,60 @@ const checkAndUpdateMovie = async (
   }
 };
 
+const checkAndUpdateCollection = async (
+  ctx: Awaited<ReturnType<typeof createTRPCContext>>,
+  collection: Pick<CollectionType, 'id' | 'updatedAt'>,
+) => {
+  // if collection data is at least 1 day old, update it
+  if (collection.updatedAt < new Date(Date.now() - 1000 * 60 * 60 * 24)) {
+    const tmdbCollection = await getTMDBCollection(collection.id);
+    if (!tmdbCollection)
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Something went wrong finding that collection on TMDB.',
+      });
+
+    const movies = await Promise.all(
+      tmdbCollection.parts.map(async (part) => {
+        let movie = await ctx.prisma.movie.findUnique({
+          where: { id: part.id },
+        });
+
+        if (!movie) {
+          const tmdbMovie = await getTMDBMovie(part.id);
+          if (!tmdbMovie)
+            throw new TRPCError({
+              code: 'NOT_FOUND',
+              message: 'Something went wrong finding that movie on TMDB.',
+            });
+
+          movie = await ctx.prisma.movie.create({
+            data: {
+              ...createDBMovieFromTMDBMovie(tmdbMovie),
+            },
+          });
+        }
+
+        await checkAndUpdateMovie(ctx, movie);
+
+        return movie;
+      }),
+    );
+
+    await ctx.prisma.collection.update({
+      where: { id: tmdbCollection.id },
+      data: {
+        id: tmdbCollection.id,
+        name: tmdbCollection.name,
+        overview: tmdbCollection.overview,
+        posterUrl: tmdbCollection.poster_path ?? tmdbCollection.backdrop_path,
+        updatedAt: new Date(),
+        movies: { connect: movies.map((movie) => ({ id: movie.id })) },
+      },
+    });
+  }
+};
+
 const getTMDBMovie = async (id: number | string): Promise<TMDBMovie | null> => {
   const res = await fetch(
     `https://api.themoviedb.org/3/movie/${id}&language=en-US`,
@@ -75,7 +134,7 @@ const getTMDBMovie = async (id: number | string): Promise<TMDBMovie | null> => {
 };
 
 const getTMDBCollection = async (
-  id: number | string,
+  id: number,
 ): Promise<z.infer<typeof TMDBCollection>> => {
   const res = await fetch(
     `https://api.themoviedb.org/3/collection/${id}?language=en-US`,
@@ -352,6 +411,8 @@ export const listItemRouter = createTRPCRouter({
           code: 'NOT_FOUND',
           message: 'Something went wrong finding that collection on TMDB.',
         });
+
+      await checkAndUpdateCollection(ctx, collection);
 
       return await Promise.all(
         collection.movies.map(async (movie) => {

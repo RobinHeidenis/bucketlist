@@ -1,5 +1,5 @@
 import type { ListItem, Movie as MovieType } from '@prisma/client';
-import { MovieImage } from '../movie/MovieImage';
+import { PosterImage } from '../movie/PosterImage';
 import { DropdownHeader } from '../dropdown/DropdownHeader';
 import { DropdownItem } from '../dropdown/DropdownItem';
 import {
@@ -60,7 +60,7 @@ export const Collection = ({
         onClick={() => setOpen(!open)}
       >
         <div className="flex flex-row items-start">
-          <MovieImage
+          <PosterImage
             alt={collection.title}
             url={collection.posterUrl}
             width={80}

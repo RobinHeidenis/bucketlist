@@ -63,9 +63,10 @@ model VerificationToken {
 
 model Collection {
   id        Int        @id
-  name      String
-  overview  String?
+  name      String     @db.VarChar(300)
+  overview  String?    @db.VarChar(1000)
   posterUrl String?
+  updatedAt DateTime   @default(now())
   movies    Movie[]
   listItems ListItem[]
 }
