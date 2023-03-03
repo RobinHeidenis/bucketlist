@@ -3,6 +3,7 @@ import { ListItem } from './ListItem';
 import { Movie } from './Movie';
 import { Collection } from './Collection';
 import { usePermissionsCheck } from '../../hooks/usePermissionsCheck';
+import type { sortMap } from '../../hooks/useSortedMovieItems';
 import { useSortedMovieItems } from '../../hooks/useSortedMovieItems';
 import { useState } from 'react';
 import RenderIfVisible from 'react-render-if-visible';
@@ -13,7 +14,8 @@ export const ListItems = ({
   listData: RouterOutputs['lists']['getList'];
 }) => {
   const { isOwner, isCollaborator } = usePermissionsCheck(listData);
-  const movieItems = useSortedMovieItems(listData);
+  const [filterMode, setFilterMode] = useState<keyof typeof sortMap>('default');
+  const movieItems = useSortedMovieItems(listData, filterMode);
   const [filterText, setFilterText] = useState('');
   const filteredMovieItems = !filterText
     ? movieItems
@@ -30,11 +32,34 @@ export const ListItems = ({
   return (
     <>
       {listData.type === 'MOVIE' && (
-        <input
-          placeholder="Filter"
-          onChange={(e) => setFilterText(e.target.value)}
-          className="input-bordered input-ghost input w-52"
-        />
+        <div className="mt-2 mb-5 flex items-center justify-between">
+          <label className="input-group">
+            <select
+              className="select-ghost select max-w-xs"
+              onChange={(e) =>
+                setFilterMode(e.target.value as keyof typeof sortMap)
+              }
+            >
+              <option disabled selected>
+                Sort
+              </option>
+              <option value="default">Default</option>
+              <option value="seen">Seen</option>
+              <option value="notSeen">Not seen</option>
+              <option value="alphabetically">Title (A-Z)</option>
+              <option value="alphabeticallyReverse">Title (Z-A)</option>
+              <option value="releaseDate">Release Date (newest)</option>
+              <option value="releaseDateReverse">Release Date (oldest)</option>
+              <option value="rating">Ratings (highest)</option>
+              <option value="ratingReverse">Ratings (lowest)</option>
+            </select>
+          </label>
+          <input
+            placeholder="Filter"
+            onChange={(e) => setFilterText(e.target.value)}
+            className="input-bordered input-ghost input w-52"
+          />
+        </div>
       )}
       {listData.type === 'BUCKET' ? (
         listData.items.map((item) => (
@@ -50,7 +75,11 @@ export const ListItems = ({
           {filteredMovieItems.map((item) => {
             if ('movie' in item) {
               return (
-                <RenderIfVisible defaultHeight={144} key={item.id}>
+                <RenderIfVisible
+                  defaultHeight={144}
+                  key={item.id}
+                  stayRendered={!filterText && filterMode === 'default'}
+                >
                   <Movie
                     checked={item.checked}
                     itemId={item.id}
@@ -63,7 +92,11 @@ export const ListItems = ({
               );
             } else {
               return (
-                <RenderIfVisible defaultHeight={144} key={item.id}>
+                <RenderIfVisible
+                  defaultHeight={144}
+                  key={item.id}
+                  stayRendered={!filterText && filterMode === 'default'}
+                >
                   <Collection
                     collection={item}
                     isOwner={isOwner}
@@ -74,9 +107,9 @@ export const ListItems = ({
               );
             }
           })}
-          )
         </>
       )}
+      {filteredMovieItems.length === 0 && <h3>No items found</h3>}
       {listData.items.length === 0 && (
         <>
           {isOwner ? (

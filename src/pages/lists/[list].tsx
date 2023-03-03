@@ -49,15 +49,15 @@ const List = () => {
 
   return (
     <StandardPage>
-      <div className="prose w-full max-w-[35%]">
+      <div className="prose w-full max-w-[40%]">
         <h1 className="m-0 text-4xl">{listData.title}</h1>
         <p className="mt-3 text-xl">{listData.description}</p>
         <ListHeaderMenu listData={listData} />
         {listData.type === 'MOVIE' && (isOwner || isCollaborator) && (
           <MovieListHeader listId={listData.id} />
         )}
-        <div className="divider" />
-        <div className="mt-5 w-full">
+        <div className="divider mb-0" />
+        <div className="w-full">
           <ListItems listData={listData} />
         </div>
         {(isOwner || isCollaborator) && listData.type === 'BUCKET' && (
