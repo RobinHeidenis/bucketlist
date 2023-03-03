@@ -34,6 +34,7 @@ specifiers:
   react: 18.2.0
   react-dom: 18.2.0
   react-hot-toast: ^2.4.0
+  react-render-if-visible: ^2.1.1
   superjson: 1.12.2
   tailwindcss: ^3.2.0
   typescript: ^4.9.4
@@ -60,6 +61,7 @@ dependencies:
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-hot-toast: 2.4.0_biqbaboplfbrettd7655fr4n2y
+  react-render-if-visible: 2.1.1_biqbaboplfbrettd7655fr4n2y
   superjson: 1.12.2
   zod: 3.20.2
 
@@ -2407,6 +2409,17 @@ packages:
   /react-is/16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
     dev: true
+
+  /react-render-if-visible/2.1.1_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-dl6OZkF+ktKi/pMNt5Upn99gSWnOCAQdFp/WBclMsPs4dV/RLeE40lab8tixoHB4UEKsspv0jFR13HF4fxmPHw==}
+    engines: {node: '>=8', npm: '>=5'}
+    peerDependencies:
+      react: '>= 16.8.0 < 19'
+      react-dom: '>= 16.8.0 < 19'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
 
   /react-ssr-prepass/1.5.0_react@18.2.0:
     resolution: {integrity: sha512-yFNHrlVEReVYKsLI5lF05tZoHveA5pGzjFbFJY/3pOqqjGOmMmqx83N4hIjN2n6E1AOa+eQEUxs3CgRnPmT0RQ==}

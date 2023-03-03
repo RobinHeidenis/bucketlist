@@ -1,8 +1,32 @@
 import type { RouterOutputs } from '../utils/api';
 import { useMemo } from 'react';
+import {
+  sortAlphabetically,
+  sortAlphabeticallyReverse,
+  sortDefault,
+  sortRating,
+  sortRatingReverse,
+  sortReleaseDate,
+  sortReleaseDateReverse,
+  sortSeen,
+  sortSeenReverse,
+} from './filterModes';
+
+export const sortMap = {
+  default: sortDefault,
+  alphabetically: sortAlphabetically,
+  alphabeticallyReverse: sortAlphabeticallyReverse,
+  releaseDate: sortReleaseDate,
+  releaseDateReverse: sortReleaseDateReverse,
+  seen: sortSeen,
+  notSeen: sortSeenReverse,
+  rating: sortRating,
+  ratingReverse: sortRatingReverse,
+};
 
 export const useSortedMovieItems = (
   listData: RouterOutputs['lists']['getList'],
+  sort: keyof typeof sortMap = 'default',
 ) => {
   const collections = useMemo(() => {
     const collections = Object.values(listData.collections);
@@ -18,33 +42,6 @@ export const useSortedMovieItems = (
   }, [listData.collections]);
 
   return useMemo(() => {
-    return [...listData.movieItems, ...collections].sort((a, b) => {
-      let aTitle;
-      let aChecked;
-      if ('movie' in a) {
-        aTitle = a.movie.title;
-        aChecked = a.checked;
-      } else {
-        aTitle = a.title;
-        aChecked = a.allChecked;
-      }
-
-      let bTitle;
-      let bChecked;
-      if ('movie' in b) {
-        bTitle = b.movie.title;
-        bChecked = b.checked;
-      } else {
-        bTitle = b.title;
-        bChecked = b.allChecked;
-      }
-
-      if (aChecked && !bChecked) return 1;
-      if (!aChecked && bChecked) return -1;
-
-      if (aTitle.toLowerCase() < bTitle.toLowerCase()) return -1;
-      if (aTitle.toLowerCase() > bTitle.toLowerCase()) return 1;
-      return 0;
-    });
-  }, [listData.movieItems, collections]);
+    return [...listData.movieItems, ...collections].sort(sortMap[sort]);
+  }, [listData.movieItems, collections, sort]);
 };
