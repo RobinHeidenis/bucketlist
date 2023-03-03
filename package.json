@@ -10,9 +10,6 @@
     "start": "next start"
   },
   "dependencies": {
-    "@af-utils/react-virtual-headless": "^0.1.10",
-    "@af-utils/react-virtual-list": "^1.0.2",
-    "@af-utils/styled": "^0.0.22",
     "@ebay/nice-modal-react": "^1.2.8",
     "@heroicons/react": "^2.0.14",
     "@mantine/form": "^5.10.2",
@@ -26,18 +23,15 @@
     "@trpc/next": "^10.9.0",
     "@trpc/react-query": "^10.9.0",
     "@trpc/server": "^10.9.0",
-    "@types/af-utils__react-virtual-list": "^0.0.1",
     "daisyui": "^2.49.0",
     "date-fns": "^2.29.3",
     "next": "13.1.6",
     "next-auth": "^4.18.10",
-    "prop-types": "^15.8.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hot-toast": "^2.4.0",
     "react-render-if-visible": "^2.1.1",
     "superjson": "1.12.2",
-    "use-sync-external-store": "^1.2.0",
     "zod": "^3.20.2"
   },
   "devDependencies": {

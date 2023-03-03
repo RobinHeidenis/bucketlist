@@ -5,7 +5,6 @@ import { Collection } from './Collection';
 import { usePermissionsCheck } from '../../hooks/usePermissionsCheck';
 import { useSortedMovieItems } from '../../hooks/useSortedMovieItems';
 import { useState } from 'react';
-import { useVirtual } from '@af-utils/react-virtual-list';
 import RenderIfVisible from 'react-render-if-visible';
 
 export const ListItems = ({
@@ -27,10 +26,6 @@ export const ListItems = ({
           return item.title.toLowerCase().includes(filterText.toLowerCase());
         }
       });
-
-  const model = useVirtual({
-    itemCount: filteredMovieItems.length,
-  });
 
   return (
     <>
