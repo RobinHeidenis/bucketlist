@@ -9,6 +9,7 @@ import {
   FilmIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline';
+import type { CSSProperties} from 'react';
 import { useState } from 'react';
 import { Movie } from './Movie';
 import { api } from '../../utils/api';
@@ -25,6 +26,7 @@ interface CollectionProps {
   isOwner: boolean;
   isCollaborator: boolean;
   listId: string;
+  style?: CSSProperties;
 }
 
 export const Collection = ({
@@ -32,6 +34,7 @@ export const Collection = ({
   isOwner,
   isCollaborator,
   listId,
+  style,
 }: CollectionProps) => {
   const context = api.useContext();
   const [open, setOpen] = useState(false);
@@ -54,6 +57,7 @@ export const Collection = ({
       className={`collapse ${
         open ? 'collapse-open' : 'collapse-close'
       } overflow-visible`}
+      style={style}
     >
       <div
         className="collapse-title flex flex-row items-start justify-between p-0"
