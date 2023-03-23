@@ -62,14 +62,17 @@ export const ListItems = ({
         </div>
       )}
       {listData.type === 'BUCKET' ? (
-        listData.items.map((item) => (
-          <ListItem
-            key={item.id}
-            isOwner={isOwner}
-            isCollaborator={isCollaborator}
-            {...item}
-          />
-        ))
+        listData.items.map(
+          (item) =>
+            typeof item === 'object' && (
+              <ListItem
+                key={item.id}
+                isOwner={isOwner}
+                isCollaborator={isCollaborator}
+                {...item}
+              />
+            ),
+        )
       ) : (
         <>
           {filteredMovieItems.map((item) => {
@@ -109,7 +112,9 @@ export const ListItems = ({
           })}
         </>
       )}
-      {filteredMovieItems.length === 0 && <h3>No items found</h3>}
+      {listData.type === 'MOVIE' && filteredMovieItems.length === 0 && (
+        <h3>No items found</h3>
+      )}
       {listData.items.length === 0 && (
         <>
           {isOwner ? (

@@ -63,7 +63,9 @@ const List = () => {
         {(isOwner || isCollaborator) && listData.type === 'BUCKET' && (
           <div
             className={`mb-10 flex w-full flex-row ${
-              listData.items.length === 0 ? 'justify-start' : 'justify-end'
+              listData.items.length === 0
+                ? 'justify-start'
+                : 'mt-10 justify-end'
             }`}
           >
             <button

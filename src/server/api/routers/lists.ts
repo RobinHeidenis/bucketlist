@@ -8,6 +8,14 @@ import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { TRPCError } from '@trpc/server';
 import type { ListItem, Movie } from '@prisma/client';
 
+interface Collection {
+  id: number;
+  title: string;
+  description: string | null;
+  posterUrl: string | null;
+  items: (ListItem & { movie: Movie })[];
+}
+
 export const listsRouter = createTRPCRouter({
   getLists: protectedProcedure.query(async ({ ctx }) => {
     const lists = await ctx.prisma.list.findMany({
@@ -32,6 +40,50 @@ export const listsRouter = createTRPCRouter({
     };
   }),
   getList: protectedProcedure.input(zIdSchema).query(async ({ ctx, input }) => {
+    const listType = await ctx.prisma.list.findUnique({
+      where: { id: input.id },
+      select: { type: true },
+    });
+
+    if (!listType)
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: "The list you're requesting cannot be found.",
+      });
+
+    if (listType.type === 'BUCKET') {
+      const list = await ctx.prisma.list.findUnique({
+        where: { id: input.id },
+        include: {
+          items: {
+            orderBy: [{ title: 'asc' }, { checked: 'asc' }],
+          },
+          collaborators: { select: { id: true } },
+          owner: { select: { id: true, name: true } },
+        },
+      });
+
+      if (!list)
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: "The list you're requesting cannot be found.",
+        });
+
+      if (
+        list.ownerId !== ctx.session.user.id &&
+        !list.isPublic &&
+        !list.collaborators.find(
+          (collaborator) => collaborator.id === ctx.session.user.id,
+        )
+      )
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'You do not have access to view this list.',
+        });
+
+      return list;
+    }
+
     const list = await ctx.prisma.list.findUnique({
       where: { id: input.id },
       include: {
@@ -66,15 +118,7 @@ export const listsRouter = createTRPCRouter({
         message: 'You do not have access to view this list.',
       });
 
-    interface collection {
-      id: number;
-      title: string;
-      description: string | null;
-      posterUrl: string | null;
-      items: (ListItem & { movie: Movie })[];
-    }
-
-    const collections: Record<number, collection> = {};
+    const collections: Record<number, Collection> = {};
     list.items.forEach((item) => {
       if (item.collection) {
         if (!item.collection || !item.movie) return;
@@ -95,6 +139,7 @@ export const listsRouter = createTRPCRouter({
 
     return {
       ...list,
+      items: list.items.map(() => 0),
       movieItems: list.items.filter(
         (i) => i.movie && !i.collection,
       ) as (ListItem & { movie: Movie })[],
