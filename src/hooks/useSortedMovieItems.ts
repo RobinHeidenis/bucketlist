@@ -29,6 +29,7 @@ export const useSortedMovieItems = (
   sort: keyof typeof sortMap = 'default',
 ) => {
   const collections = useMemo(() => {
+    if (!('collections' in listData) || !listData.collections) return [];
     const collections = Object.values(listData.collections);
     return collections.map((collection) => {
       collection.items = collection.items.sort((a, b) => {
@@ -39,9 +40,10 @@ export const useSortedMovieItems = (
       const allChecked = collection.items.every((item) => item.checked);
       return { ...collection, allChecked };
     });
-  }, [listData.collections]);
+  }, [listData]);
 
   return useMemo(() => {
+    if (!('movieItems' in listData) || !listData.movieItems) return [];
     return [...listData.movieItems, ...collections].sort(sortMap[sort]);
-  }, [listData.movieItems, collections, sort]);
+  }, [listData, collections, sort]);
 };
