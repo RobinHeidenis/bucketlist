@@ -7,6 +7,12 @@ import type { sortMap } from '../../hooks/useSortedMovieItems';
 import { useSortedMovieItems } from '../../hooks/useSortedMovieItems';
 import { useState } from 'react';
 import RenderIfVisible from 'react-render-if-visible';
+import { RandomTitle } from './RandomTitle';
+import type {
+  ListItem as ListItemType,
+  Movie as MovieType,
+} from '@prisma/client';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 
 export const ListItems = ({
   listData,
@@ -28,11 +34,12 @@ export const ListItems = ({
           return item.title.toLowerCase().includes(filterText.toLowerCase());
         }
       });
+  const [parent] = useAutoAnimate();
 
   return (
     <>
       {listData.type === 'MOVIE' && (
-        <div className="mt-2 mb-5 flex items-center justify-between">
+        <div className="mt-2 mb-5 flex items-start justify-between">
           <label className="input-group">
             <select
               className="select-ghost select max-w-xs"
@@ -54,6 +61,11 @@ export const ListItems = ({
               <option value="ratingReverse">Ratings (lowest)</option>
             </select>
           </label>
+          <RandomTitle
+            titles={(
+              listData.items as (ListItemType & { movie: MovieType })[]
+            ).filter((item) => !item.checked)}
+          />
           <input
             placeholder="Filter"
             onChange={(e) => setFilterText(e.target.value)}
@@ -74,7 +86,7 @@ export const ListItems = ({
             ),
         )
       ) : (
-        <>
+        <div ref={parent}>
           {filteredMovieItems.map((item) => {
             if ('movie' in item) {
               return (
@@ -110,7 +122,7 @@ export const ListItems = ({
               );
             }
           })}
-        </>
+        </div>
       )}
       {listData.type === 'MOVIE' && filteredMovieItems.length === 0 && (
         <h3>No items found</h3>

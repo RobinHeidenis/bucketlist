@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@ebay/nice-modal-react': ^1.2.8
+  '@formkit/auto-animate': 1.0.0-beta.6
   '@heroicons/react': ^2.0.14
   '@mantine/form': ^5.10.2
   '@mantine/hooks': ^5.10.2
@@ -42,6 +43,7 @@ specifiers:
 
 dependencies:
   '@ebay/nice-modal-react': 1.2.8_biqbaboplfbrettd7655fr4n2y
+  '@formkit/auto-animate': 1.0.0-beta.6
   '@heroicons/react': 2.0.14_react@18.2.0
   '@mantine/form': 5.10.2_react@18.2.0
   '@mantine/hooks': 5.10.2_react@18.2.0
@@ -124,6 +126,10 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@formkit/auto-animate/1.0.0-beta.6:
+    resolution: {integrity: sha512-PVDhLAlr+B4Xb7e+1wozBUWmXa6BFU8xUPR/W/E+TsQhPS1qkAdAsJ25keEnFrcePSnXHrOsh3tiFbEToOzV9w==}
+    dev: false
 
   /@heroicons/react/2.0.14_react@18.2.0:
     resolution: {integrity: sha512-eFL4if6L7woL1fUvk/jjXx4z9NxVESHHrQnEd2qKVelTFTIr/3VLGWdPb0biia9ZVe26P0JSs/xmOlRNur3SrQ==}

@@ -14,7 +14,7 @@ export const movieRouter = createTRPCRouter({
         query: z.string().min(1),
       }),
     )
-    .query(async ({ ctx, input }) => {
+    .query(async ({ input }) => {
       // search for both movies and collections in tmdb
       const [movieRes, collectionRes] = await Promise.all([
         fetch(
