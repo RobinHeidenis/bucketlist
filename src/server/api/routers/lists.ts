@@ -139,7 +139,6 @@ export const listsRouter = createTRPCRouter({
 
     return {
       ...list,
-      items: list.items.map(() => 0),
       movieItems: list.items.filter(
         (i) => i.movie && !i.collection,
       ) as (ListItem & { movie: Movie })[],
