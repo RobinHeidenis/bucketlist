@@ -76,7 +76,7 @@ export const checkAndUpdateMovie = async (
         await fetch(`https://api.themoviedb.org/3/movie/${movie.id}`, {
           headers: {
             Authorization: `Bearer ${env.TMDB_API_KEY}`,
-            'If-None-Match': movie.etag,
+            'If-None-Match': movie.etag ?? '',
           },
         })
       ).status !== 304;
