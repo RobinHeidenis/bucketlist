@@ -1,4 +1,4 @@
-import type { ListItem as ListItemType } from '@prisma/client';
+import type { BucketListItem as ListItemType } from '@prisma/client';
 import { useRef, useState } from 'react';
 import { api } from '../../utils/api';
 import { DropdownMenu } from '../dropdown/DropdownMenu';
@@ -19,7 +19,7 @@ export const ListItem = ({
   const [showDescription, setShowDescription] = useState(false);
   const context = api.useContext();
   const ref = useRef<HTMLInputElement>(null);
-  const setItemCheckedMutation = api.listItem.setItemChecked.useMutation({
+  const setItemCheckedMutation = api.bucketList.setItemChecked.useMutation({
     onSuccess: () => context.lists.getList.invalidate({ id: listId }),
     onError: () => {
       if (!ref.current) return;
@@ -29,7 +29,7 @@ export const ListItem = ({
       );
     },
   });
-  const deleteItemMutation = api.listItem.deleteItem.useMutation({
+  const deleteItemMutation = api.bucketList.deleteItem.useMutation({
     onSuccess: () => context.lists.getList.invalidate({ id: listId }),
     onError: ({ message }) => {
       toast.custom(<ErrorToast message={message} />);

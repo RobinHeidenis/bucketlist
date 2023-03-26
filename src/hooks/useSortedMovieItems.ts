@@ -1,4 +1,3 @@
-import type { RouterOutputs } from '../utils/api';
 import { useMemo } from 'react';
 import {
   sortAlphabetically,
@@ -11,6 +10,7 @@ import {
   sortSeen,
   sortSeenReverse,
 } from './filterModes';
+import type { MovieList } from '../types/List';
 
 export const sortMap = {
   default: sortDefault,
@@ -25,25 +25,24 @@ export const sortMap = {
 };
 
 export const useSortedMovieItems = (
-  listData: RouterOutputs['lists']['getList'],
+  list: MovieList,
   sort: keyof typeof sortMap = 'default',
 ) => {
   const collections = useMemo(() => {
-    if (!('collections' in listData) || !listData.collections) return [];
-    const collections = Object.values(listData.collections);
+    if (!('collections' in list) || !list.collections) return [];
+    const collections = Object.values(list.collections);
     return collections.map((collection) => {
-      collection.items = collection.items.sort((a, b) => {
-        if (a.movie.releaseDate < b.movie.releaseDate) return -1;
-        if (a.movie.releaseDate > b.movie.releaseDate) return 1;
+      collection.movies = collection.movies.sort((a, b) => {
+        if (a.releaseDate < b.releaseDate) return -1;
+        if (a.releaseDate > b.releaseDate) return 1;
         return 0;
       });
-      const allChecked = collection.items.every((item) => item.checked);
-      return { ...collection, allChecked };
+      return collection;
     });
-  }, [listData]);
+  }, [list]);
 
   return useMemo(() => {
-    if (!('movieItems' in listData) || !listData.movieItems) return [];
-    return [...listData.movieItems, ...collections].sort(sortMap[sort]);
-  }, [listData, collections, sort]);
+    if (!('movieItems' in list) || !list.movieItems) return [];
+    return [...list.movies, ...collections].sort(sortMap[sort]);
+  }, [list, collections, sort]);
 };

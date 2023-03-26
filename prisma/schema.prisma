@@ -62,30 +62,25 @@ model VerificationToken {
 }
 
 model Collection {
-  id        Int        @id
-  name      String     @db.VarChar(300)
-  overview  String?    @db.VarChar(1000)
+  id        Int      @id
+  name      String   @db.VarChar(300)
+  overview  String?  @db.VarChar(1000)
   posterUrl String?
-  updatedAt DateTime   @default(now())
+  updatedAt DateTime @default(now())
+  etag      String?  @db.VarChar(100)
   movies    Movie[]
-  listItems ListItem[]
+  lists     List[]
 }
 
-model ListItem {
-  id           String      @id @default(uuid())
-  title        String?     @db.VarChar(46)
-  description  String?     @db.VarChar(500)
-  checked      Boolean     @default(false)
-  movieId      Int?
-  movie        Movie?      @relation(fields: [movieId], references: [id], onDelete: Cascade)
-  collectionId Int?
-  collection   Collection? @relation(fields: [collectionId], references: [id], onDelete: Cascade)
-  listId       String
-  list         List        @relation(fields: [listId], references: [id], onDelete: Cascade)
+model BucketListItem {
+  id          String  @id @default(uuid())
+  title       String? @db.VarChar(46)
+  description String? @db.VarChar(500)
+  checked     Boolean @default(false)
+  listId      String
+  list        List    @relation(fields: [listId], references: [id], onDelete: Cascade)
 
   @@index([listId])
-  @@index([movieId])
-  @@index([collectionId])
 }
 
 enum ListType {
@@ -94,31 +89,49 @@ enum ListType {
 }
 
 model List {
-  id            String       @id @default(uuid())
-  title         String       @db.VarChar(100)
-  description   String?      @db.VarChar(500)
-  isPublic      Boolean      @default(false)
-  items         ListItem[]
-  type          ListType     @default(BUCKET)
-  ownerId       String
-  owner         User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  collaborators User[]       @relation("ListCollaborators")
-  InviteLink    InviteLink[]
+  id              String           @id @default(uuid())
+  title           String           @db.VarChar(100)
+  description     String?          @db.VarChar(500)
+  isPublic        Boolean          @default(false)
+  type            ListType         @default(BUCKET)
+  bucketListItems BucketListItem[]
+  movies          Movie[]
+  collections     Collection[]
+  checkedMovies   CheckedMovie[]
+  collaborators   User[]           @relation("ListCollaborators")
+  InviteLink      InviteLink[]
+  ownerId         String
+  owner           User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
   @@index([ownerId])
 }
 
+model CheckedMovie {
+  id      String @id @default(uuid())
+  listId  String
+  list    List   @relation(fields: [listId], references: [id])
+  movieId Int
+  movie   Movie  @relation(fields: [movieId], references: [id])
+
+  @@index([listId])
+  @@index([movieId])
+  @@index([listId, movieId])
+  @@unique([movieId, listId])
+}
+
 model Movie {
-  id          Int          @id
-  title       String       @db.VarChar(200)
-  description String?      @db.VarChar(1000)
-  releaseDate String       @db.VarChar(50)
-  rating      String?      @db.VarChar(10)
-  runtime     Int?         @db.SmallInt
-  genres      String?      @db.VarChar(200)
-  posterUrl   String?      @db.VarChar(200)
-  updatedAt   DateTime     @default(now())
-  listItems   ListItem[]
+  id          Int            @id
+  title       String         @db.VarChar(200)
+  description String?        @db.VarChar(1000)
+  releaseDate String         @db.VarChar(50)
+  rating      String?        @db.VarChar(10)
+  runtime     Int?           @db.SmallInt
+  genres      String?        @db.VarChar(200)
+  posterUrl   String?        @db.VarChar(200)
+  updatedAt   DateTime       @default(now())
+  etag        String?        @db.VarChar(100)
+  lists       List[]
+  checkedBy   CheckedMovie[]
   collections Collection[]
 }
 

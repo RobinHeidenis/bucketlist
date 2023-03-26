@@ -1,18 +1,19 @@
 import type { Item } from './default';
+import { isCollection } from '../../types/List';
 
 export const sortReleaseDate = (a: Item, b: Item) => {
   let aReleaseDate;
-  if ('movie' in a) {
-    aReleaseDate = a.movie.releaseDate;
-  } else {
+  if (isCollection(a)) {
     return 1;
+  } else {
+    aReleaseDate = a.releaseDate;
   }
 
   let bReleaseDate;
-  if ('movie' in b) {
-    bReleaseDate = b.movie.releaseDate;
-  } else {
+  if (isCollection(b)) {
     return -1;
+  } else {
+    bReleaseDate = b.releaseDate;
   }
 
   if (aReleaseDate < bReleaseDate) return 1;
@@ -22,17 +23,17 @@ export const sortReleaseDate = (a: Item, b: Item) => {
 
 export const sortReleaseDateReverse = (a: Item, b: Item) => {
   let aReleaseDate;
-  if ('movie' in a) {
-    aReleaseDate = a.movie.releaseDate;
-  } else {
+  if (isCollection(a)) {
     return 1;
+  } else {
+    aReleaseDate = a.releaseDate;
   }
 
   let bReleaseDate;
-  if ('movie' in b) {
-    bReleaseDate = b.movie.releaseDate;
-  } else {
+  if (isCollection(b)) {
     return -1;
+  } else {
+    bReleaseDate = b.releaseDate;
   }
 
   if (aReleaseDate < bReleaseDate) return -1;

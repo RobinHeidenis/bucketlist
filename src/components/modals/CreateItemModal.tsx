@@ -23,7 +23,7 @@ export const CreateItemModal = NiceModal.create(
       },
       validate: zodResolver(zNewListItemSchema),
     });
-    const { mutate, isLoading } = api.listItem.createItem.useMutation({
+    const { mutate, isLoading } = api.bucketList.createItem.useMutation({
       onSuccess: () => {
         void modal.remove();
         void utils.lists.getList.invalidate({ id: listId });

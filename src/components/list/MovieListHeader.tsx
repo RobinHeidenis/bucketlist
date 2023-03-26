@@ -24,7 +24,7 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
     { enabled: !!searchValue && searchValue.length > 2 },
   );
 
-  const { mutate: createMovie } = api.listItem.createMovie.useMutation({
+  const { mutate: createMovie } = api.movieList.createMovie.useMutation({
     onSuccess: () => {
       setSearchValue('');
       setSelectedResult(null);
@@ -32,7 +32,7 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
     },
   });
   const { mutate: createCollection } =
-    api.listItem.createCollection.useMutation({
+    api.movieList.createCollection.useMutation({
       onSuccess: () => {
         setSearchValue('');
         setSelectedResult(null);

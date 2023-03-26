@@ -6,15 +6,8 @@ import {
 } from '../../../schemas/listSchemas';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { TRPCError } from '@trpc/server';
-import type { ListItem, Movie } from '@prisma/client';
-
-interface Collection {
-  id: number;
-  title: string;
-  description: string | null;
-  posterUrl: string | null;
-  items: (ListItem & { movie: Movie })[];
-}
+import type { BucketList, DBMovieList, MovieList } from '../../../types/List';
+import { isBucketList } from '../../../types/List';
 
 export const listsRouter = createTRPCRouter({
   getLists: protectedProcedure.query(async ({ ctx }) => {
@@ -26,42 +19,78 @@ export const listsRouter = createTRPCRouter({
         ],
       },
       include: {
-        items: { include: { movie: true, collection: true } },
+        bucketListItems: { select: { checked: true } },
+        _count: { select: { checkedMovies: true, movies: true } },
+        collections: { include: { _count: { select: { movies: true } } } },
         collaborators: { select: { id: true } },
       },
       orderBy: { title: 'asc' },
     });
 
-    return {
-      lists: lists.map((list) => ({
-        ...list,
-        amountChecked: list.items.filter((i) => i.checked).length,
-      })),
-    };
-  }),
-  getList: protectedProcedure.input(zIdSchema).query(async ({ ctx, input }) => {
-    const listType = await ctx.prisma.list.findUnique({
-      where: { id: input.id },
-      select: { type: true },
+    return lists.map((list) => {
+      const baseList = {
+        id: list.id,
+        title: list.title,
+        description: list.description,
+        collaborators: list.collaborators,
+      };
+
+      if (list.type === 'BUCKET')
+        return {
+          ...baseList,
+          amountChecked: list.bucketListItems.filter((i) => i.checked).length,
+          amount: list.bucketListItems.length,
+        };
+      else
+        return {
+          ...baseList,
+          amountChecked: list._count.checkedMovies,
+          amount:
+            list._count.movies +
+            list.collections
+              .map((c) => c._count.movies)
+              .reduce((a, b) => a + b, 0),
+        };
     });
-
-    if (!listType)
-      throw new TRPCError({
-        code: 'NOT_FOUND',
-        message: "The list you're requesting cannot be found.",
-      });
-
-    if (listType.type === 'BUCKET') {
-      const list = await ctx.prisma.list.findUnique({
+  }),
+  getList: protectedProcedure
+    .input(zIdSchema)
+    .query(async ({ ctx, input }): Promise<BucketList | MovieList> => {
+      const listType = await ctx.prisma.list.findUnique({
         where: { id: input.id },
-        include: {
-          items: {
-            orderBy: [{ title: 'asc' }, { checked: 'asc' }],
-          },
-          collaborators: { select: { id: true } },
-          owner: { select: { id: true, name: true } },
-        },
+        select: { type: true },
       });
+
+      if (!listType)
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: "The list you're requesting cannot be found.",
+        });
+
+      let list;
+
+      if (listType.type === 'BUCKET')
+        list = await ctx.prisma.list.findUnique({
+          where: { id: input.id },
+          include: {
+            bucketListItems: {
+              orderBy: [{ title: 'asc' }, { checked: 'asc' }],
+            },
+            collaborators: { select: { id: true } },
+            owner: { select: { id: true, name: true } },
+          },
+        });
+      else
+        list = await ctx.prisma.list.findUnique({
+          where: { id: input.id },
+          include: {
+            movies: true,
+            collections: { include: { movies: true } },
+            checkedMovies: true,
+            owner: { select: { id: true, name: true } },
+            collaborators: { select: { id: true } },
+          },
+        });
 
       if (!list)
         throw new TRPCError({
@@ -81,70 +110,79 @@ export const listsRouter = createTRPCRouter({
           message: 'You do not have access to view this list.',
         });
 
-      return list;
-    }
-
-    const list = await ctx.prisma.list.findUnique({
-      where: { id: input.id },
-      include: {
-        items: {
-          orderBy: [
-            { title: 'asc' },
-            { checked: 'asc' },
-            { movie: { title: 'asc' } },
-          ],
-          include: { movie: true, collection: true },
-        },
-        owner: { select: { id: true, name: true } },
-        collaborators: { select: { id: true } },
-      },
-    });
-
-    if (!list)
-      throw new TRPCError({
-        code: 'NOT_FOUND',
-        message: "The list you're requesting cannot be found.",
-      });
-
-    if (
-      list.ownerId !== ctx.session.user.id &&
-      !list.isPublic &&
-      !list.collaborators.find(
-        (collaborator) => collaborator.id === ctx.session.user.id,
-      )
-    )
-      throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'You do not have access to view this list.',
-      });
-
-    const collections: Record<number, Collection> = {};
-    list.items.forEach((item) => {
-      if (item.collection) {
-        if (!item.collection || !item.movie) return;
-        if (!collections[item.collection.id]) {
-          collections[item.collection.id] = {
-            id: item.collection.id,
-            title: item.collection.name,
-            description: item.collection.overview,
-            posterUrl: item.collection.posterUrl,
-            items: [],
-          };
-        }
-        collections[item.collection.id]?.items.push(
-          item as ListItem & { movie: Movie },
-        );
+      if (isBucketList(list)) {
+        const {
+          id,
+          title,
+          description,
+          isPublic,
+          type,
+          ownerId,
+          owner,
+          collaborators,
+          bucketListItems,
+        } = list;
+        return {
+          id,
+          title,
+          description,
+          isPublic,
+          type,
+          ownerId,
+          owner,
+          collaborators,
+          bucketListItems,
+          total: bucketListItems.length,
+          totalChecked: bucketListItems.filter((item) => item.checked).length,
+        };
       }
-    });
 
-    return {
-      ...list,
-      movieItems: list.items.filter(
-        (i) => i.movie && !i.collection,
-      ) as (ListItem & { movie: Movie })[],
-      collections,
-    };
-  }),
+      const {
+        id,
+        title,
+        description,
+        isPublic,
+        type,
+        ownerId,
+        owner,
+        collaborators,
+        collections,
+        movies,
+        checkedMovies,
+      } = list as DBMovieList;
+
+      return {
+        id,
+        title,
+        description,
+        isPublic,
+        type,
+        ownerId,
+        owner,
+        collaborators,
+        collections: collections.map((collection) => ({
+          ...collection,
+          movies: collection.movies.map((movie) => ({
+            ...movie,
+            checked: !!checkedMovies.find((m) => m.movieId === movie.id),
+          })),
+          allChecked: collection.movies.every((movie) =>
+            checkedMovies.find((m) => m.movieId === movie.id),
+          ),
+          amountChecked: collection.movies.filter((movie) =>
+            checkedMovies.find((m) => m.movieId === movie.id),
+          ).length,
+        })),
+        movies: movies.map((movie) => ({
+          ...movie,
+          checked: !!checkedMovies.find((m) => m.movieId === movie.id),
+        })),
+        total:
+          movies.length +
+          collections.map((c) => c.movies.length).reduce((a, b) => a + b, 0),
+        totalChecked: checkedMovies.length,
+      };
+    }),
   createList: protectedProcedure
     .input(zNewListSchema)
     .mutation(({ ctx, input }) => {

@@ -1,18 +1,19 @@
 import type { Item } from './default';
+import { isCollection } from '../../types/List';
 
 export const sortRating = (a: Item, b: Item) => {
   let aRating;
-  if ('movie' in a) {
-    aRating = a.movie.rating ?? 0;
-  } else {
+  if (isCollection(a)) {
     return 1;
+  } else {
+    aRating = a.rating ?? 0;
   }
 
   let bRating;
-  if ('movie' in b) {
-    bRating = b.movie.rating ?? 0;
-  } else {
+  if (isCollection(b)) {
     return -1;
+  } else {
+    bRating = b.rating ?? 0;
   }
 
   if (aRating < bRating) return 1;
@@ -22,17 +23,17 @@ export const sortRating = (a: Item, b: Item) => {
 
 export const sortRatingReverse = (a: Item, b: Item) => {
   let aRating;
-  if ('movie' in a) {
-    aRating = a.movie.rating ?? 0;
-  } else {
+  if (isCollection(a)) {
     return 1;
+  } else {
+    aRating = a.rating ?? 0;
   }
 
   let bRating;
-  if ('movie' in b) {
-    bRating = b.movie.rating ?? 0;
-  } else {
+  if (isCollection(b)) {
     return -1;
+  } else {
+    bRating = b.rating ?? 0;
   }
 
   if (aRating < bRating) return -1;

@@ -1,16 +1,17 @@
 import type { Item } from './default';
+import { isCollection } from '../../types/List';
 
 export const sortAlphabetically = (a: Item, b: Item) => {
   let aTitle;
-  if ('movie' in a) {
-    aTitle = a.movie.title;
+  if (isCollection(a)) {
+    aTitle = a.name;
   } else {
     aTitle = a.title;
   }
 
   let bTitle;
-  if ('movie' in b) {
-    bTitle = b.movie.title;
+  if (isCollection(b)) {
+    bTitle = b.name;
   } else {
     bTitle = b.title;
   }
@@ -22,15 +23,15 @@ export const sortAlphabetically = (a: Item, b: Item) => {
 
 export const sortAlphabeticallyReverse = (a: Item, b: Item) => {
   let aTitle;
-  if ('movie' in a) {
-    aTitle = a.movie.title;
+  if (isCollection(a)) {
+    aTitle = a.name;
   } else {
     aTitle = a.title;
   }
 
   let bTitle;
-  if ('movie' in b) {
-    bTitle = b.movie.title;
+  if (isCollection(b)) {
+    bTitle = b.name;
   } else {
     bTitle = b.title;
   }

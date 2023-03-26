@@ -1,35 +1,31 @@
-import type { ListItem, Movie } from '@prisma/client';
+import type {
+  MovieListCollection,
+  MovieListMovie} from '../../types/List';
+import {
+  isCollection
+} from '../../types/List';
 
-export type Item =
-  | (ListItem & { movie: Movie })
-  | {
-      allChecked: boolean;
-      id: number;
-      title: string;
-      description: string | null;
-      posterUrl: string | null;
-      items: (ListItem & { movie: Movie })[];
-    };
+export type Item = MovieListMovie | MovieListCollection;
 
 export const sortDefault = (a: Item, b: Item) => {
   let aTitle;
   let aChecked;
-  if ('movie' in a) {
-    aTitle = a.movie.title;
-    aChecked = a.checked;
+  if (isCollection(a)) {
+    aTitle = a.name;
+    aChecked = a.allChecked;
   } else {
     aTitle = a.title;
-    aChecked = a.allChecked;
+    aChecked = a.checked;
   }
 
   let bTitle;
   let bChecked;
-  if ('movie' in b) {
-    bTitle = b.movie.title;
-    bChecked = b.checked;
+  if (isCollection(b)) {
+    bTitle = b.name;
+    bChecked = b.allChecked;
   } else {
     bTitle = b.title;
-    bChecked = b.allChecked;
+    bChecked = b.checked;
   }
 
   if (aChecked && !bChecked) return 1;
