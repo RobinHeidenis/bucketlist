@@ -1,5 +1,10 @@
-import type { BucketListItem, Collection, List, Movie } from '@prisma/client';
-import type { CheckedMovie } from '.prisma/client';
+import type {
+  BucketListItem,
+  CheckedMovie,
+  Collection,
+  List,
+  Movie,
+} from '@prisma/client';
 
 type Owner = {
   id: string;
