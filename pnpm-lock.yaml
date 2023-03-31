@@ -8,8 +8,8 @@ dependencies:
     specifier: 1.0.0-beta.6
     version: 1.0.0-beta.6
   '@heroicons/react':
-    specifier: ^2.0.14
-    version: 2.0.14(react@18.2.0)
+    specifier: ^2.0.17
+    version: 2.0.17(react@18.2.0)
   '@mantine/form':
     specifier: ^5.10.2
     version: 5.10.2(react@18.2.0)
@@ -168,8 +168,8 @@ packages:
     resolution: {integrity: sha512-PVDhLAlr+B4Xb7e+1wozBUWmXa6BFU8xUPR/W/E+TsQhPS1qkAdAsJ25keEnFrcePSnXHrOsh3tiFbEToOzV9w==}
     dev: false
 
-  /@heroicons/react@2.0.14(react@18.2.0):
-    resolution: {integrity: sha512-eFL4if6L7woL1fUvk/jjXx4z9NxVESHHrQnEd2qKVelTFTIr/3VLGWdPb0biia9ZVe26P0JSs/xmOlRNur3SrQ==}
+  /@heroicons/react@2.0.17(react@18.2.0):
+    resolution: {integrity: sha512-90GMZktkA53YbNzHp6asVEDevUQCMtxWH+2UK2S8OpnLEu7qckTJPhNxNQG52xIR1WFTwFqtH6bt7a60ZNcLLA==}
     peerDependencies:
       react: '>= 16'
     dependencies:
