@@ -24,8 +24,8 @@ const Lists = () => {
         <div className="divider" />
       </div>
       <div className="mt-12 mb-12 grid grid-cols-1 gap-10 lg:grid-cols-3">
-        {lists?.lists.map((list) => (
-          <ListCard list={list} key={list.id} />
+        {lists?.map((list) => (
+          <ListCard {...list} key={list.id} />
         ))}
         <ListCardWrapper onClick={showCreateModal}>
           <div className="flex flex-col items-center justify-center">

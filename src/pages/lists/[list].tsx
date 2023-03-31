@@ -6,9 +6,11 @@ import NiceModal from '@ebay/nice-modal-react';
 import { CreateItemModal } from '../../components/modals/CreateItemModal';
 import { ListSkeleton } from '../../components/skeletons/ListSkeleton';
 import { StandardPage } from '../../components/page/StandardPage';
-import { ListItems } from '../../components/list/ListItems';
+import { BucketListItems } from '../../components/list/bucket/BucketListItems';
 import { MovieListHeader } from '../../components/list/MovieListHeader';
 import { usePermissionsCheck } from '../../hooks/usePermissionsCheck';
+import { isBucketList } from '../../types/List';
+import { MovieListItems } from '../../components/list/movie/MovieListItems';
 
 const List = () => {
   useRequireSignin();
@@ -58,19 +60,21 @@ const List = () => {
         )}
         <div className="divider mb-0" />
         <div className="w-full">
-          <ListItems listData={listData} />
+          {isBucketList(listData) ? (
+            <BucketListItems list={listData} />
+          ) : (
+            <MovieListItems list={listData} />
+          )}
         </div>
         {(isOwner || isCollaborator) && listData.type === 'BUCKET' && (
           <div
             className={`mb-10 flex w-full flex-row ${
-              listData.items.length === 0
-                ? 'justify-start'
-                : 'mt-10 justify-end'
+              listData.total === 0 ? 'justify-start' : 'mt-10 justify-end'
             }`}
           >
             <button
               className={`btn-primary btn ${
-                listData.items.length === 0 ? 'mt-5' : ''
+                listData.total === 0 ? 'mt-5' : ''
               }`}
               onClick={showCreateModal}
             >

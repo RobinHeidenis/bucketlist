@@ -1,38 +1,41 @@
-import type { List, ListItem, User } from '@prisma/client';
 import { ListCardWrapper } from './ListCardWrapper';
 import { useSession } from 'next-auth/react';
 import React from 'react';
 import { UsersIcon } from '@heroicons/react/24/outline';
 
-type BucketListType = List & {
-  items: ListItem[];
-  amountChecked: number;
-  collaborators: Pick<User, 'id'>[];
-};
-
 interface ListCardProps {
-  list: BucketListType;
+  id: string;
+  title: string;
+  description: string | null;
+  collaborators?: { id: string }[];
+  amount: number;
+  amountChecked: number;
 }
 
-export const ListCard = ({ list }: ListCardProps) => {
+export const ListCard = ({
+  id,
+  title,
+  description,
+  collaborators,
+  amount,
+  amountChecked,
+}: ListCardProps) => {
   const { data } = useSession();
 
   return (
-    <ListCardWrapper href={`/lists/${list.id}`}>
+    <ListCardWrapper href={`/lists/${id}`}>
       <div className="flex h-full flex-col justify-between">
         <div>
-          <h2 className="card-title line-clamp-2">{list.title}</h2>
-          <p
-            className={`line-clamp-${list.title.length > 21 ? '2' : '3'} mt-1`}
-          >
-            {list.description}
+          <h2 className="card-title line-clamp-2">{title}</h2>
+          <p className={`line-clamp-${title.length > 21 ? '2' : '3'} mt-1`}>
+            {description}
           </p>
         </div>
         <div className="card-actions flex items-center">
           <p className="line-clamp-3">
-            {list.items?.length} items • {list.amountChecked} checked
+            {amount} items • {amountChecked} checked
           </p>
-          {list.collaborators?.some(
+          {collaborators?.some(
             (collaborator) => collaborator.id === data?.user?.id,
           ) && (
             <div className="tooltip" data-tip="Collaborator">

@@ -1,4 +1,3 @@
-import type { Movie as MovieType } from '@prisma/client';
 import { StarIcon } from '@heroicons/react/24/solid';
 import {
   CalendarIcon,
@@ -12,6 +11,7 @@ import { DropdownHeader } from '../dropdown/DropdownHeader';
 import { DropdownItem } from '../dropdown/DropdownItem';
 import { api } from '../../utils/api';
 import { PosterImage } from '../movie/PosterImage';
+import type { MovieListMovie } from '../../types/List';
 
 const toHoursAndMinutes = (totalMinutes: number) => {
   if (totalMinutes === 0) return '0';
@@ -21,8 +21,7 @@ const toHoursAndMinutes = (totalMinutes: number) => {
 };
 
 interface MovieProps {
-  checked: boolean;
-  itemId: string;
+  movie: MovieListMovie;
   listId: string;
   isOwner: boolean;
   isCollaborator: boolean;
@@ -32,21 +31,19 @@ interface MovieProps {
 
 export const Movie = ({
   listId,
-  itemId,
-  checked,
   isOwner,
   isCollaborator,
   dropdownLeft,
   hideDivider,
-  ...movie
-}: MovieType & MovieProps) => {
+  movie,
+}: MovieProps) => {
   const context = api.useContext();
-  const { mutate: setWatched } = api.listItem.setItemChecked.useMutation({
+  const { mutate: setWatched } = api.movieList.setMovieWatched.useMutation({
     onSuccess: () => {
       void context.lists.getList.invalidate({ id: listId });
     },
   });
-  const { mutate: deleteMovie } = api.listItem.deleteItem.useMutation({
+  const { mutate: deleteMovie } = api.movieList.deleteMovie.useMutation({
     onSuccess: () => {
       void context.lists.getList.invalidate({ id: listId });
     },
@@ -61,20 +58,20 @@ export const Movie = ({
             url={movie.posterUrl}
             width={80}
             height={120}
-            className={`m-0 mr-4 ${checked ? 'grayscale' : ''}`}
+            className={`m-0 mr-4 ${movie.checked ? 'grayscale' : ''}`}
           />
           <div className="flex h-full flex-col justify-between">
             <div>
               <h3
                 className={`m-0 ${
-                  checked ? 'text-slate-500 line-through' : ''
+                  movie.checked ? 'text-slate-500 line-through' : ''
                 }`}
               >
                 {movie.title}
               </h3>
               <p
                 className={`m-0 line-clamp-2 ${
-                  checked ? 'text-slate-500 line-through' : ''
+                  movie.checked ? 'text-slate-500 line-through' : ''
                 }`}
               >
                 {movie.description}
@@ -108,13 +105,13 @@ export const Movie = ({
             <DropdownItem
               onClick={() =>
                 setWatched({
-                  id: itemId,
+                  id: movie.id,
                   listId,
-                  checked: !checked,
+                  checked: !movie.checked,
                 })
               }
             >
-              {checked ? (
+              {movie.checked ? (
                 <>
                   <EyeSlashIcon className="h-6 w-6" /> Mark as unseen
                 </>
@@ -124,7 +121,10 @@ export const Movie = ({
                 </>
               )}
             </DropdownItem>
-            <DropdownItem onClick={() => deleteMovie({ id: itemId })} danger>
+            <DropdownItem
+              onClick={() => deleteMovie({ id: movie.id, listId })}
+              danger
+            >
               <TrashIcon className="h-6 w-6" />
               Delete
             </DropdownItem>

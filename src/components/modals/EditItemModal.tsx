@@ -5,8 +5,8 @@ import { zEditListItemSchema } from '../../schemas/listSchemas';
 import { api } from '../../utils/api';
 import { TextInput } from '../form/TextInput';
 import { TextArea } from '../form/TextArea';
-import type { ListItem } from '@prisma/client';
 import { ModalHeader } from './ModalHeader';
+import type { BucketListItem } from '@prisma/client';
 
 export const EditItemModal = NiceModal.create(
   ({
@@ -14,7 +14,7 @@ export const EditItemModal = NiceModal.create(
     title,
     description,
     listId,
-  }: Pick<ListItem, 'id' | 'title' | 'description' | 'listId'>) => {
+  }: Pick<BucketListItem, 'id' | 'title' | 'description' | 'listId'>) => {
     const modal = useModal();
     const utils = api.useContext();
     const form = useForm<z.infer<typeof zEditListItemSchema>>({
@@ -25,7 +25,7 @@ export const EditItemModal = NiceModal.create(
       },
       validate: zodResolver(zEditListItemSchema),
     });
-    const { mutate, isLoading } = api.listItem.updateItem.useMutation({
+    const { mutate, isLoading } = api.bucketList.updateItem.useMutation({
       onSuccess: () => {
         void modal.remove();
         void utils.lists.getList.invalidate({ id: listId });

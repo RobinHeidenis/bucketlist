@@ -18,7 +18,7 @@ export const ListHeaderMenu = ({
   listData: RouterOutputs['lists']['getList'];
 }) => {
   const router = useRouter();
-  const { id, owner, items, title, description, isPublic, type } = listData;
+  const { id, owner, total, title, description, isPublic, type } = listData;
   const { isOwner } = usePermissionsCheck(listData);
   const context = api.useContext();
 
@@ -53,7 +53,7 @@ export const ListHeaderMenu = ({
     <div className="flex w-full flex-row items-center justify-between">
       <div className="flex flex-row items-center">
         <p className="m-0">
-          List by {owner.name} • {items.length}{' '}
+          List by {owner.name} • {total}{' '}
           {type === 'BUCKET' ? "to-do's" : 'movies'}
         </p>
         <span className="ml-3 mr-3">•</span>

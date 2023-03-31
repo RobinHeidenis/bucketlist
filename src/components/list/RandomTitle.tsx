@@ -1,13 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import type { ListItem, Movie } from '@prisma/client';
 import { PosterImage } from '../movie/PosterImage';
 import autoAnimate from '@formkit/auto-animate';
+import type { MovieListMovie } from '../../types/List';
 
-export const RandomTitle = ({
-  titles,
-}: {
-  titles: (ListItem & { movie: Movie })[];
-}) => {
+export const RandomTitle = ({ titles }: { titles: MovieListMovie[] }) => {
   const parent = useRef(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
@@ -28,13 +24,13 @@ export const RandomTitle = ({
         {selectedIndex && titles[selectedIndex] && (
           <div className="flex flex-col items-center justify-center">
             <PosterImage
-              alt={titles[selectedIndex]?.movie.title ?? ''}
-              url={titles[selectedIndex]?.movie.posterUrl}
+              alt={titles[selectedIndex]?.title ?? ''}
+              url={titles[selectedIndex]?.posterUrl}
               width={152}
               height={225}
               className="mr-0"
             />
-            <h3 className="m-0">{titles[selectedIndex]?.movie.title}</h3>
+            <h3 className="m-0">{titles[selectedIndex]?.title}</h3>
           </div>
         )}
       </div>

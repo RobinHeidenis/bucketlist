@@ -1,23 +1,24 @@
 import type { Item } from './default';
+import { isCollection } from '../../types/List';
 
 export const sortSeen = (a: Item, b: Item) => {
   let aSeen;
   let aTitle;
-  if ('movie' in a) {
-    aSeen = a.checked;
-    aTitle = a.movie.title;
-  } else {
+  if (isCollection(a)) {
     aSeen = a.allChecked;
+    aTitle = a.name;
+  } else {
+    aSeen = a.checked;
     aTitle = a.title;
   }
 
   let bSeen;
   let bTitle;
-  if ('movie' in b) {
-    bSeen = b.checked;
-    bTitle = b.movie.title;
-  } else {
+  if (isCollection(b)) {
     bSeen = b.allChecked;
+    bTitle = b.name;
+  } else {
+    bSeen = b.checked;
     bTitle = b.title;
   }
 
@@ -32,21 +33,21 @@ export const sortSeen = (a: Item, b: Item) => {
 export const sortSeenReverse = (a: Item, b: Item) => {
   let aSeen;
   let aTitle;
-  if ('movie' in a) {
-    aSeen = a.checked;
-    aTitle = a.movie.title;
-  } else {
+  if (isCollection(a)) {
     aSeen = a.allChecked;
+    aTitle = a.name;
+  } else {
+    aSeen = a.checked;
     aTitle = a.title;
   }
 
   let bSeen;
   let bTitle;
-  if ('movie' in b) {
-    bSeen = b.checked;
-    bTitle = b.movie.title;
-  } else {
+  if (isCollection(b)) {
     bSeen = b.allChecked;
+    bTitle = b.name;
+  } else {
+    bSeen = b.checked;
     bTitle = b.title;
   }
 
