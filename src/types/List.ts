@@ -62,5 +62,5 @@ export function isBucketList(
 export function isCollection(
   item: MovieListCollection | MovieListMovie,
 ): item is MovieListCollection {
-  return 'movie' in item;
+  return 'movies' in item;
 }

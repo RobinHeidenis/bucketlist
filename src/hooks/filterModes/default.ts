@@ -1,9 +1,5 @@
-import type {
-  MovieListCollection,
-  MovieListMovie} from '../../types/List';
-import {
-  isCollection
-} from '../../types/List';
+import type { MovieListCollection, MovieListMovie } from '../../types/List';
+import { isCollection } from '../../types/List';
 
 export type Item = MovieListMovie | MovieListCollection;
 

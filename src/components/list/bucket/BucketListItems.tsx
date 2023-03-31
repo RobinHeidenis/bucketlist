@@ -1,8 +1,8 @@
-import { ListItem } from './ListItem';
-import { usePermissionsCheck } from '../../hooks/usePermissionsCheck';
-import type { BucketList } from '../../types/List';
+import { ListItem } from '../ListItem';
+import { usePermissionsCheck } from '../../../hooks/usePermissionsCheck';
+import type { BucketList } from '../../../types/List';
 
-export const ListItems = ({ list }: { list: BucketList }) => {
+export const BucketListItems = ({ list }: { list: BucketList }) => {
   const { isOwner, isCollaborator } = usePermissionsCheck(list);
 
   return (

@@ -42,7 +42,7 @@ export const useSortedMovieItems = (
   }, [list]);
 
   return useMemo(() => {
-    if (!('movieItems' in list) || !list.movieItems) return [];
+    if (!('movies' in list) || !list.movies) return [];
     return [...list.movies, ...collections].sort(sortMap[sort]);
   }, [list, collections, sort]);
 };

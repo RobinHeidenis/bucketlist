@@ -6,7 +6,7 @@ import NiceModal from '@ebay/nice-modal-react';
 import { CreateItemModal } from '../../components/modals/CreateItemModal';
 import { ListSkeleton } from '../../components/skeletons/ListSkeleton';
 import { StandardPage } from '../../components/page/StandardPage';
-import { ListItems } from '../../components/list/ListItems';
+import { BucketListItems } from '../../components/list/bucket/BucketListItems';
 import { MovieListHeader } from '../../components/list/MovieListHeader';
 import { usePermissionsCheck } from '../../hooks/usePermissionsCheck';
 import { isBucketList } from '../../types/List';
@@ -61,7 +61,7 @@ const List = () => {
         <div className="divider mb-0" />
         <div className="w-full">
           {isBucketList(listData) ? (
-            <ListItems list={listData} />
+            <BucketListItems list={listData} />
           ) : (
             <MovieListItems list={listData} />
           )}

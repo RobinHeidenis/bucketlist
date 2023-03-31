@@ -3,8 +3,7 @@ import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { z } from 'zod';
 import { zNewMovieSchema } from '../../../schemas/listSchemas';
 import { TRPCError } from '@trpc/server';
-import type { List, User } from '@prisma/client';
-import type { Collection } from '@prisma/client';
+import type { Collection, List, User } from '@prisma/client';
 import {
   checkAndUpdateCollection,
   checkAndUpdateMovie,
@@ -221,12 +220,9 @@ export const movieListRouter = createTRPCRouter({
 
       if (!checkIfExistsAndAccess(ctx, list)) return;
 
-      await ctx.prisma.checkedMovie.delete({
+      await ctx.prisma.checkedMovie.deleteMany({
         where: {
-          movieId_listId: {
-            movieId: input.id,
-            listId: input.listId,
-          },
+          AND: [{ movieId: input.id }, { listId: input.listId }],
         },
       });
 
