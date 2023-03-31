@@ -11,11 +11,11 @@ dependencies:
     specifier: ^2.0.17
     version: 2.0.17(react@18.2.0)
   '@mantine/form':
-    specifier: ^5.10.2
-    version: 5.10.2(react@18.2.0)
+    specifier: ^5.10.5
+    version: 5.10.5(react@18.2.0)
   '@mantine/hooks':
-    specifier: ^5.10.2
-    version: 5.10.2(react@18.2.0)
+    specifier: ^5.10.5
+    version: 5.10.5(react@18.2.0)
   '@next-auth/prisma-adapter':
     specifier: ^1.0.4
     version: 1.0.5(@prisma/client@4.12.0)(next-auth@4.20.1)
@@ -221,8 +221,8 @@ packages:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
 
-  /@mantine/form@5.10.2(react@18.2.0):
-    resolution: {integrity: sha512-06r/TykBRc8nxOEdeklMyIbNLWYQCRvUwGU1JLKHCKh/VLv2M0dyAFmCk8r6vnVoopbzYowHL3mcS0/qTT7PjA==}
+  /@mantine/form@5.10.5(react@18.2.0):
+    resolution: {integrity: sha512-0ENh7W/mwbOnIjJlRUoUTZjOtEi7/qoF86k67CVjKqagsA+Wy6cuBF1spPcllMzujepprtqKACb3rVLR+Pxj7Q==}
     peerDependencies:
       react: '>=16.8.0'
     dependencies:
@@ -231,8 +231,8 @@ packages:
       react: 18.2.0
     dev: false
 
-  /@mantine/hooks@5.10.2(react@18.2.0):
-    resolution: {integrity: sha512-H26lZ+P2HasLXt3coXYUiN5hVRNXPYNwF93oP9TfmOOA+EEzbGtGQR/dBv51BF53UJ+rzgJ0W5lLi1CbZPdMnA==}
+  /@mantine/hooks@5.10.5(react@18.2.0):
+    resolution: {integrity: sha512-hFQp71QZDfivPzfIUOQZfMKLiOL/Cn2EnzacRlbUr55myteTfzYN8YMt+nzniE/6c4IRopFHEAdbKEtfyQc6kg==}
     peerDependencies:
       react: '>=16.8.0'
     dependencies:
