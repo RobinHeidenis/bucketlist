@@ -10,7 +10,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@ebay/nice-modal-react": "^1.2.8",
+    "@ebay/nice-modal-react": "^1.2.9",
     "@formkit/auto-animate": "1.0.0-beta.6",
     "@heroicons/react": "^2.0.14",
     "@mantine/form": "^5.10.2",

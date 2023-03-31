@@ -74,7 +74,7 @@ model Collection {
 
 model BucketListItem {
   id          String  @id @default(uuid())
-  title       String? @db.VarChar(46)
+  title       String  @db.VarChar(46)
   description String? @db.VarChar(500)
   checked     Boolean @default(false)
   listId      String

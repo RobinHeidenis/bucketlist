@@ -36,7 +36,12 @@ export const ListItem = ({
     },
   });
   const openEditItemModal = () => {
-    void NiceModal.show(EditItemModal, { id, title, description, listId });
+    void NiceModal.show(EditItemModal, {
+      itemId: id,
+      title,
+      description,
+      listId,
+    });
   };
 
   return (

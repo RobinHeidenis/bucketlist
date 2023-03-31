@@ -42,7 +42,7 @@ export const ListHeaderMenu = ({
   });
 
   const showEditListModal = () => {
-    void NiceModal.show(EditListModal, { id, title, description });
+    void NiceModal.show(EditListModal, { listId: id, title, description });
   };
 
   const showCreateInviteLinkModal = () => {

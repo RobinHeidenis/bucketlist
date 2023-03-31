@@ -2,8 +2,8 @@ lockfileVersion: '6.0'
 
 dependencies:
   '@ebay/nice-modal-react':
-    specifier: ^1.2.8
-    version: 1.2.8(react-dom@18.2.0)(react@18.2.0)
+    specifier: ^1.2.9
+    version: 1.2.9(react-dom@18.2.0)(react@18.2.0)
   '@formkit/auto-animate':
     specifier: 1.0.0-beta.6
     version: 1.0.0-beta.6
@@ -137,8 +137,8 @@ packages:
     dependencies:
       regenerator-runtime: 0.13.11
 
-  /@ebay/nice-modal-react@1.2.8(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-5C+9/zWsaYeDMI3HLVIg2clQzVmhepxOGeVdAWOyww2GZJ4Cl3NgzPHyO70SIkG0a4aXvUruyDnPM+jx7DzSJg==}
+  /@ebay/nice-modal-react@1.2.9(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-IxTE4jEMx7curG7WOv8qiYEfAY/NJXXX/94MH4imOvefea4vOlWdV+B7Xj5CMgpUowybsKe9T0F0Dqp5fj0gng==}
     peerDependencies:
       react: '>16.8.0'
       react-dom: '>16.8.0'
