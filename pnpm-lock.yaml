@@ -44,8 +44,8 @@ dependencies:
     specifier: ^10.9.0
     version: 10.9.0
   daisyui:
-    specifier: ^2.49.0
-    version: 2.49.0(autoprefixer@10.4.14)(postcss@8.4.21)
+    specifier: ^2.51.5
+    version: 2.51.5(autoprefixer@10.4.14)(postcss@8.4.21)
   date-fns:
     specifier: ^2.29.3
     version: 2.29.3
@@ -991,8 +991,8 @@ packages:
   /csstype@3.1.1:
     resolution: {integrity: sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==}
 
-  /daisyui@2.49.0(autoprefixer@10.4.14)(postcss@8.4.21):
-    resolution: {integrity: sha512-+hEFMupi/7rqkAH4d3iBWj1TXRq73V3PrkJ3HiDqFuQgMoE1/UQOgMoeqaHa3r4IRo4fjMNauwHBA17qT0YSIA==}
+  /daisyui@2.51.5(autoprefixer@10.4.14)(postcss@8.4.21):
+    resolution: {integrity: sha512-L05dRw0tasmz2Ha+10LhftEGLq4kaA8vRR/T0wDaXfHwqcgsf81jfXDJ6NlZ63Z7Rl1k3rj7UHs0l0p7CM3aYA==}
     peerDependencies:
       autoprefixer: ^10.0.2
       postcss: ^8.1.6
