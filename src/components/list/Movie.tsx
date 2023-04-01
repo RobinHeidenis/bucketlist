@@ -9,9 +9,9 @@ import {
 } from '@heroicons/react/24/outline';
 import { DropdownHeader } from '../dropdown/DropdownHeader';
 import { DropdownItem } from '../dropdown/DropdownItem';
-import { api } from '../../utils/api';
+import { api } from '~/utils/api';
 import { PosterImage } from '../movie/PosterImage';
-import type { MovieListMovie } from '../../types/List';
+import type { MovieListMovie } from '~/types/List';
 
 const toHoursAndMinutes = (totalMinutes: number) => {
   if (totalMinutes === 0) return '0';
@@ -80,21 +80,21 @@ export const Movie = ({
             <div className="flex flex-row items-center">
               <StarIcon className="mr-1 h-5 w-5 text-amber-500" />{' '}
               {movie.rating}
-              <ClockIcon className="mr-1 ml-2 h-5 w-5" />{' '}
+              <ClockIcon className="ml-2 mr-1 h-5 w-5" />{' '}
               {toHoursAndMinutes(movie.runtime ?? 0)}
-              <CalendarIcon className="mr-1 ml-2 h-5 w-5" />{' '}
+              <CalendarIcon className="ml-2 mr-1 h-5 w-5" />{' '}
               {movie.releaseDate || 'unknown'}
               {movie.genres ? (
                 <div
                   className="tooltip flex flex-row items-center"
                   data-tip={movie.genres}
                 >
-                  <TagIcon className="mr-1 ml-2 h-5 w-5" />
+                  <TagIcon className="ml-2 mr-1 h-5 w-5" />
                   {movie.genres?.split(',')[0]}, ...
                 </div>
               ) : (
                 <>
-                  <TagIcon className="mr-1 ml-2 h-5 w-5" /> none
+                  <TagIcon className="ml-2 mr-1 h-5 w-5" /> none
                 </>
               )}
             </div>
@@ -131,7 +131,7 @@ export const Movie = ({
           </DropdownHeader>
         )}
       </div>
-      {!hideDivider && <div className="divider mt-2 mb-2" />}
+      {!hideDivider && <div className="divider mb-2 mt-2" />}
     </div>
   );
 };

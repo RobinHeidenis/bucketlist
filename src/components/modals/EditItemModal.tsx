@@ -1,8 +1,8 @@
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { useForm, zodResolver } from '@mantine/form';
 import type { z } from 'zod';
-import { zEditListItemSchema } from '../../schemas/listSchemas';
-import { api } from '../../utils/api';
+import { zEditListItemSchema } from '~/schemas/listSchemas';
+import { api } from '~/utils/api';
 import { TextInput } from '../form/TextInput';
 import { TextArea } from '../form/TextArea';
 import { ModalHeader } from './ModalHeader';

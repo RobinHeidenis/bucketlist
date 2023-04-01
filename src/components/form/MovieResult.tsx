@@ -1,7 +1,7 @@
 import { StarIcon } from '@heroicons/react/24/solid';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import type { z } from 'zod';
-import type { TMDBSearchMovie } from '../../types/TMDBMovie';
+import type { TMDBSearchMovie } from '~/types/TMDBMovie';
 import { PosterImage } from '../movie/PosterImage';
 
 export const MovieResult = ({
@@ -20,7 +20,7 @@ export const MovieResult = ({
         <div className="flex flex-row items-center">
           <StarIcon className="mr-1 h-5 w-5 text-amber-500" />{' '}
           {movie.vote_average.toFixed(1)}
-          <CalendarIcon className="mr-1 ml-2 h-5 w-5" /> {movie.release_date}
+          <CalendarIcon className="ml-2 mr-1 h-5 w-5" /> {movie.release_date}
         </div>
       </div>
     </div>

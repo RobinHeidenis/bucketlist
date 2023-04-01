@@ -11,8 +11,8 @@ import {
 import type { CSSProperties } from 'react';
 import { useState } from 'react';
 import { Movie } from './Movie';
-import { api } from '../../utils/api';
-import type { MovieListCollection } from '../../types/List';
+import { api } from '~/utils/api';
+import type { MovieListCollection } from '~/types/List';
 
 interface CollectionProps {
   collection: MovieListCollection;
@@ -137,7 +137,7 @@ export const Collection = ({
           />
         ))}
       </div>
-      <div className="divider mt-2 mb-2" />
+      <div className="divider mb-2 mt-2" />
     </div>
   );
 };

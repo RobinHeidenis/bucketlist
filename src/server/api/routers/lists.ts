@@ -3,11 +3,11 @@ import {
   zIdSchema,
   zNewListSchema,
   zSetIsPublicSchema,
-} from '../../../schemas/listSchemas';
+} from '~/schemas/listSchemas';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { TRPCError } from '@trpc/server';
-import type { BucketList, DBMovieList, MovieList } from '../../../types/List';
-import { isBucketList } from '../../../types/List';
+import type { BucketList, DBMovieList, MovieList } from '~/types/List';
+import { isBucketList } from '~/types/List';
 
 export const listsRouter = createTRPCRouter({
   getLists: protectedProcedure.query(async ({ ctx }) => {

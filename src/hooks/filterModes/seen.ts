@@ -1,5 +1,5 @@
 import type { Item } from './default';
-import { isCollection } from '../../types/List';
+import { isCollection } from '~/types/List';
 
 const getTitleAndSeen = (a: Item, b: Item) => {
   let aSeen;

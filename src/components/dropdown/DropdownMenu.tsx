@@ -1,5 +1,5 @@
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
-import type { PropsWithClassName } from '../../types/PropsWithClassName';
+import type { PropsWithClassName } from '~/types/PropsWithClassName';
 import type { PropsWithChildren } from 'react';
 import { DropdownItem } from './DropdownItem';
 import { DropdownHeader } from './DropdownHeader';

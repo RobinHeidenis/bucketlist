@@ -1,9 +1,9 @@
 import { useRouter } from 'next/router';
-import { StandardPage } from '../../components/page/StandardPage';
-import { api } from '../../utils/api';
+import { StandardPage } from '~/components/page/StandardPage';
+import { api } from '~/utils/api';
 import toast from 'react-hot-toast';
-import { SuccessToast } from '../../components/toasts/SuccessToast';
-import { ErrorToast } from '../../components/toasts/ErrorToast';
+import { SuccessToast } from '~/components/toasts/SuccessToast';
+import { ErrorToast } from '~/components/toasts/ErrorToast';
 
 const InvitePage = () => {
   const router = useRouter();
@@ -49,7 +49,7 @@ const InvitePage = () => {
       <StandardPage>
         <div className="mx-0 grid h-[calc(100vh-200px)] max-w-none place-content-center px-0">
           <div className="alert prose flex flex-col p-5 shadow-xl">
-            <h1 className="mt-3 mb-3">
+            <h1 className="mb-3 mt-3">
               {error?.message ?? 'Something went wrong'}
             </h1>
             <h3>

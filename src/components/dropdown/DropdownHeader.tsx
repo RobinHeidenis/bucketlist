@@ -1,6 +1,6 @@
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import type { PropsWithChildren } from 'react';
-import type { PropsWithClassName } from '../../types/PropsWithClassName';
+import type { PropsWithClassName } from '~/types/PropsWithClassName';
 
 export const DropdownHeader = ({
   className,

@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import type { z } from 'zod';
-import type {
-  TMDBSearchCollection,
-  TMDBSearchMovie,
-} from '../../types/TMDBMovie';
+import type { TMDBSearchCollection, TMDBSearchMovie } from '~/types/TMDBMovie';
 import { MovieResult } from './MovieResult';
 import { CollectionResult } from './CollectionResult';
 
@@ -33,7 +30,7 @@ export const Autocomplete = ({
 
   return (
     <div
-      className={`dropdown-end dropdown mt-3 w-full ${
+      className={`dropdown dropdown-end mt-3 w-full ${
         open ? 'dropdown-open' : ''
       }`}
     >

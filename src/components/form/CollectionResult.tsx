@@ -1,5 +1,5 @@
 import type { z } from 'zod';
-import type { TMDBSearchCollection } from '../../types/TMDBMovie';
+import type { TMDBSearchCollection } from '~/types/TMDBMovie';
 import { PosterImage } from '../movie/PosterImage';
 
 export const CollectionResult = ({

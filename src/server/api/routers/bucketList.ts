@@ -1,10 +1,7 @@
 import type { createTRPCContext } from '../trpc';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { z } from 'zod';
-import {
-  zEditListItemSchema,
-  zNewListItemSchema,
-} from '../../../schemas/listSchemas';
+import { zEditListItemSchema, zNewListItemSchema } from '~/schemas/listSchemas';
 import { TRPCError } from '@trpc/server';
 import type { List, User } from '@prisma/client';
 

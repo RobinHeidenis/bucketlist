@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { zIdSchema } from '../../../schemas/listSchemas';
+import { zIdSchema } from '~/schemas/listSchemas';
 import { TRPCError } from '@trpc/server';
-import { getBaseUrl } from '../../../utils/api';
-import { env } from '../../../env/server.mjs';
+import { getBaseUrl } from '~/utils/api';
+import { env } from '~/env.mjs';
 
 export const inviteRouter = createTRPCRouter({
   create: protectedProcedure

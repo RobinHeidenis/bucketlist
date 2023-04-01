@@ -1,16 +1,16 @@
 import { useRouter } from 'next/router';
-import { api } from '../../utils/api';
-import { ListHeaderMenu } from '../../components/list/ListHeaderMenu';
-import { useRequireSignin } from '../../hooks/useRequireSignin';
+import { api } from '~/utils/api';
+import { ListHeaderMenu } from '~/components/list/ListHeaderMenu';
+import { useRequireSignin } from '~/hooks/useRequireSignin';
 import NiceModal from '@ebay/nice-modal-react';
-import { CreateItemModal } from '../../components/modals/CreateItemModal';
-import { ListSkeleton } from '../../components/skeletons/ListSkeleton';
-import { StandardPage } from '../../components/page/StandardPage';
-import { BucketListItems } from '../../components/list/bucket/BucketListItems';
-import { MovieListHeader } from '../../components/list/MovieListHeader';
-import { usePermissionsCheck } from '../../hooks/usePermissionsCheck';
-import { isBucketList } from '../../types/List';
-import { MovieListItems } from '../../components/list/movie/MovieListItems';
+import { CreateItemModal } from '~/components/modals/CreateItemModal';
+import { ListSkeleton } from '~/components/skeletons/ListSkeleton';
+import { StandardPage } from '~/components/page/StandardPage';
+import { BucketListItems } from '~/components/list/bucket/BucketListItems';
+import { MovieListHeader } from '~/components/list/MovieListHeader';
+import { usePermissionsCheck } from '~/hooks/usePermissionsCheck';
+import { isBucketList } from '~/types/List';
+import { MovieListItems } from '~/components/list/movie/MovieListItems';
 
 const List = () => {
   useRequireSignin();

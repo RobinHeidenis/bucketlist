@@ -1,7 +1,7 @@
 import { formatDistance } from 'date-fns';
 import { ClipboardIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useClipboard } from '@mantine/hooks';
-import { api } from '../../utils/api';
+import { api } from '~/utils/api';
 import type { InviteLink } from '@prisma/client';
 import toast from 'react-hot-toast';
 import { SuccessToast } from '../toasts/SuccessToast';
