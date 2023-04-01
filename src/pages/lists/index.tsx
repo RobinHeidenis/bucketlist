@@ -1,12 +1,12 @@
-import { api } from '../../utils/api';
-import { ListCard } from '../../components/lists/ListCard';
-import { ListCardWrapper } from '../../components/lists/ListCardWrapper';
-import { PlusSVG } from '../../components/lists/PlusSVG';
+import { api } from '~/utils/api';
+import { ListCard } from '~/components/lists/ListCard';
+import { ListCardWrapper } from '~/components/lists/ListCardWrapper';
+import { PlusSVG } from '~/components/lists/PlusSVG';
 import NiceModal from '@ebay/nice-modal-react';
-import { CreateListModal } from '../../components/modals/CreateListModal';
-import { useRequireSignin } from '../../hooks/useRequireSignin';
-import { ListIndexSkeleton } from '../../components/skeletons/ListIndexSkeleton';
-import { StandardPage } from '../../components/page/StandardPage';
+import { CreateListModal } from '~/components/modals/CreateListModal';
+import { useRequireSignin } from '~/hooks/useRequireSignin';
+import { ListIndexSkeleton } from '~/components/skeletons/ListIndexSkeleton';
+import { StandardPage } from '~/components/page/StandardPage';
 
 const Lists = () => {
   useRequireSignin();
@@ -23,7 +23,7 @@ const Lists = () => {
         <h1>Your lists</h1>
         <div className="divider" />
       </div>
-      <div className="mt-12 mb-12 grid grid-cols-1 gap-10 lg:grid-cols-3">
+      <div className="mb-12 mt-12 grid grid-cols-1 gap-10 lg:grid-cols-3">
         {lists?.map((list) => (
           <ListCard {...list} key={list.id} />
         ))}

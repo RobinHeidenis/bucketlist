@@ -1,11 +1,11 @@
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { env } from '../../../env/server.mjs';
+import { env } from '~/env.mjs';
 import {
   TMDBCollectionSearchResult,
   TMDBMovieSearchResult,
-} from '../../../types/TMDBMovie';
+} from '~/types/TMDBMovie';
 
 export const movieRouter = createTRPCRouter({
   search: protectedProcedure

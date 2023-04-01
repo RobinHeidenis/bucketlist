@@ -10,7 +10,7 @@ import {
   sortSeen,
   sortSeenReverse,
 } from './filterModes';
-import type { MovieList } from '../types/List';
+import type { MovieList } from '~/types/List';
 
 export const sortMap = {
   default: sortDefault,

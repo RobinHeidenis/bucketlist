@@ -1,8 +1,8 @@
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { useForm, zodResolver } from '@mantine/form';
 import type { z } from 'zod';
-import { zNewListSchema } from '../../schemas/listSchemas';
-import { api } from '../../utils/api';
+import { zNewListSchema } from '~/schemas/listSchemas';
+import { api } from '~/utils/api';
 import { TextInput } from '../form/TextInput';
 import { TextArea } from '../form/TextArea';
 import { ModalHeader } from './ModalHeader';
@@ -64,7 +64,7 @@ export const CreateListModal = NiceModal.create(() => {
           {...form.getInputProps('description')}
         />
         <button
-          className={`btn-primary btn mt-5 mr-3 self-end ${
+          className={`btn-primary btn mr-3 mt-5 self-end ${
             isLoading ? 'loading' : ''
           }`}
           type="submit"

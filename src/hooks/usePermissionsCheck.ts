@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useSession } from 'next-auth/react';
-import type { RouterOutputs } from '../utils/api';
+import type { RouterOutputs } from '~/utils/api';
 
 export const usePermissionsCheck = (
   listData: Partial<RouterOutputs['lists']['getList']> | undefined,

@@ -1,11 +1,8 @@
 import { Autocomplete } from '../form/Autocomplete';
 import { useState } from 'react';
-import { api } from '../../utils/api';
+import { api } from '~/utils/api';
 import type { z } from 'zod';
-import type {
-  TMDBSearchCollection,
-  TMDBSearchMovie,
-} from '../../types/TMDBMovie';
+import type { TMDBSearchCollection, TMDBSearchMovie } from '~/types/TMDBMovie';
 import { PosterImage } from '../movie/PosterImage';
 import { StarIcon } from '@heroicons/react/24/solid';
 import { CalendarIcon } from '@heroicons/react/24/outline';
@@ -73,7 +70,7 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
                 <div className="flex flex-row items-center">
                   <StarIcon className="mr-1 h-5 w-5 text-amber-500" />{' '}
                   {selectedResult.vote_average.toFixed(1)}
-                  <CalendarIcon className="mr-1 ml-2 h-5 w-5" />{' '}
+                  <CalendarIcon className="ml-2 mr-1 h-5 w-5" />{' '}
                   {selectedResult.release_date}
                 </div>
               )}

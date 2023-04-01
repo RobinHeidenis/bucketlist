@@ -1,6 +1,6 @@
-import type { TMDBMovie } from '../types/TMDBMovie';
-import { TMDBCollection } from '../types/TMDBMovie';
-import { env } from '../env/server.mjs';
+import type { TMDBMovie } from '~/types/TMDBMovie';
+import { TMDBCollection } from '~/types/TMDBMovie';
+import { env } from '~/env.mjs';
 import type { z } from 'zod';
 import type { Collection as CollectionType, Movie } from '@prisma/client';
 import type { createTRPCContext } from './api/trpc';

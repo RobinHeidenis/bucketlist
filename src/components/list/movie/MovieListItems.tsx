@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import RenderIfVisible from 'react-render-if-visible';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
-import type { MovieList } from '../../../types/List';
-import { isCollection } from '../../../types/List';
-import { usePermissionsCheck } from '../../../hooks/usePermissionsCheck';
-import type { sortMap } from '../../../hooks/useSortedMovieItems';
-import { useSortedMovieItems } from '../../../hooks/useSortedMovieItems';
+import type { MovieList } from '~/types/List';
+import { isCollection } from '~/types/List';
+import { usePermissionsCheck } from '~/hooks/usePermissionsCheck';
+import type { sortMap } from '~/hooks/useSortedMovieItems';
+import { useSortedMovieItems } from '~/hooks/useSortedMovieItems';
 import { RandomTitle } from '../RandomTitle';
 import { Movie } from '../Movie';
 import { Collection } from '../Collection';
@@ -28,7 +28,7 @@ export const MovieListItems = ({ list }: { list: MovieList }) => {
 
   return (
     <>
-      <div className="mt-2 mb-5 flex items-start justify-between">
+      <div className="mb-5 mt-2 flex items-start justify-between">
         <label className="input-group">
           <select
             className="select-ghost select max-w-xs"

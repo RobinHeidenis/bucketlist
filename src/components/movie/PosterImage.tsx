@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { PhotoIcon } from '@heroicons/react/24/outline';
-import type { PropsWithClassName } from '../../types/PropsWithClassName';
+import type { PropsWithClassName } from '~/types/PropsWithClassName';
 
 export const PosterImage = ({
   url,

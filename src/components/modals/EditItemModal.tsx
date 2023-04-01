@@ -1,25 +1,29 @@
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { useForm, zodResolver } from '@mantine/form';
 import type { z } from 'zod';
-import { zEditListItemSchema } from '../../schemas/listSchemas';
-import { api } from '../../utils/api';
+import { zEditListItemSchema } from '~/schemas/listSchemas';
+import { api } from '~/utils/api';
 import { TextInput } from '../form/TextInput';
 import { TextArea } from '../form/TextArea';
 import { ModalHeader } from './ModalHeader';
-import type { BucketListItem } from '@prisma/client';
 
 export const EditItemModal = NiceModal.create(
   ({
-    id,
+    itemId,
     title,
     description,
     listId,
-  }: Pick<BucketListItem, 'id' | 'title' | 'description' | 'listId'>) => {
+  }: {
+    itemId: string;
+    listId: string;
+    title: string;
+    description: string | null;
+  }) => {
     const modal = useModal();
     const utils = api.useContext();
     const form = useForm<z.infer<typeof zEditListItemSchema>>({
       initialValues: {
-        id,
+        id: itemId,
         title: title ?? '',
         description: description ?? '',
       },
@@ -41,7 +45,11 @@ export const EditItemModal = NiceModal.create(
                 modal.remove();
                 return;
               }
-              mutate({ id, title: newTitle, description: newDescription });
+              mutate({
+                id: itemId,
+                title: newTitle,
+                description: newDescription,
+              });
             },
           )}
           className="flex w-3/4 max-w-xs flex-col items-center"

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { PosterImage } from '../movie/PosterImage';
 import autoAnimate from '@formkit/auto-animate';
-import type { MovieListMovie } from '../../types/List';
+import type { MovieListMovie } from '~/types/List';
 
 export const RandomTitle = ({ titles }: { titles: MovieListMovie[] }) => {
   const parent = useRef(null);

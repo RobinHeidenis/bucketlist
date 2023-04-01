@@ -1,20 +1,27 @@
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { useForm, zodResolver } from '@mantine/form';
 import type { z } from 'zod';
-import { zEditListSchema } from '../../schemas/listSchemas';
-import { api } from '../../utils/api';
+import { zEditListSchema } from '~/schemas/listSchemas';
+import { api } from '~/utils/api';
 import { TextInput } from '../form/TextInput';
 import { TextArea } from '../form/TextArea';
-import type { List } from '@prisma/client';
 import { ModalHeader } from './ModalHeader';
 
 export const EditListModal = NiceModal.create(
-  ({ id, title, description }: Pick<List, 'id' | 'title' | 'description'>) => {
+  ({
+    listId,
+    title,
+    description,
+  }: {
+    listId: string;
+    title: string;
+    description: string | null;
+  }) => {
     const modal = useModal();
     const utils = api.useContext();
     const form = useForm<z.infer<typeof zEditListSchema>>({
       initialValues: {
-        id,
+        id: listId,
         title,
         description: description || '',
       },
@@ -23,7 +30,7 @@ export const EditListModal = NiceModal.create(
     const { mutate, isLoading } = api.lists.updateList.useMutation({
       onSuccess: () => {
         void modal.remove();
-        void utils.lists.getList.invalidate({ id });
+        void utils.lists.getList.invalidate({ id: listId });
       },
     });
 
@@ -36,7 +43,11 @@ export const EditListModal = NiceModal.create(
                 void modal.remove();
                 return;
               }
-              mutate({ title: newTitle, description: newDescription, id });
+              mutate({
+                title: newTitle,
+                description: newDescription,
+                id: listId,
+              });
             },
           )}
           className="flex w-3/4 max-w-xs flex-col items-center"

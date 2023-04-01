@@ -1,7 +1,7 @@
 import type { createTRPCContext } from '../trpc';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { z } from 'zod';
-import { zNewMovieSchema } from '../../../schemas/listSchemas';
+import { zNewMovieSchema } from '~/schemas/listSchemas';
 import { TRPCError } from '@trpc/server';
 import type { Collection, List, User } from '@prisma/client';
 import {

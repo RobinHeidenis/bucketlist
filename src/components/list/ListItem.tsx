@@ -1,6 +1,6 @@
 import type { BucketListItem as ListItemType } from '@prisma/client';
 import { useRef, useState } from 'react';
-import { api } from '../../utils/api';
+import { api } from '~/utils/api';
 import { DropdownMenu } from '../dropdown/DropdownMenu';
 import toast from 'react-hot-toast';
 import { ErrorToast } from '../toasts/ErrorToast';
@@ -36,7 +36,12 @@ export const ListItem = ({
     },
   });
   const openEditItemModal = () => {
-    void NiceModal.show(EditItemModal, { id, title, description, listId });
+    void NiceModal.show(EditItemModal, {
+      itemId: id,
+      title,
+      description,
+      listId,
+    });
   };
 
   return (

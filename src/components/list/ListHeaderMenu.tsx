@@ -1,6 +1,6 @@
 import { DropdownMenu } from '../dropdown/DropdownMenu';
-import type { RouterOutputs } from '../../utils/api';
-import { api } from '../../utils/api';
+import type { RouterOutputs } from '~/utils/api';
+import { api } from '~/utils/api';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import { ErrorToast } from '../toasts/ErrorToast';
@@ -10,7 +10,7 @@ import { EditListModal } from '../modals/EditListModal';
 import { EyeIcon, EyeSlashIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { CreateInviteLinkModal } from '../modals/CreateInviteLinkModal';
 import { DropdownItem } from '../dropdown/DropdownItem';
-import { usePermissionsCheck } from '../../hooks/usePermissionsCheck';
+import { usePermissionsCheck } from '~/hooks/usePermissionsCheck';
 
 export const ListHeaderMenu = ({
   listData,
@@ -42,7 +42,7 @@ export const ListHeaderMenu = ({
   });
 
   const showEditListModal = () => {
-    void NiceModal.show(EditListModal, { id, title, description });
+    void NiceModal.show(EditListModal, { listId: id, title, description });
   };
 
   const showCreateInviteLinkModal = () => {

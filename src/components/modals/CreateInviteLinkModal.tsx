@@ -1,6 +1,6 @@
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { isPast } from 'date-fns';
-import { api } from '../../utils/api';
+import { api } from '~/utils/api';
 import { ModalHeader } from './ModalHeader';
 import { InviteLinkRow } from '../inviteLinks/InviteLinkRow';
 

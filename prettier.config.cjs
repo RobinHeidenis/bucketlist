@@ -1,5 +1,5 @@
 /** @type {import("prettier").Config} */
-module.exports = {
+const config = {
   plugins: [require.resolve("prettier-plugin-tailwindcss")],
   trailingComma: "all",
   tabWidth: 2,
@@ -7,3 +7,5 @@ module.exports = {
   singleQuote: true,
   printWidth: 80
 };
+
+module.exports = config;
