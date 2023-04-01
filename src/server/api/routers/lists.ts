@@ -33,6 +33,10 @@ export const listsRouter = createTRPCRouter({
         title: list.title,
         description: list.description,
         collaborators: list.collaborators,
+        isPublic: list.isPublic,
+        updatedAt: list.updatedAt,
+        type: list.type,
+        ownerId: list.ownerId,
       };
 
       if (list.type === 'BUCKET')
@@ -121,6 +125,7 @@ export const listsRouter = createTRPCRouter({
           owner,
           collaborators,
           bucketListItems,
+          updatedAt,
         } = list;
         return {
           id,
@@ -132,6 +137,7 @@ export const listsRouter = createTRPCRouter({
           owner,
           collaborators,
           bucketListItems,
+          updatedAt,
           total: bucketListItems.length,
           totalChecked: bucketListItems.filter((item) => item.checked).length,
         };
@@ -149,6 +155,7 @@ export const listsRouter = createTRPCRouter({
         collections,
         movies,
         checkedMovies,
+        updatedAt,
       } = list as DBMovieList;
 
       return {
@@ -181,6 +188,7 @@ export const listsRouter = createTRPCRouter({
           movies.length +
           collections.map((c) => c.movies.length).reduce((a, b) => a + b, 0),
         totalChecked: checkedMovies.length,
+        updatedAt,
       };
     }),
   createList: protectedProcedure

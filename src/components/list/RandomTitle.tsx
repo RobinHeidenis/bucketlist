@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { PosterImage } from '../movie/PosterImage';
 import autoAnimate from '@formkit/auto-animate';
 import type { MovieListMovie } from '~/types/List';
+import { DiceIcon } from '~/components/list/movie/DiceIcon';
 
 export const RandomTitle = ({ titles }: { titles: MovieListMovie[] }) => {
   const parent = useRef(null);
@@ -18,7 +19,7 @@ export const RandomTitle = ({ titles }: { titles: MovieListMovie[] }) => {
   return (
     <div className="flex w-full flex-col items-center">
       <button className="btn-ghost btn mb-5" onClick={roll}>
-        Random title
+        <DiceIcon /> Random title
       </button>
       <div className="flex flex-row" ref={parent}>
         {selectedIndex && titles[selectedIndex] && (
