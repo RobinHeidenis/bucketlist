@@ -40,6 +40,11 @@ export const bucketListRouter = createTRPCRouter({
           message: 'You are not allowed to update this item.',
         });
 
+      await ctx.prisma.list.update({
+        where: { id: input.listId },
+        data: { updatedAt: new Date() },
+      });
+
       return ctx.prisma.bucketListItem.update({
         where: { id: input.id },
         data: { checked: input.checked },
@@ -75,6 +80,11 @@ export const bucketListRouter = createTRPCRouter({
           message: 'You can only add bucket list items to this list.',
         });
 
+      await ctx.prisma.list.update({
+        where: { id: input.listId },
+        data: { updatedAt: new Date() },
+      });
+
       return ctx.prisma.bucketListItem.create({
         data: {
           title: input.title,
@@ -90,7 +100,11 @@ export const bucketListRouter = createTRPCRouter({
         where: { id: input.id },
         select: {
           list: {
-            select: { ownerId: true, collaborators: { select: { id: true } } },
+            select: {
+              ownerId: true,
+              collaborators: { select: { id: true } },
+              id: true,
+            },
           },
         },
       });
@@ -106,6 +120,11 @@ export const bucketListRouter = createTRPCRouter({
           code: 'UNAUTHORIZED',
           message: 'You are not allowed to delete this item',
         });
+
+      await ctx.prisma.list.update({
+        where: { id: listItem.list.id },
+        data: { updatedAt: new Date() },
+      });
 
       return ctx.prisma.bucketListItem.delete({
         where: { id: input.id },
@@ -134,6 +153,11 @@ export const bucketListRouter = createTRPCRouter({
           code: 'UNAUTHORIZED',
           message: 'You are not allowed to update this item',
         });
+
+      await ctx.prisma.list.update({
+        where: { id: input.listId },
+        data: { updatedAt: new Date() },
+      });
 
       return ctx.prisma.bucketListItem.update({
         where: { id: input.id },

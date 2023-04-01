@@ -66,19 +66,20 @@ model Collection {
   name      String   @db.VarChar(300)
   overview  String?  @db.VarChar(1000)
   posterUrl String?
-  updatedAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
   etag      String?  @db.VarChar(100)
   movies    Movie[]
   lists     List[]
 }
 
 model BucketListItem {
-  id          String  @id @default(uuid())
-  title       String  @db.VarChar(46)
-  description String? @db.VarChar(500)
-  checked     Boolean @default(false)
+  id          String   @id @default(uuid())
+  title       String   @db.VarChar(46)
+  description String?  @db.VarChar(500)
+  checked     Boolean  @default(false)
+  updatedAt   DateTime @default(now()) @updatedAt
   listId      String
-  list        List    @relation(fields: [listId], references: [id], onDelete: Cascade)
+  list        List     @relation(fields: [listId], references: [id], onDelete: Cascade)
 
   @@index([listId])
 }
@@ -94,6 +95,7 @@ model List {
   description     String?          @db.VarChar(500)
   isPublic        Boolean          @default(false)
   type            ListType         @default(BUCKET)
+  updatedAt       DateTime         @default(now()) @updatedAt
   bucketListItems BucketListItem[]
   movies          Movie[]
   collections     Collection[]
@@ -113,10 +115,10 @@ model CheckedMovie {
   movieId Int
   movie   Movie  @relation(fields: [movieId], references: [id])
 
+  @@unique([movieId, listId])
   @@index([listId])
   @@index([movieId])
   @@index([listId, movieId])
-  @@unique([movieId, listId])
 }
 
 model Movie {
