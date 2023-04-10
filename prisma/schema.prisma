@@ -137,6 +137,19 @@ model Movie {
   collections Collection[]
 }
 
+model Show {
+  id          Int      @id
+  title       String   @db.VarChar(200)
+  description String?  @db.VarChar(1000)
+  releaseDate String   @db.VarChar(50)
+  rating      String?  @db.VarChar(10)
+  runtime     Int?     @db.SmallInt
+  genres      String?  @db.VarChar(200)
+  posterUrl   String?  @db.VarChar(200)
+  updatedAt   DateTime @default(now())
+  etag        String?  @db.VarChar(100)
+}
+
 model InviteLink {
   id        String   @id @default(uuid())
   code      String   @unique @db.VarChar(5)

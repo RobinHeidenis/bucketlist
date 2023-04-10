@@ -4,12 +4,8 @@ import { z } from 'zod';
 import { zNewMovieSchema } from '~/schemas/listSchemas';
 import { TRPCError } from '@trpc/server';
 import type { Collection, List, User } from '@prisma/client';
-import {
-  checkAndUpdateCollection,
-  checkAndUpdateMovie,
-  createDBMovieFromTMDBMovie,
-  getTMDBMovie,
-} from '../../tmdbApi';
+import { checkAndUpdateCollection, checkAndUpdateMovie } from '../../tmdbApi';
+import { getMovie, transformAPIMovie } from '~/server/TMDB/getMovie';
 
 const checkAccess = (
   ctx: Awaited<ReturnType<typeof createTRPCContext>>,
@@ -149,7 +145,7 @@ export const movieListRouter = createTRPCRouter({
       });
 
       if (!movie) {
-        const tmdbMovie = await getTMDBMovie(input.externalId);
+        const tmdbMovie = await getMovie(input.externalId);
         if (!tmdbMovie)
           throw new TRPCError({
             code: 'NOT_FOUND',
@@ -158,7 +154,7 @@ export const movieListRouter = createTRPCRouter({
 
         movie = await ctx.prisma.movie.create({
           data: {
-            ...createDBMovieFromTMDBMovie(tmdbMovie.json, tmdbMovie.etag),
+            ...transformAPIMovie(tmdbMovie.result, tmdbMovie.eTag),
           },
         });
       }
@@ -205,6 +201,7 @@ export const movieListRouter = createTRPCRouter({
           collection ?? {
             id: input.externalId,
             updatedAt: new Date('01-01-2000'),
+            etag: '',
           },
         );
       }
