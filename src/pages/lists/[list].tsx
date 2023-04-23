@@ -7,10 +7,12 @@ import { CreateItemModal } from '~/components/modals/CreateItemModal';
 import { ListSkeleton } from '~/components/skeletons/ListSkeleton';
 import { StandardPage } from '~/components/page/StandardPage';
 import { BucketListItems } from '~/components/list/bucket/BucketListItems';
-import { MovieListHeader } from '~/components/list/MovieListHeader';
+import { MovieListHeader } from '~/components/list/movie/MovieListHeader';
 import { usePermissionsCheck } from '~/hooks/usePermissionsCheck';
-import { isBucketList } from '~/types/List';
+import { isBucketList, isMovieList } from '~/types/List';
 import { MovieListItems } from '~/components/list/movie/MovieListItems';
+import { ShowListHeader } from '~/components/list/show/ShowListHeader';
+import { ShowListItems } from '~/components/list/show/ShowListItems';
 
 const List = () => {
   useRequireSignin();
@@ -58,15 +60,20 @@ const List = () => {
         {listData.type === 'MOVIE' && (isOwner || isCollaborator) && (
           <MovieListHeader listId={listData.id} />
         )}
+        {listData.type === 'SHOW' && (isOwner || isCollaborator) && (
+          <ShowListHeader listId={listData.id} />
+        )}
         <div className="divider mb-0" />
         <div className="w-full">
           {isBucketList(listData) ? (
             <BucketListItems list={listData} />
-          ) : (
+          ) : isMovieList(listData) ? (
             <MovieListItems list={listData} />
+          ) : (
+            <ShowListItems list={listData} />
           )}
         </div>
-        {(isOwner || isCollaborator) && listData.type === 'BUCKET' && (
+        {(isOwner || isCollaborator) && isBucketList(listData) && (
           <div
             className={`mb-10 flex w-full flex-row ${
               listData.total === 0 ? 'justify-start' : 'mt-10 justify-end'

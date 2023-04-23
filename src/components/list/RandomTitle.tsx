@@ -29,7 +29,7 @@ export const RandomTitle = ({ titles }: { titles: MovieListMovie[] }) => {
               url={titles[selectedIndex]?.posterUrl}
               width={152}
               height={225}
-              className="mr-0"
+              noMargin
             />
             <h3 className="m-0">{titles[selectedIndex]?.title}</h3>
           </div>

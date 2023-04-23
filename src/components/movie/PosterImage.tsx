@@ -7,12 +7,14 @@ export const PosterImage = ({
   alt,
   width = 64,
   height = 91,
+  noMargin = false,
   className,
 }: PropsWithClassName<{
   alt: string;
   url?: string | null;
   width?: number;
   height?: number;
+  noMargin?: boolean;
 }>) => {
   if (url)
     return (
@@ -21,7 +23,9 @@ export const PosterImage = ({
         alt={alt}
         width={width}
         height={height}
-        className={`m-0 mr-4 aspect-[2/3] p-0 ${className ?? ''}`}
+        className={`m-0 ${noMargin ? '' : 'mr-4'} aspect-[2/3] p-0 ${
+          className ?? ''
+        }`}
         unoptimized
       />
     );

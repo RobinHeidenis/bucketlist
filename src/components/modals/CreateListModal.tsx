@@ -47,6 +47,7 @@ export const CreateListModal = NiceModal.create(() => {
               Bucket list
             </option>
             <option value="MOVIE">Movie list</option>
+            <option value="SHOW">Show list</option>
           </select>
         </div>
         <TextInput
