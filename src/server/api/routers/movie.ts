@@ -1,11 +1,12 @@
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { env } from '~/env.mjs';
 import {
   TMDBCollectionSearchResult,
   TMDBMovieSearchResult,
 } from '~/types/TMDBMovie';
+import { basicRequest } from '~/server/TMDB/basicRequest';
+import { diceCoefficient } from 'dice-coefficient';
 
 export const movieRouter = createTRPCRouter({
   search: protectedProcedure
@@ -16,55 +17,32 @@ export const movieRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       // search for both movies and collections in tmdb
-      const [movieRes, collectionRes] = await Promise.all([
-        fetch(
-          `https://api.themoviedb.org/3/search/movie?query=${input.query}&language=en-US`,
-          {
-            headers: {
-              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-              Authorization: `Bearer ${env.TMDB_API_KEY ?? ''}`,
-            },
-          },
-        ),
-        fetch(
-          `https://api.themoviedb.org/3/search/collection?query=${input.query}&language=en-US`,
-          {
-            headers: {
-              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-              Authorization: `Bearer ${env.TMDB_API_KEY ?? ''}`,
-            },
-          },
-        ),
+      const [moviesJSON, collectionsJSON] = await Promise.all([
+        basicRequest(`search/movie?query=${input.query}&language=en-US`),
+        basicRequest(`search/collection?query=${input.query}&language=en-US`),
       ]);
-
-      if (!movieRes.ok || !collectionRes.ok) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Something went wrong searching TMDB.',
-        });
-      }
 
       try {
         const parsedMovies = TMDBMovieSearchResult.parse(
-          await movieRes.json(),
+          moviesJSON.result,
         ).results;
         const parsedCollections = TMDBCollectionSearchResult.parse(
-          await collectionRes.json(),
+          collectionsJSON.result,
         ).results;
 
-        return [...parsedMovies, ...parsedCollections].sort((a, b) => {
-          let aTitle;
-          if ('title' in a) aTitle = a.title;
-          else aTitle = a.name;
-
-          let bTitle;
-          if ('title' in b) bTitle = b.title;
-          else bTitle = b.name;
-
-          if (aTitle < bTitle) return -1;
-          if (aTitle > bTitle) return 1;
-          return 0;
-        });
+        return [...parsedMovies, ...parsedCollections]
+          .map((i) => ({
+            ...i,
+            similarity: diceCoefficient(
+              input.query,
+              'title' in i ? i.title : i.name,
+            ),
+          }))
+          .sort((a, b) => {
+            if (a.similarity > b.similarity) return -1;
+            if (a.similarity < b.similarity) return 1;
+            return 0;
+          });
       } catch (e) {
         console.error(e);
         throw new TRPCError({

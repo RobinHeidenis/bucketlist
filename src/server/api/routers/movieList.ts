@@ -7,14 +7,14 @@ import type { Collection, List, User } from '@prisma/client';
 import { checkAndUpdateCollection, checkAndUpdateMovie } from '../../tmdbApi';
 import { getMovie, transformAPIMovie } from '~/server/TMDB/getMovie';
 
-const checkAccess = (
+export const checkAccess = (
   ctx: Awaited<ReturnType<typeof createTRPCContext>>,
   list: Partial<List & { collaborators: Pick<User, 'id'>[] }>,
 ) =>
   list.ownerId === ctx.session?.user?.id ||
   list.collaborators?.some((c) => c.id === ctx.session?.user?.id);
 
-const checkIfExistsAndAccess = (
+export const checkIfExistsAndAccess = (
   ctx: Awaited<ReturnType<typeof createTRPCContext>>,
   list:
     | Partial<List & { collaborators: Pick<User, 'id'>[] }>

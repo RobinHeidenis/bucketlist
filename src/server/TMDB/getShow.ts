@@ -1,6 +1,8 @@
 import * as z from 'zod';
+import { basicRequest } from '~/server/TMDB/basicRequest';
+import { seasonSchema } from '~/server/TMDB/getSeason';
 
-const showSchema = z.object({
+export const showSchema = z.object({
   id: z.number(),
   name: z.string(),
   overview: z.string().optional(),
@@ -80,19 +82,7 @@ const showSchema = z.object({
       }),
     )
     .optional(),
-  seasons: z
-    .array(
-      z.object({
-        air_date: z.string().optional(),
-        episode_count: z.number().optional(),
-        id: z.number().optional(),
-        name: z.string().optional(),
-        overview: z.string().optional(),
-        poster_path: z.string().optional(),
-        season_number: z.number().optional(),
-      }),
-    )
-    .optional(),
+  seasons: z.array(seasonSchema).optional(),
   spoken_languages: z
     .array(
       z.object({
@@ -105,6 +95,16 @@ const showSchema = z.object({
   status: z.string().optional(),
   tagline: z.string().optional(),
   type: z.string().optional(),
+  adult: z.boolean().optional(),
   vote_average: z.number().optional(),
   vote_count: z.number().optional(),
 });
+
+export const getShow = async (id: number | string, options?: RequestInit) => {
+  const { result, response } = await basicRequest(`tv/${id}`, options);
+
+  return {
+    result: showSchema.parse(result),
+    eTag: response.headers.get('etag') ?? '',
+  };
+};

@@ -30,10 +30,30 @@ export const TMDBSearchCollection = z.object({
   backdrop_path: z.string().optional().nullable(),
 });
 
+export const TMDBSearchTVShow = z.object({
+  poster_path: z.string().nullable(),
+  popularity: z.number().optional(),
+  id: z.number(),
+  backdrop_path: z.string().nullable(),
+  vote_average: z.number(),
+  overview: z.string().optional(),
+  first_air_date: z.string().optional(),
+  origin_country: z.array(z.string()).optional(),
+  genre_ids: z.array(z.number()).optional(),
+  original_language: z.string().optional(),
+  vote_count: z.number().optional(),
+  name: z.string(),
+  original_name: z.string().optional(),
+});
+
 export const TMDBMovieSearchResult = GenericTMDBSearchResult.extend({
   results: z.array(TMDBSearchMovie),
 });
 
 export const TMDBCollectionSearchResult = GenericTMDBSearchResult.extend({
   results: z.array(TMDBSearchCollection),
+});
+
+export const TMDBTVShowSearchResult = GenericTMDBSearchResult.extend({
+  results: z.array(TMDBSearchTVShow),
 });

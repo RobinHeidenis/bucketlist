@@ -1,9 +1,9 @@
-import { Autocomplete } from '../form/Autocomplete';
+import { Autocomplete } from '../../form/Autocomplete';
 import { useState } from 'react';
 import { api } from '~/utils/api';
 import type { z } from 'zod';
 import type { TMDBSearchCollection, TMDBSearchMovie } from '~/types/TMDBMovie';
-import { PosterImage } from '../movie/PosterImage';
+import { PosterImage } from '../../movie/PosterImage';
 import { StarIcon } from '@heroicons/react/24/solid';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 

@@ -61,66 +61,6 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Collection {
-  id        Int      @id
-  name      String   @db.VarChar(300)
-  overview  String?  @db.VarChar(1000)
-  posterUrl String?
-  updatedAt DateTime @default(now()) @updatedAt
-  etag      String?  @db.VarChar(100)
-  movies    Movie[]
-  lists     List[]
-}
-
-model BucketListItem {
-  id          String   @id @default(uuid())
-  title       String   @db.VarChar(46)
-  description String?  @db.VarChar(500)
-  checked     Boolean  @default(false)
-  updatedAt   DateTime @default(now()) @updatedAt
-  listId      String
-  list        List     @relation(fields: [listId], references: [id], onDelete: Cascade)
-
-  @@index([listId])
-}
-
-enum ListType {
-  MOVIE
-  BUCKET
-}
-
-model List {
-  id              String           @id @default(uuid())
-  title           String           @db.VarChar(100)
-  description     String?          @db.VarChar(500)
-  isPublic        Boolean          @default(false)
-  type            ListType         @default(BUCKET)
-  updatedAt       DateTime         @default(now()) @updatedAt
-  bucketListItems BucketListItem[]
-  movies          Movie[]
-  collections     Collection[]
-  checkedMovies   CheckedMovie[]
-  collaborators   User[]           @relation("ListCollaborators")
-  InviteLink      InviteLink[]
-  ownerId         String
-  owner           User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-
-  @@index([ownerId])
-}
-
-model CheckedMovie {
-  id      String @id @default(uuid())
-  listId  String
-  list    List   @relation(fields: [listId], references: [id])
-  movieId Int
-  movie   Movie  @relation(fields: [movieId], references: [id])
-
-  @@unique([movieId, listId])
-  @@index([listId])
-  @@index([movieId])
-  @@index([listId, movieId])
-}
-
 model Movie {
   id          Int            @id
   title       String         @db.VarChar(200)
@@ -137,17 +77,125 @@ model Movie {
   collections Collection[]
 }
 
+model CheckedMovie {
+  id      String @id @default(uuid())
+  listId  String
+  list    List   @relation(fields: [listId], references: [id], onDelete: Cascade)
+  movieId Int
+  movie   Movie  @relation(fields: [movieId], references: [id])
+
+  @@unique([movieId, listId])
+  @@index([listId])
+  @@index([movieId])
+  @@index([listId, movieId])
+}
+
+model Collection {
+  id        Int      @id
+  name      String   @db.VarChar(300)
+  overview  String?  @db.VarChar(1000)
+  posterUrl String?
+  updatedAt DateTime @default(now()) @updatedAt
+  etag      String?  @db.VarChar(100)
+  movies    Movie[]
+  lists     List[]
+}
+
 model Show {
   id          Int      @id
   title       String   @db.VarChar(200)
   description String?  @db.VarChar(1000)
   releaseDate String   @db.VarChar(50)
   rating      String?  @db.VarChar(10)
-  runtime     Int?     @db.SmallInt
   genres      String?  @db.VarChar(200)
   posterUrl   String?  @db.VarChar(200)
   updatedAt   DateTime @default(now())
   etag        String?  @db.VarChar(100)
+  seasons     Season[]
+  lists       List[]
+}
+
+model Season {
+  id           Int       @id
+  showId       Int
+  show         Show      @relation(fields: [showId], references: [id], onDelete: Cascade)
+  seasonNumber Int       @db.SmallInt
+  title        String    @db.VarChar(200)
+  overview     String?   @db.VarChar(1000)
+  posterUrl    String?   @db.VarChar(200)
+  releaseDate  String    @db.VarChar(50)
+  updatedAt    DateTime  @default(now())
+  episodes     Episode[]
+
+  @@unique([showId, seasonNumber])
+  @@index([showId])
+  @@index([showId, seasonNumber])
+}
+
+model Episode {
+  id            Int              @id
+  seasonId      Int
+  season        Season           @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  episodeNumber Int              @db.SmallInt
+  title         String           @db.VarChar(200)
+  overview      String?          @db.VarChar(1000)
+  releaseDate   String           @db.VarChar(50)
+  updatedAt     DateTime         @default(now())
+  checkedBy     CheckedEpisode[]
+
+  @@index([seasonId])
+}
+
+model CheckedEpisode {
+  id        String  @id @default(uuid())
+  listId    String
+  list      List    @relation(fields: [listId], references: [id], onDelete: Cascade)
+  episodeId Int
+  episode   Episode @relation(fields: [episodeId], references: [id])
+
+  @@unique([episodeId, listId])
+  @@index([listId])
+  @@index([episodeId])
+  @@index([listId, episodeId])
+}
+
+model BucketListItem {
+  id          String   @id @default(uuid())
+  title       String   @db.VarChar(46)
+  description String?  @db.VarChar(500)
+  checked     Boolean  @default(false)
+  updatedAt   DateTime @default(now()) @updatedAt
+  listId      String
+  list        List     @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  @@index([listId])
+}
+
+enum ListType {
+  MOVIE
+  SHOW
+  BUCKET
+}
+
+model List {
+  id              String           @id @default(uuid())
+  title           String           @db.VarChar(100)
+  description     String?          @db.VarChar(500)
+  isPublic        Boolean          @default(false)
+  type            ListType         @default(BUCKET)
+  updatedAt       DateTime         @default(now()) @updatedAt
+  bucketListItems BucketListItem[]
+  movies          Movie[]
+  collections     Collection[]
+  shows           Show[]
+  checkedMovies   CheckedMovie[]
+  checkedEpisodes CheckedEpisode[]
+  collaborators   User[]           @relation("ListCollaborators")
+  InviteLink      InviteLink[]
+  ownerId         String
+  owner           User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId])
 }
 
 model InviteLink {

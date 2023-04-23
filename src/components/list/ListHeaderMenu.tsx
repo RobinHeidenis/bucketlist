@@ -53,8 +53,13 @@ export const ListHeaderMenu = ({
     <div className="flex w-full flex-row items-center justify-between">
       <div className="flex flex-row items-center">
         <p className="m-0">
-          List by {owner.name} • {total}{' '}
-          {type === 'BUCKET' ? "to-do's" : 'movies'}
+          List by {owner.name} •{' '}
+          {'shows' in listData ? listData.shows.length : total}{' '}
+          {type === 'BUCKET'
+            ? "to-do's"
+            : type === 'MOVIE'
+            ? 'movies'
+            : 'shows'}
         </p>
         <span className="ml-3 mr-3">•</span>
         <div className="tooltip" data-tip={isPublic ? 'Public' : 'Private'}>

@@ -1,20 +1,19 @@
 import { useState } from 'react';
 import type { z } from 'zod';
 import type { TMDBSearchCollection, TMDBSearchMovie } from '~/types/TMDBMovie';
+import { type TMDBSearchTVShow } from '~/types/TMDBMovie';
 import { MovieResult } from './MovieResult';
 import { CollectionResult } from './CollectionResult';
+import { ShowResult } from '~/components/form/ShowResult';
 
 interface AutocompleteProps {
   value: string;
   onChange: (value: string) => void;
-  setSelectedResult: (
-    value:
-      | z.infer<typeof TMDBSearchMovie>
-      | z.infer<typeof TMDBSearchCollection>,
-  ) => void;
+  setSelectedResult: (value: any) => void;
   items: (
     | z.infer<typeof TMDBSearchMovie>
     | z.infer<typeof TMDBSearchCollection>
+    | z.infer<typeof TMDBSearchTVShow>
   )[];
   isLoading: boolean;
 }
@@ -30,7 +29,7 @@ export const Autocomplete = ({
 
   return (
     <div
-      className={`dropdown dropdown-end mt-3 w-full ${
+      className={`dropdown-end dropdown mt-3 w-full ${
         open ? 'dropdown-open' : ''
       }`}
     >
@@ -72,8 +71,10 @@ export const Autocomplete = ({
               >
                 {'title' in item ? (
                   <MovieResult movie={item} />
+                ) : 'first_air_date' in item ? (
+                  <ShowResult show={item} />
                 ) : (
-                  <CollectionResult collection={item} />
+                  <CollectionResult result={item} />
                 )}
               </li>
             );
