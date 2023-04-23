@@ -14,7 +14,7 @@ export const ShowListHeader = ({ listId }: { listId: string }) => {
   > | null>(null);
   const context = api.useContext();
 
-  const { data, isFetching } = api.shows.search.useQuery(
+  const { data, isFetching } = api.search.show.useQuery(
     { query: searchValue },
     { enabled: !!searchValue && searchValue.length > 2 },
   );

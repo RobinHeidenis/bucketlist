@@ -1,15 +1,16 @@
-import { createTRPCRouter, protectedProcedure } from '../trpc';
+import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
 import { z } from 'zod';
+import { basicRequest } from '~/server/TMDB/basicRequest';
 import { TRPCError } from '@trpc/server';
 import {
   TMDBCollectionSearchResult,
   TMDBMovieSearchResult,
+  TMDBTVShowSearchResult,
 } from '~/types/TMDBMovie';
-import { basicRequest } from '~/server/TMDB/basicRequest';
 import { diceCoefficient } from 'dice-coefficient';
 
-export const movieRouter = createTRPCRouter({
-  search: protectedProcedure
+export const searchRouter = createTRPCRouter({
+  movie: protectedProcedure
     .input(
       z.object({
         query: z.string().min(1),
@@ -43,6 +44,27 @@ export const movieRouter = createTRPCRouter({
             if (a.similarity < b.similarity) return 1;
             return 0;
           });
+      } catch (e) {
+        console.error(e);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Something went wrong searching TMDB.',
+        });
+      }
+    }),
+  show: protectedProcedure
+    .input(
+      z.object({
+        query: z.string().min(1),
+      }),
+    )
+    .query(async ({ input }) => {
+      const showsJSON = await basicRequest(
+        `search/tv?query=${input.query}&language=en-US`,
+      );
+
+      try {
+        return TMDBTVShowSearchResult.parse(showsJSON.result).results;
       } catch (e) {
         console.error(e);
         throw new TRPCError({

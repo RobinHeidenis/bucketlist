@@ -16,7 +16,7 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
   >(null);
   const context = api.useContext();
 
-  const { data, isFetching } = api.movies.search.useQuery(
+  const { data, isFetching } = api.search.movie.useQuery(
     { query: searchValue },
     { enabled: !!searchValue && searchValue.length > 2 },
   );
