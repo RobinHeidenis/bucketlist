@@ -78,37 +78,53 @@ export const getSeasons = async (
   options?: RequestInit,
 ) => {
   let appendToResponse = '';
-  for (let i = 0; i <= maxSeasonNumber + 1; i++) {
-    appendToResponse += `season/${i},`;
+  let remainingSeasons = maxSeasonNumber;
+  let seasonsAdded = 0;
+  const resultArray = [];
+
+  while (remainingSeasons > 0) {
+    const seasonsToAdd = Math.min(19, remainingSeasons);
+
+    for (let i = seasonsAdded; i <= seasonsAdded + seasonsToAdd; i++) {
+      appendToResponse += `season/${i},`;
+    }
+    const { result } = await basicRequest(
+      `tv/${showId}?append_to_response=${appendToResponse}`,
+      options,
+    );
+
+    const show = showSchema
+      .catchall(seasonSchema.augment({ id: z.number().optional() }))
+      .parse(result);
+
+    const mergedSeasons =
+      show.seasons
+        ?.slice(seasonsAdded, seasonsAdded + seasonsToAdd + 1)
+        .map((s, i) => {
+          if (
+            !Object.hasOwn(s, 'season_number') ||
+            typeof s.season_number !== 'number'
+          )
+            throw new Error(`Season ${i + 1} has no season_number`);
+          const season = show[`season/${s.season_number}`];
+          if (!season) throw new Error(`Season ${s.season_number} not found`);
+
+          delete show[`seasons/${s.season_number}`];
+
+          return {
+            ...season,
+            id: s.id,
+          };
+        }) ?? [];
+
+    resultArray.push(...mergedSeasons);
+
+    remainingSeasons -= seasonsToAdd;
+    seasonsAdded += seasonsToAdd + 1;
+    appendToResponse = '';
   }
-  const { result, response } = await basicRequest(
-    `tv/${showId}?append_to_response=${appendToResponse}`,
-    options,
-  );
-
-  const show = showSchema
-    .catchall(seasonSchema.augment({ id: z.number().optional() }))
-    .parse(result);
-  const mergedSeasons =
-    show.seasons?.map((s, i) => {
-      if (
-        !Object.hasOwn(s, 'season_number') ||
-        typeof s.season_number !== 'number'
-      )
-        throw new Error(`Season ${i + 1} has no season_number`);
-      const season = show[`season/${s.season_number}`];
-      if (!season) throw new Error(`Season ${s.season_number} not found`);
-
-      delete show[`seasons/${s.season_number}`];
-
-      return {
-        ...season,
-        id: s.id,
-      };
-    }) ?? [];
 
   return {
-    result: mergedSeasons,
-    eTag: response.headers.get('etag') ?? '',
+    result: resultArray,
   };
 };

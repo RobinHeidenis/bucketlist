@@ -19,7 +19,6 @@ interface ShowProps {
   listId: string;
   isOwner: boolean;
   isCollaborator: boolean;
-  dropdownLeft?: boolean;
   hideDivider?: boolean;
 }
 
@@ -27,7 +26,6 @@ export const Show = ({
   listId,
   isOwner,
   isCollaborator,
-  dropdownLeft,
   hideDivider,
   show,
 }: ShowProps) => {
@@ -42,7 +40,7 @@ export const Show = ({
 
   return (
     <div
-      className={`collapse-arrow collapse ${
+      className={`collapse-arrow collapse max-w-full ${
         open ? 'collapse-open' : 'collapse-close'
       } overflow-visible`}
     >
@@ -68,28 +66,39 @@ export const Show = ({
                 {show.title}
               </h3>
               <p
-                className={`m-0 line-clamp-2 ${
+                className={`m-0 line-clamp-2 max-w-full ${
                   show.allChecked ? 'text-slate-500 line-through' : ''
                 }`}
               >
                 {show.description}
               </p>
             </div>
-            <div className="flex flex-row items-center">
-              <StarIcon className="mr-1 h-5 w-5 text-amber-500" /> {show.rating}
-              <CalendarIcon className="ml-2 mr-1 h-5 w-5" />{' '}
-              {show.releaseDate || 'unknown'}
-              <TvIcon className="ml-2 mr-1 h-5 w-5" />
-              {show.seasons.length} seasons
-              <CheckIcon className={'ml-2 mr-1 h-5 w-5'} />
-              {show.amountChecked} episodes
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-row md:items-center">
+              <div className={'flex flex-row items-center whitespace-nowrap'}>
+                <StarIcon className="mr-1 h-5 w-5 text-amber-500" />{' '}
+                {show.rating ? parseFloat(show.rating).toFixed(1) : 'unknown'}
+              </div>
+              <div className={'flex flex-row items-center whitespace-nowrap'}>
+                <CalendarIcon className="ml-2 mr-1 h-5 w-5" />
+                {show.releaseDate || 'unknown'}
+              </div>
+              <div className={'flex flex-row items-center whitespace-nowrap'}>
+                <TvIcon className="ml-2 mr-1 h-5 w-5" />
+                {show.seasons.length} seasons
+              </div>
+              <div className={'flex flex-row items-center whitespace-nowrap'}>
+                <CheckIcon className={'ml-2 mr-1 h-5 w-5'} />
+                {show.amountChecked} episodes
+              </div>
               {show.genres ? (
                 <div
-                  className="tooltip flex flex-row items-center"
+                  className="tooltip col-span-2 flex min-w-0 max-w-full flex-row items-center justify-start"
                   data-tip={show.genres}
                 >
-                  <TagIcon className="ml-2 mr-1 h-5 w-5" />
-                  {show.genres?.split(',')[0]}, ...
+                  <TagIcon className="ml-2 mr-1 h-5 w-5 flex-shrink-0" />
+                  <div className={'whitespace-wrap line-clamp-1 text-start'}>
+                    {show.genres}
+                  </div>
                 </div>
               ) : (
                 <>
@@ -100,7 +109,7 @@ export const Show = ({
           </div>
         </div>
         {(isOwner || isCollaborator) && (
-          <DropdownHeader left={dropdownLeft}>
+          <DropdownHeader left>
             <DropdownItem
               onClick={() => deleteShow({ showId: show.id, listId })}
               danger
