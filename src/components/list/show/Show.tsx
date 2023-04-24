@@ -13,6 +13,7 @@ import { Season } from '~/components/list/show/Season';
 import { DropdownHeader } from '~/components/dropdown/DropdownHeader';
 import { DropdownItem } from '~/components/dropdown/DropdownItem';
 import { api } from '~/utils/api';
+import { FlexRowCenter } from '~/components/style/FlexRowCenter';
 
 interface ShowProps {
   show: ShowListShow;
@@ -73,23 +74,23 @@ export const Show = ({
                 {show.description}
               </p>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-row md:items-center">
-              <div className={'flex flex-row items-center whitespace-nowrap'}>
-                <StarIcon className="mr-1 h-5 w-5 text-amber-500" />{' '}
+            <div className="flex flex-col xsm:grid xsm:grid-cols-2 sm:grid-cols-3 md:flex md:flex-row md:items-center">
+              <FlexRowCenter sx="whitespace-nowrap">
+                <StarIcon className="mr-1 h-5 w-5 flex-shrink-0 text-amber-500" />{' '}
                 {show.rating ? parseFloat(show.rating).toFixed(1) : 'unknown'}
-              </div>
-              <div className={'flex flex-row items-center whitespace-nowrap'}>
-                <CalendarIcon className="ml-2 mr-1 h-5 w-5" />
+              </FlexRowCenter>
+              <FlexRowCenter sx="whitespace-nowrap">
+                <CalendarIcon className="ml-2 mr-1 h-5 w-5 flex-shrink-0" />
                 {show.releaseDate || 'unknown'}
-              </div>
-              <div className={'flex flex-row items-center whitespace-nowrap'}>
-                <TvIcon className="ml-2 mr-1 h-5 w-5" />
+              </FlexRowCenter>
+              <FlexRowCenter sx="whitespace-nowrap">
+                <TvIcon className="ml-2 mr-1 h-5 w-5 flex-shrink-0" />
                 {show.seasons.length} seasons
-              </div>
-              <div className={'flex flex-row items-center whitespace-nowrap'}>
-                <CheckIcon className={'ml-2 mr-1 h-5 w-5'} />
+              </FlexRowCenter>
+              <FlexRowCenter sx="whitespace-nowrap">
+                <CheckIcon className="ml-2 mr-1 h-5 w-5 flex-shrink-0" />
                 {show.amountChecked} episodes
-              </div>
+              </FlexRowCenter>
               {show.genres ? (
                 <div
                   className="tooltip col-span-2 flex min-w-0 max-w-full flex-row items-center justify-start"
@@ -123,7 +124,7 @@ export const Show = ({
       <div
         className={`collapse-content ${
           open ? 'mt-5' : ''
-        } ml-24 overflow-x-visible p-0`}
+        } overflow-x-visible p-0 sm:ml-24`}
       >
         {show.seasons.map((season) => (
           <div key={season.id}>

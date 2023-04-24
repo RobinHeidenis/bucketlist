@@ -10,7 +10,9 @@ export const Navbar = () => {
       {session?.user ? (
         <>
           <NavbarLink href="/lists" name="BucketList" />
-          <div className="mr-3">Hey, {session.user.name}</div>
+          <div className="mr-3 hidden sm:inline-flex">
+            Hey, {session.user.name}
+          </div>
           <div className="dropdown-end dropdown">
             <label tabIndex={0} className="btn-ghost btn-circle avatar btn">
               <div className="w-10 rounded-full">
