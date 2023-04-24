@@ -110,7 +110,7 @@ export const Show = ({
           </div>
         </div>
         {(isOwner || isCollaborator) && (
-          <DropdownHeader left>
+          <DropdownHeader>
             <DropdownItem
               onClick={() => deleteShow({ showId: show.id, listId })}
               danger

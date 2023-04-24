@@ -51,23 +51,30 @@ export const ListHeaderMenu = ({
 
   return (
     <div className="flex w-full flex-row items-center justify-between">
-      <div className="flex flex-row items-center">
-        <p className="m-0">
-          List by {owner.name} •{' '}
+      <div className="flex flex-col sm:flex-row sm:items-center">
+        <span className="flex flex-row items-center">
+          List by {owner.name}{' '}
+          <span className="ml-2 mr-2 hidden sm:block">•</span>
+        </span>
+        <span>
           {'shows' in listData ? listData.shows.length : total}{' '}
           {type === 'BUCKET'
             ? "to-do's"
             : type === 'MOVIE'
             ? 'movies'
             : 'shows'}
-        </p>
-        <span className="ml-3 mr-3">•</span>
-        <div className="tooltip" data-tip={isPublic ? 'Public' : 'Private'}>
+        </span>
+        <span className="ml-3 mr-3 hidden sm:block">•</span>
+        <div
+          className="tooltip flex flex-row items-center"
+          data-tip={isPublic ? 'Public' : 'Private'}
+        >
           {isPublic ? (
-            <EyeIcon className="h-5 w-5" />
+            <EyeIcon className="mr-2 h-5 w-5" />
           ) : (
-            <EyeSlashIcon className="h-5 w-5" />
+            <EyeSlashIcon className="mr-2 h-5 w-5" />
           )}
+          {isPublic ? 'Public' : 'Private'}
         </div>
       </div>
       {isOwner && (

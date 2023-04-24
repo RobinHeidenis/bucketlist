@@ -4,13 +4,10 @@ import type { PropsWithClassName } from '~/types/PropsWithClassName';
 
 export const DropdownHeader = ({
   className,
-  left,
   children,
-}: PropsWithClassName<PropsWithChildren<{ left?: boolean }>>) => (
+}: PropsWithClassName<PropsWithChildren>) => (
   <div
-    className={`dropdown justify-self-end ${className ?? ''} ${
-      left ? 'dropdown-left' : ''
-    }`}
+    className={`dropdown justify-self-end ${className ?? ''} dropdown-left`}
     onClick={(e) => e.stopPropagation()}
   >
     <label tabIndex={0} className="btn-ghost btn-xs btn-circle btn m-1">

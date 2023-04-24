@@ -16,7 +16,10 @@ export const ModalHeader = ({
 
   return (
     <div className={`modal ${modal.visible ? 'modal-open' : ''}`}>
-      <div className="modal-box relative max-w-2xl" ref={ref}>
+      <div
+        className="modal-box relative max-w-2xl p-0 pb-6 pt-6 xsm:p-6"
+        ref={ref}
+      >
         <label
           className="btn-sm btn-circle btn absolute right-2 top-2"
           onClick={() => void modal.remove()}
