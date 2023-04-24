@@ -135,7 +135,6 @@ export const showListRouter = createTRPCRouter({
 
       if (!checkIfExistsAndAccess(ctx, list)) return;
 
-      console.log(list.type);
       if (list.type !== 'SHOW')
         throw new TRPCError({
           code: 'BAD_REQUEST',
@@ -157,60 +156,62 @@ export const showListRouter = createTRPCRouter({
 
         const { result, eTag } = tmdbShow;
 
-        show = await ctx.prisma.show.create({
-          data: {
-            id: result.id,
-            title: result.name,
-            description: result.overview,
-            genres: result.genres?.map((g) => g.name).join(', ') ?? '',
-            rating: result.vote_average?.toString() ?? 'Unknown',
-            posterUrl: result.poster_path,
-            releaseDate: result.first_air_date ?? 'Unknown',
-            etag: eTag,
-          },
-        });
-
-        if (!show)
-          throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'Something went wrong finding that show on TMDB.',
+        await ctx.prisma.$transaction(async (prisma) => {
+          show = await prisma.show.create({
+            data: {
+              id: result.id,
+              title: result.name,
+              description: result.overview,
+              genres: result.genres?.map((g) => g.name).join(', ') ?? '',
+              rating: result.vote_average?.toString() ?? 'Unknown',
+              posterUrl: result.poster_path,
+              releaseDate: result.first_air_date ?? 'Unknown',
+              etag: eTag,
+            },
           });
 
-        const seasons = await getSeasons(
-          input.showId,
-          result.number_of_seasons ?? 1,
-        );
+          if (!show)
+            throw new TRPCError({
+              code: 'NOT_FOUND',
+              message: 'Something went wrong finding that show on TMDB.',
+            });
 
-        if (!seasons)
-          throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'Something went wrong finding that show on TMDB.',
+          const seasons = await getSeasons(
+            input.showId,
+            result.number_of_seasons ?? 1,
+          );
+
+          if (!seasons)
+            throw new TRPCError({
+              code: 'NOT_FOUND',
+              message: 'Something went wrong finding that show on TMDB.',
+            });
+
+          await prisma.season.createMany({
+            data: seasons.result.map((s) => ({
+              id: s.id,
+              seasonNumber: s.season_number ?? 0,
+              title: s.name,
+              overview: s.overview,
+              posterUrl: s.poster_path,
+              releaseDate: s.air_date ?? 'Unknown',
+              showId: input.showId,
+            })),
           });
 
-        await ctx.prisma.season.createMany({
-          data: seasons.result.map((s) => ({
-            id: s.id,
-            seasonNumber: s.season_number ?? 0,
-            title: s.name,
-            overview: s.overview,
-            posterUrl: s.poster_path,
-            releaseDate: s.air_date ?? 'Unknown',
-            showId: input.showId,
-          })),
-        });
-
-        await ctx.prisma.episode.createMany({
-          data: seasons.result.flatMap(
-            (s) =>
-              s.episodes?.map((e) => ({
-                id: e.id,
-                episodeNumber: e.episode_number,
-                title: e.name,
-                overview: e.overview,
-                releaseDate: e.air_date ?? 'Unknown',
-                seasonId: s.id,
-              })) ?? [],
-          ),
+          await prisma.episode.createMany({
+            data: seasons.result.flatMap(
+              (s) =>
+                s.episodes?.map((e) => ({
+                  id: e.id,
+                  episodeNumber: e.episode_number,
+                  title: e.name,
+                  overview: e.overview?.slice(0, 999),
+                  releaseDate: e.air_date ?? 'Unknown',
+                  seasonId: s.id,
+                })) ?? [],
+            ),
+          });
         });
       }
 
