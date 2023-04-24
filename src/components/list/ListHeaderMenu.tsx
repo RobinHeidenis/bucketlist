@@ -7,10 +7,17 @@ import { ErrorToast } from '../toasts/ErrorToast';
 import { SuccessToast } from '../toasts/SuccessToast';
 import NiceModal from '@ebay/nice-modal-react';
 import { EditListModal } from '../modals/EditListModal';
-import { EyeIcon, EyeSlashIcon, PlusIcon } from '@heroicons/react/24/outline';
+import {
+  EyeIcon,
+  EyeSlashIcon,
+  ListBulletIcon,
+  PlusIcon,
+  UserIcon,
+} from '@heroicons/react/24/outline';
 import { CreateInviteLinkModal } from '../modals/CreateInviteLinkModal';
 import { DropdownItem } from '../dropdown/DropdownItem';
 import { usePermissionsCheck } from '~/hooks/usePermissionsCheck';
+import { FlexRowCenter } from '~/components/style/FlexRowCenter';
 
 export const ListHeaderMenu = ({
   listData,
@@ -52,30 +59,29 @@ export const ListHeaderMenu = ({
   return (
     <div className="flex w-full flex-row items-center justify-between">
       <div className="flex flex-col sm:flex-row sm:items-center">
-        <span className="flex flex-row items-center">
+        <FlexRowCenter>
+          <UserIcon className="mr-1 h-5 w-5" />
           List by {owner.name}{' '}
           <span className="ml-2 mr-2 hidden sm:block">•</span>
-        </span>
-        <span>
+        </FlexRowCenter>
+        <FlexRowCenter>
+          <ListBulletIcon className="mr-1 h-5 w-5" />
           {'shows' in listData ? listData.shows.length : total}{' '}
           {type === 'BUCKET'
             ? "to-do's"
             : type === 'MOVIE'
             ? 'movies'
             : 'shows'}
-        </span>
+        </FlexRowCenter>
         <span className="ml-3 mr-3 hidden sm:block">•</span>
-        <div
-          className="tooltip flex flex-row items-center"
-          data-tip={isPublic ? 'Public' : 'Private'}
-        >
+        <FlexRowCenter>
           {isPublic ? (
             <EyeIcon className="mr-2 h-5 w-5" />
           ) : (
             <EyeSlashIcon className="mr-2 h-5 w-5" />
           )}
           {isPublic ? 'Public' : 'Private'}
-        </div>
+        </FlexRowCenter>
       </div>
       {isOwner && (
         <DropdownMenu
