@@ -3,6 +3,7 @@ import { api } from '~/utils/api';
 import { type ShowListSeason } from '~/types/List';
 import { Episode } from '~/components/list/show/Episode';
 import { CalendarIcon, CheckIcon, TvIcon } from '@heroicons/react/24/outline';
+import { FlexRowCenter } from '~/components/style/FlexRowCenter';
 
 export const Season = ({
   season,
@@ -66,13 +67,19 @@ export const Season = ({
                 {season.overview}
               </p>
             </div>
-            <div className={'flex flex-row items-center'}>
-              <CalendarIcon className="mr-1 h-5 w-5" />
-              {season.releaseDate}
-              <TvIcon className="ml-3 mr-1 h-5 w-5" />
-              {season.episodes.length} episodes
-              <CheckIcon className={'ml-3 mr-1 h-5 w-5'} />
-              {season.amountChecked} watched
+            <div className="flex flex-row flex-wrap items-center">
+              <FlexRowCenter sx="mr-3">
+                <CalendarIcon className="mr-1 h-5 w-5" />
+                {season.releaseDate}
+              </FlexRowCenter>
+              <FlexRowCenter sx="mr-3">
+                <TvIcon className="mr-1 h-5 w-5" />
+                {season.episodes.length} episodes
+              </FlexRowCenter>
+              <FlexRowCenter>
+                <CheckIcon className={'mr-1 h-5 w-5'} />
+                {season.amountChecked} watched
+              </FlexRowCenter>
             </div>
           </div>
         </div>

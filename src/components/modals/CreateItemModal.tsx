@@ -36,7 +36,7 @@ export const CreateItemModal = NiceModal.create(
           onSubmit={form.onSubmit(({ title, description }) =>
             mutate({ title, description, listId }),
           )}
-          className="flex w-3/4 max-w-xs flex-col items-center"
+          className="flex w-full max-w-xs flex-col items-center pl-3 pr-3 xsm:w-3/4"
         >
           <TextInput
             label="Title"

@@ -7,8 +7,8 @@ import { usePermissionsCheck } from '~/hooks/usePermissionsCheck';
 import type { sortMap } from '~/hooks/useSortedMovieItems';
 import { useSortedMovieItems } from '~/hooks/useSortedMovieItems';
 import { RandomTitle } from '../RandomTitle';
-import { Movie } from '../Movie';
-import { Collection } from '../Collection';
+import { Movie } from './Movie';
+import { Collection } from './Collection';
 import { CustomDropdown } from '~/components/dropdown/CustomDropdown';
 import {
   ArrowsUpDownIcon,

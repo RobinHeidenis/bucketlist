@@ -1,6 +1,6 @@
-import { PosterImage } from '../movie/PosterImage';
-import { DropdownHeader } from '../dropdown/DropdownHeader';
-import { DropdownItem } from '../dropdown/DropdownItem';
+import { PosterImage } from '../../movie/PosterImage';
+import { DropdownHeader } from '../../dropdown/DropdownHeader';
+import { DropdownItem } from '../../dropdown/DropdownItem';
 import {
   CheckIcon,
   EyeIcon,
@@ -47,13 +47,13 @@ export const Collection = ({
 
   return (
     <div
-      className={`collapse ${
+      className={`collapse-arrow collapse ${
         open ? 'collapse-open' : 'collapse-close'
       } overflow-visible`}
       style={style}
     >
       <div
-        className="collapse-title flex flex-row items-start justify-between p-0"
+        className="collapse-title flex flex-row items-start justify-between p-0 after:!right-[0.85rem]"
         onClick={() => setOpen(!open)}
       >
         <div className="flex flex-row items-start">
@@ -123,7 +123,7 @@ export const Collection = ({
       <div
         className={`collapse-content ${
           open ? 'mt-5' : ''
-        } ml-24 overflow-x-visible p-0`}
+        } ml-7 overflow-x-visible p-0 sm:ml-24`}
       >
         {collection.movies.map((item, index) => (
           <Movie
@@ -131,7 +131,6 @@ export const Collection = ({
             listId={listId}
             isOwner={isOwner}
             isCollaborator={isCollaborator}
-            dropdownLeft
             hideDivider={index === collection.movies.length - 1}
             movie={item}
           />
