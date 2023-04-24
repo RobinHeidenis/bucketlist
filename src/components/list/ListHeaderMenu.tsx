@@ -8,6 +8,7 @@ import { SuccessToast } from '../toasts/SuccessToast';
 import NiceModal from '@ebay/nice-modal-react';
 import { EditListModal } from '../modals/EditListModal';
 import {
+  ArrowLeftOnRectangleIcon,
   EyeIcon,
   EyeSlashIcon,
   ListBulletIcon,
@@ -18,6 +19,7 @@ import { CreateInviteLinkModal } from '../modals/CreateInviteLinkModal';
 import { DropdownItem } from '../dropdown/DropdownItem';
 import { usePermissionsCheck } from '~/hooks/usePermissionsCheck';
 import { FlexRowCenter } from '~/components/style/FlexRowCenter';
+import { DropdownHeader } from '~/components/dropdown/DropdownHeader';
 
 export const ListHeaderMenu = ({
   listData,
@@ -26,7 +28,7 @@ export const ListHeaderMenu = ({
 }) => {
   const router = useRouter();
   const { id, owner, total, title, description, isPublic, type } = listData;
-  const { isOwner } = usePermissionsCheck(listData);
+  const { isOwner, isCollaborator } = usePermissionsCheck(listData);
   const context = api.useContext();
 
   const { mutateAsync: deleteList } = api.lists.deleteList.useMutation({
@@ -42,6 +44,16 @@ export const ListHeaderMenu = ({
     onSuccess: () => {
       toast.custom(<SuccessToast message="Visibility updated!" />);
       return context.lists.getList.invalidate({ id });
+    },
+    onError: ({ message }) => {
+      toast.custom(<ErrorToast message={message} />);
+    },
+  });
+
+  const { mutateAsync: leaveList } = api.lists.leaveList.useMutation({
+    onSuccess: () => {
+      toast.custom(<SuccessToast message="Successfully left list!" />);
+      return context.lists.getLists.invalidate();
     },
     onError: ({ message }) => {
       toast.custom(<ErrorToast message={message} />);
@@ -105,6 +117,19 @@ export const ListHeaderMenu = ({
             Invite Collaborators
           </DropdownItem>
         </DropdownMenu>
+      )}
+      {isCollaborator && (
+        <DropdownHeader>
+          <DropdownItem
+            onClick={() =>
+              void leaveList({ id }).then(() => router.push('/lists'))
+            }
+            danger
+          >
+            <ArrowLeftOnRectangleIcon className="h-6 w-6" />
+            Leave List
+          </DropdownItem>
+        </DropdownHeader>
       )}
     </div>
   );
