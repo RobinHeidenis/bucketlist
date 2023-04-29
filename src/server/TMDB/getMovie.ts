@@ -26,13 +26,7 @@ export const movieSchema = z.object({
       }),
     )
     .optional(),
-  imdb_id: z
-    .string()
-    .min(9)
-    .max(9)
-    .regex(/^tt[0-9]{7}$/)
-    .optional()
-    .nullable(),
+  imdb_id: z.string().min(9).max(10).optional().nullable(),
   original_language: z.string().optional(),
   original_title: z.string().optional(),
   overview: z.string().nullable().optional(),
