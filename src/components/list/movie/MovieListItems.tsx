@@ -19,6 +19,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { TIcon } from '~/components/list/movie/TIcon';
 import { StarIcon } from '@heroicons/react/24/solid';
+import { useDebouncedValue } from '@mantine/hooks';
 
 const filterModeOptions = [
   {
@@ -72,15 +73,22 @@ export const MovieListItems = ({ list }: { list: MovieList }) => {
     filterMode as keyof typeof sortMap,
   );
   const [filterText, setFilterText] = useState('');
-  const filteredMovieItems = !filterText
+  const [debouncedFilterText] = useDebouncedValue(filterText, 300);
+  const filteredMovieItems = !debouncedFilterText
     ? movieItems
-    : movieItems.filter((item) => {
+    : debouncedFilterText.length > 2
+    ? movieItems.filter((item) => {
         if (isCollection(item)) {
-          return item.name.toLowerCase().includes(filterText.toLowerCase());
+          return item.name
+            .toLowerCase()
+            .includes(debouncedFilterText.toLowerCase());
         } else {
-          return item.title.toLowerCase().includes(filterText.toLowerCase());
+          return item.title
+            .toLowerCase()
+            .includes(debouncedFilterText.toLowerCase());
         }
-      });
+      })
+    : movieItems;
   const [parent] = useAutoAnimate();
 
   return (
