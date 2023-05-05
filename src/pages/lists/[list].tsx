@@ -13,6 +13,7 @@ import { isBucketList, isMovieList } from '~/types/List';
 import { MovieListItems } from '~/components/list/movie/MovieListItems';
 import { ShowListHeader } from '~/components/list/show/ShowListHeader';
 import { ShowListItems } from '~/components/list/show/ShowListItems';
+import { ScrollToTop } from '~/components/nav/ScrollToTop';
 
 const List = () => {
   useRequireSignin();
@@ -52,45 +53,48 @@ const List = () => {
     );
 
   return (
-    <StandardPage>
-      <div className="prose w-full max-w-[95%] min-[823px]:max-w-[85%] 2xl:max-w-[50%]">
-        <h1 className="m-0 text-4xl">{listData.title}</h1>
-        <p className="mt-3 text-xl">{listData.description}</p>
-        <ListHeaderMenu listData={listData} />
-        {listData.type === 'MOVIE' && (isOwner || isCollaborator) && (
-          <MovieListHeader listId={listData.id} />
-        )}
-        {listData.type === 'SHOW' && (isOwner || isCollaborator) && (
-          <ShowListHeader listId={listData.id} />
-        )}
-        <div className="divider mb-0" />
-        <div className="w-full">
-          {isBucketList(listData) ? (
-            <BucketListItems list={listData} />
-          ) : isMovieList(listData) ? (
-            <MovieListItems list={listData} />
-          ) : (
-            <ShowListItems list={listData} />
+    <>
+      <ScrollToTop />
+      <StandardPage>
+        <div className="prose w-full max-w-[95%] min-[823px]:max-w-[85%] 2xl:max-w-[50%]">
+          <h1 className="m-0 text-4xl">{listData.title}</h1>
+          <p className="mt-3 text-xl">{listData.description}</p>
+          <ListHeaderMenu listData={listData} />
+          {listData.type === 'MOVIE' && (isOwner || isCollaborator) && (
+            <MovieListHeader listId={listData.id} />
+          )}
+          {listData.type === 'SHOW' && (isOwner || isCollaborator) && (
+            <ShowListHeader listId={listData.id} />
+          )}
+          <div className="divider mb-0" />
+          <div className="w-full">
+            {isBucketList(listData) ? (
+              <BucketListItems list={listData} />
+            ) : isMovieList(listData) ? (
+              <MovieListItems list={listData} />
+            ) : (
+              <ShowListItems list={listData} />
+            )}
+          </div>
+          {(isOwner || isCollaborator) && isBucketList(listData) && (
+            <div
+              className={`mb-10 flex w-full flex-row ${
+                listData.total === 0 ? 'justify-start' : 'mt-10 justify-end'
+              }`}
+            >
+              <button
+                className={`btn-primary btn ${
+                  listData.total === 0 ? 'mt-5' : ''
+                }`}
+                onClick={showCreateModal}
+              >
+                Add to-do
+              </button>
+            </div>
           )}
         </div>
-        {(isOwner || isCollaborator) && isBucketList(listData) && (
-          <div
-            className={`mb-10 flex w-full flex-row ${
-              listData.total === 0 ? 'justify-start' : 'mt-10 justify-end'
-            }`}
-          >
-            <button
-              className={`btn-primary btn ${
-                listData.total === 0 ? 'mt-5' : ''
-              }`}
-              onClick={showCreateModal}
-            >
-              Add to-do
-            </button>
-          </div>
-        )}
-      </div>
-    </StandardPage>
+      </StandardPage>
+    </>
   );
 };
 
