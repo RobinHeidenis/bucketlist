@@ -129,6 +129,7 @@ export const movieListRouter = createTRPCRouter({
           ownerId: true,
           collaborators: { select: { id: true } },
           type: true,
+          movies: { select: { id: true }, where: { id: input.externalId } },
         },
       });
 
@@ -139,6 +140,13 @@ export const movieListRouter = createTRPCRouter({
           code: 'BAD_REQUEST',
           message: 'You can only add movie list items to this list.',
         });
+
+      if (list.movies.length) {
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: 'That movie is already in this list.',
+        });
+      }
 
       let movie = await ctx.prisma.movie.findUnique({
         where: { id: input.externalId },
@@ -178,6 +186,10 @@ export const movieListRouter = createTRPCRouter({
           ownerId: true,
           collaborators: { select: { id: true } },
           type: true,
+          collections: {
+            where: { id: input.externalId },
+            select: { id: true },
+          },
         },
       });
 
@@ -188,6 +200,13 @@ export const movieListRouter = createTRPCRouter({
           code: 'BAD_REQUEST',
           message: 'You can only add movie list items to this list.',
         });
+
+      if (list.collections.length) {
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: 'That collection is already in this list.',
+        });
+      }
 
       let collection: Collection | null | undefined =
         await ctx.prisma.collection.findUnique({

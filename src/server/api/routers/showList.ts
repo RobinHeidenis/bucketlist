@@ -130,6 +130,7 @@ export const showListRouter = createTRPCRouter({
           ownerId: true,
           collaborators: { select: { id: true } },
           type: true,
+          shows: { where: { id: input.showId }, select: { id: true } },
         },
       });
 
@@ -140,6 +141,13 @@ export const showListRouter = createTRPCRouter({
           code: 'BAD_REQUEST',
           message: 'You can only add shows to this list.',
         });
+
+      if (list.shows.length) {
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: 'This show is already on this list.',
+        });
+      }
 
       let show = await ctx.prisma.show.findUnique({
         where: { id: input.showId },

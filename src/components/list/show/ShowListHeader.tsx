@@ -6,6 +6,8 @@ import { type TMDBSearchTVShow } from '~/types/TMDBMovie';
 import { PosterImage } from '../../movie/PosterImage';
 import { StarIcon } from '@heroicons/react/24/solid';
 import { CalendarIcon } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
+import { ErrorToast } from '~/components/toasts/ErrorToast';
 
 export const ShowListHeader = ({ listId }: { listId: string }) => {
   const [searchValue, setSearchValue] = useState('');
@@ -24,6 +26,15 @@ export const ShowListHeader = ({ listId }: { listId: string }) => {
       setSearchValue('');
       setSelectedResult(null);
       void context.lists.getList.invalidate({ id: listId });
+    },
+    onError: (error) => {
+      if (error.shape?.data.code === 'CONFLICT') {
+        toast.custom(
+          <ErrorToast message="That show is already on your list!" />,
+        );
+        setSearchValue('');
+        setSelectedResult(null);
+      }
     },
   });
 
