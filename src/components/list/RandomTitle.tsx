@@ -1,16 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { PosterImage } from '../movie/PosterImage';
-import autoAnimate from '@formkit/auto-animate';
 import type { MovieListMovie } from '~/types/List';
 import { DiceIcon } from '~/components/list/movie/DiceIcon';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 
 export const RandomTitle = ({ titles }: { titles: MovieListMovie[] }) => {
-  const parent = useRef(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-
-  useEffect(() => {
-    parent.current && autoAnimate(parent.current);
-  }, [parent]);
 
   const roll = () => {
     setSelectedIndex(Math.floor(Math.random() * titles.length));
@@ -18,12 +13,16 @@ export const RandomTitle = ({ titles }: { titles: MovieListMovie[] }) => {
 
   return (
     <div className="flex w-full flex-col items-center">
-      <button className="btn-ghost btn mb-5" onClick={roll}>
+      <button className="btn-ghost btn" onClick={roll}>
         <DiceIcon /> Random title
       </button>
-      <div className="flex flex-row" ref={parent}>
+      <div className="flex flex-row">
         {selectedIndex && titles[selectedIndex] && (
-          <div className="flex flex-col items-center justify-center">
+          <div className="mt-5 flex flex-col items-center justify-center">
+            <XMarkIcon
+              className="h-5 w-5"
+              onClick={() => setSelectedIndex(null)}
+            />
             <PosterImage
               alt={titles[selectedIndex]?.title ?? ''}
               url={titles[selectedIndex]?.posterUrl}

@@ -71,7 +71,9 @@ const List = () => {
             {isBucketList(listData) ? (
               <BucketListItems list={listData} />
             ) : isMovieList(listData) ? (
-              <MovieListItems list={listData} />
+              <div className="mt-2">
+                <MovieListItems list={listData} />
+              </div>
             ) : (
               <ShowListItems list={listData} />
             )}
