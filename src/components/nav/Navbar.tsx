@@ -6,7 +6,7 @@ export const Navbar = () => {
   const { data: session } = useSession();
 
   return (
-    <nav className="navbar bg-base-100">
+    <nav className="navbar sticky top-0 z-50 bg-base-100">
       {session?.user ? (
         <>
           <NavbarLink href="/lists" name="BucketList" />

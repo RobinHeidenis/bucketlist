@@ -93,7 +93,7 @@ export const MovieListItems = ({ list }: { list: MovieList }) => {
 
   return (
     <>
-      <div className="mb-5 mt-2 flex items-start justify-between">
+      <div className="sticky top-[65px] z-50 flex items-start justify-between backdrop-blur-md">
         <CustomDropdown
           items={filterModeOptions}
           label={
@@ -121,7 +121,7 @@ export const MovieListItems = ({ list }: { list: MovieList }) => {
           />
         </div>
       </div>
-      <div ref={parent}>
+      <div ref={parent} className="mt-5">
         {filteredMovieItems.map((item) => {
           if (isCollection(item)) {
             return (
