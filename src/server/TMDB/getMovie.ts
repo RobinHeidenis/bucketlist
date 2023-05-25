@@ -51,7 +51,7 @@ export const movieSchema = z.object({
     .optional(),
   release_date: z
     .string()
-    .regex(/^(\d{4})-(\d{2})-(\d{2})$/)
+    .regex(/^$|^(\d{4})-(\d{2})-(\d{2})$/)
     .nullable()
     .optional(),
   revenue: z.number().int().optional(),
