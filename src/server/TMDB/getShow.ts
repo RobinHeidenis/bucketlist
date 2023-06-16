@@ -46,7 +46,7 @@ export const showSchema = z.object({
       vote_count: z.number().optional(),
     })
     .optional(),
-  next_episode_to_air: z.object({}).optional(), // TODO: find proper shape for this, or maybe just focus on only validating the properties we care about?
+  next_episode_to_air: z.object({}).nullable().optional(), // TODO: find proper shape for this, or maybe just focus on only validating the properties we care about?
   networks: z
     .array(
       z.object({
