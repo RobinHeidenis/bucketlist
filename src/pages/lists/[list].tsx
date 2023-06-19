@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
 import { api } from '~/utils/api';
 import { ListHeaderMenu } from '~/components/list/ListHeaderMenu';
-import { useRequireSignin } from '~/hooks/useRequireSignin';
 import NiceModal from '@ebay/nice-modal-react';
 import { CreateItemModal } from '~/components/modals/CreateItemModal';
 import { ListSkeleton } from '~/components/skeletons/ListSkeleton';
@@ -16,7 +15,6 @@ import { ShowListItems } from '~/components/list/show/ShowListItems';
 import { ScrollToTop } from '~/components/nav/ScrollToTop';
 
 const List = () => {
-  useRequireSignin();
   const router = useRouter();
   const { list: listId } = router.query;
   const {

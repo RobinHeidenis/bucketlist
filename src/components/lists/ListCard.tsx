@@ -1,7 +1,7 @@
 import { ListCardWrapper } from './ListCardWrapper';
-import { useSession } from 'next-auth/react';
 import React from 'react';
 import { UsersIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '@clerk/nextjs';
 
 interface ListCardProps {
   id: string;
@@ -20,7 +20,7 @@ export const ListCard = ({
   amount,
   amountChecked,
 }: ListCardProps) => {
-  const { data } = useSession();
+  const { userId } = useAuth();
 
   return (
     <ListCardWrapper href={`/lists/${id}`}>
@@ -36,7 +36,7 @@ export const ListCard = ({
             {amount} items • {amountChecked} checked
           </p>
           {collaborators?.some(
-            (collaborator) => collaborator.id === data?.user?.id,
+            (collaborator) => collaborator.id === userId,
           ) && (
             <div className="tooltip" data-tip="Collaborator">
               <UsersIcon className="ml-2 h-6 w-6" />

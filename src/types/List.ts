@@ -4,7 +4,7 @@ import type {
   CheckedMovie,
   Collection,
   Episode,
-  List,
+  List as DBList,
   Movie,
   Season,
   Show,
@@ -18,6 +18,8 @@ type Owner = {
 type Collaborator = {
   id: string;
 };
+
+type List = Omit<DBList, 'ownerId'>;
 
 export type DBMovieList = List & {
   movies: Movie[];
@@ -81,12 +83,12 @@ export type MovieList = Omit<
 >;
 
 export type ListType =
-  | Omit<BucketList, 'total' | 'totalChecked'>
-  | DBMovieList
-  | BucketList
-  | MovieList
-  | ShowList
-  | DBShowList;
+  | Omit<BucketList, 'total' | 'totalChecked' | 'owner'>
+  | Omit<DBMovieList, 'owner'>
+  | Omit<BucketList, 'owner'>
+  | Omit<MovieList, 'owner'>
+  | Omit<ShowList, 'owner'>
+  | Omit<DBShowList, 'owner'>;
 
 export const isBucketList = (list: ListType): list is BucketList =>
   list.type === 'BUCKET';

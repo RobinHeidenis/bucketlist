@@ -1,24 +1,26 @@
 import { type AppType } from 'next/app';
-import { type Session } from 'next-auth';
-import { SessionProvider } from 'next-auth/react';
+import { ClerkProvider } from '@clerk/nextjs';
 
 import { api } from '~/utils/api';
 
 import '~/styles/globals.css';
 import NiceModal from '@ebay/nice-modal-react';
 import { Toaster } from 'react-hot-toast';
+import { dark } from '@clerk/themes';
 
-const MyApp: AppType<{ session: Session | null }> = ({
-  Component,
-  pageProps: { session, ...pageProps },
-}) => {
+const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <SessionProvider session={session}>
+    <ClerkProvider
+      appearance={{
+        baseTheme: dark,
+      }}
+      {...pageProps}
+    >
       <Toaster position="bottom-right" />
       <NiceModal.Provider>
         <Component {...pageProps} />
       </NiceModal.Provider>
-    </SessionProvider>
+    </ClerkProvider>
   );
 };
 

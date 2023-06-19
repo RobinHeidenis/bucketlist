@@ -20,10 +20,6 @@ export const ScrollToTop = () => {
   };
 
   useEffect(() => {
-    console.log('scrollY', window.scrollY);
-  });
-
-  useEffect(() => {
     window.addEventListener('scroll', toggleVisibility);
 
     return () => {
