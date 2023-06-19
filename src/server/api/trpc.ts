@@ -16,10 +16,8 @@
  *
  */
 import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
-import { type Session } from 'next-auth';
-
-import { getServerAuthSession } from '../auth';
 import { prisma } from '../db';
+
 /**
  * 2. INITIALIZATION
  *
@@ -30,9 +28,14 @@ import { prisma } from '../db';
 import { initTRPC, TRPCError } from '@trpc/server';
 import superjson from 'superjson';
 import { ZodError } from 'zod';
+import type {
+  SignedInAuthObject,
+  SignedOutAuthObject,
+} from '@clerk/nextjs/api';
+import { getAuth } from '@clerk/nextjs/server';
 
-type CreateContextOptions = {
-  session: Session | null;
+type AuthContext = {
+  auth: SignedInAuthObject | SignedOutAuthObject;
 };
 
 /**
@@ -44,9 +47,9 @@ type CreateContextOptions = {
  * - trpc's `createSSGHelpers` where we don't have req/res.
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
-const createInnerTRPCContext = (opts: CreateContextOptions) => {
+const createInnerTRPCContext = ({ auth }: AuthContext) => {
   return {
-    session: opts.session,
+    auth,
     prisma,
   };
 };
@@ -56,15 +59,8 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
  * process every request that goes through your tRPC endpoint.
  * @link https://trpc.io/docs/context
  */
-export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-  const { req, res } = opts;
-
-  // Get the session from the server using the getServerSession wrapper function
-  const session = await getServerAuthSession({ req, res });
-
-  return createInnerTRPCContext({
-    session,
-  });
+export const createTRPCContext = ({ req }: CreateNextContextOptions) => {
+  return createInnerTRPCContext({ auth: getAuth(req) });
 };
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
@@ -108,13 +104,12 @@ export const publicProcedure = t.procedure;
  * procedure.
  */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+  if (!ctx.auth.userId) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
   return next({
     ctx: {
-      // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
+      auth: ctx.auth,
     },
   });
 });

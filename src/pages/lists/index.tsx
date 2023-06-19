@@ -4,7 +4,6 @@ import { ListCardWrapper } from '~/components/lists/ListCardWrapper';
 import { PlusSVG } from '~/components/lists/PlusSVG';
 import NiceModal from '@ebay/nice-modal-react';
 import { CreateListModal } from '~/components/modals/CreateListModal';
-import { useRequireSignin } from '~/hooks/useRequireSignin';
 import { ListIndexSkeleton } from '~/components/skeletons/ListIndexSkeleton';
 import { StandardPage } from '~/components/page/StandardPage';
 import { CustomDropdown } from '~/components/dropdown/CustomDropdown';
@@ -65,7 +64,6 @@ const sortingModes = [
 ];
 
 const Lists = () => {
-  useRequireSignin();
   const [sortingMode, setSortingMode] = useState('default');
   const { data: lists, isLoading } = api.lists.getLists.useQuery();
   const showCreateModal = () => {

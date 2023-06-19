@@ -4,6 +4,7 @@ import { zIdSchema } from '~/schemas/listSchemas';
 import { TRPCError } from '@trpc/server';
 import { getBaseUrl } from '~/utils/api';
 import { env } from '~/env.mjs';
+import { clerkClient } from '@clerk/nextjs';
 
 export const inviteRouter = createTRPCRouter({
   create: protectedProcedure
@@ -25,7 +26,7 @@ export const inviteRouter = createTRPCRouter({
             "The list you're trying to create an invite for cannot be found.",
         });
 
-      if (list.ownerId !== ctx.session.user.id)
+      if (list.ownerId !== ctx.auth.userId)
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You are not allowed to create an invite for this list.',
@@ -51,7 +52,7 @@ export const inviteRouter = createTRPCRouter({
         include: {
           list: {
             include: {
-              owner: { select: { id: true, name: true } },
+              owner: { select: { id: true } },
               collaborators: { select: { id: true } },
             },
           },
@@ -70,19 +71,34 @@ export const inviteRouter = createTRPCRouter({
           message: 'This invite has expired.',
         });
 
-      if (invite.list.ownerId === ctx.session.user.id)
+      if (invite.list.ownerId === ctx.auth.userId)
         throw new TRPCError({
           code: 'PRECONDITION_FAILED',
           message: "You can't join your own list.",
         });
 
-      if (invite.list.collaborators.some((c) => c.id === ctx.session.user.id))
+      if (invite.list.collaborators.some((c) => c.id === ctx.auth.userId))
         throw new TRPCError({
           code: 'PRECONDITION_FAILED',
           message: 'You are already a collaborator on this list.',
         });
 
-      return invite;
+      const { firstName, lastName, externalAccounts } =
+        await clerkClient.users.getUser(invite.list.owner.id);
+
+      return {
+        ...invite,
+        list: {
+          ...invite.list,
+          owner: {
+            ...invite.list.owner,
+            name:
+              (`${firstName ?? ''} ${lastName ?? ''}`.trim() ||
+                externalAccounts[0]?.firstName) ??
+              "User that somehow doesn't have a name or a connected account",
+          },
+        },
+      };
     }),
   getInvitesByListId: protectedProcedure
     .input(zIdSchema)
@@ -110,7 +126,7 @@ export const inviteRouter = createTRPCRouter({
           message: "The invite you're trying to delete cannot be found.",
         });
 
-      if (list.list.ownerId !== ctx.session.user.id)
+      if (list.list.ownerId !== ctx.auth.userId)
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You are not allowed to delete this invite.',
@@ -142,13 +158,13 @@ export const inviteRouter = createTRPCRouter({
           message: 'This invite has expired.',
         });
 
-      if (invite.list.ownerId === ctx.session.user.id)
+      if (invite.list.ownerId === ctx.auth.userId)
         throw new TRPCError({
           code: 'PRECONDITION_FAILED',
           message: 'You are the owner of this list.',
         });
 
-      if (invite.list.collaborators.some((c) => c.id === ctx.session.user.id))
+      if (invite.list.collaborators.some((c) => c.id === ctx.auth.userId))
         throw new TRPCError({
           code: 'PRECONDITION_FAILED',
           message: 'You are already a collaborator on this list.',
@@ -158,7 +174,7 @@ export const inviteRouter = createTRPCRouter({
         where: { id: invite.listId },
         data: {
           collaborators: {
-            connect: { id: ctx.session.user.id },
+            connect: { id: ctx.auth.userId },
           },
         },
       });

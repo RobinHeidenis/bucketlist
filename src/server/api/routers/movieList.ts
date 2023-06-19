@@ -11,8 +11,8 @@ export const checkAccess = (
   ctx: Awaited<ReturnType<typeof createTRPCContext>>,
   list: Partial<List & { collaborators: Pick<User, 'id'>[] }>,
 ) =>
-  list.ownerId === ctx.session?.user?.id ||
-  list.collaborators?.some((c) => c.id === ctx.session?.user?.id);
+  list.ownerId === ctx.auth.userId ||
+  list.collaborators?.some((c) => c.id === ctx.auth.userId);
 
 export const checkIfExistsAndAccess = (
   ctx: Awaited<ReturnType<typeof createTRPCContext>>,

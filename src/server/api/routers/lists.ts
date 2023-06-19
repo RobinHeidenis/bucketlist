@@ -13,14 +13,15 @@ import type {
   ShowList,
 } from '~/types/List';
 import { isBucketList, isMovieList, isShowList } from '~/types/List';
+import { clerkClient } from '@clerk/nextjs';
 
 export const listsRouter = createTRPCRouter({
   getLists: protectedProcedure.query(async ({ ctx }) => {
     const lists = await ctx.prisma.list.findMany({
       where: {
         OR: [
-          { ownerId: ctx.session.user.id },
-          { collaborators: { some: { id: ctx.session.user.id } } },
+          { ownerId: ctx.auth.userId },
+          { collaborators: { some: { id: ctx.auth.userId } } },
         ],
       },
       include: {
@@ -100,7 +101,7 @@ export const listsRouter = createTRPCRouter({
                 orderBy: [{ title: 'asc' }, { checked: 'asc' }],
               },
               collaborators: { select: { id: true } },
-              owner: { select: { id: true, name: true } },
+              owner: { select: { id: true } },
             },
           });
         else if (listType.type === 'MOVIE')
@@ -110,7 +111,7 @@ export const listsRouter = createTRPCRouter({
               movies: true,
               collections: { include: { movies: true } },
               checkedMovies: true,
-              owner: { select: { id: true, name: true } },
+              owner: { select: { id: true } },
               collaborators: { select: { id: true } },
             },
           });
@@ -120,7 +121,7 @@ export const listsRouter = createTRPCRouter({
             include: {
               shows: { include: { seasons: { include: { episodes: true } } } },
               checkedEpisodes: true,
-              owner: { select: { id: true, name: true } },
+              owner: { select: { id: true } },
               collaborators: { select: { id: true } },
             },
           });
@@ -132,10 +133,10 @@ export const listsRouter = createTRPCRouter({
           });
 
         if (
-          list.ownerId !== ctx.session.user.id &&
+          list.ownerId !== ctx.auth.userId &&
           !list.isPublic &&
           !list.collaborators.find(
-            (collaborator) => collaborator.id === ctx.session.user.id,
+            (collaborator) => collaborator.id === ctx.auth.userId,
           )
         )
           throw new TRPCError({
@@ -143,16 +144,32 @@ export const listsRouter = createTRPCRouter({
             message: 'You do not have access to view this list.',
           });
 
+        const { firstName, lastName, externalAccounts } =
+          await clerkClient.users.getUser(list.ownerId).catch(() => ({
+            firstName: null,
+            lastName: null,
+            externalAccounts: [],
+          }));
+
+        const base = {
+          id: list.id,
+          title: list.title,
+          description: list.description,
+          isPublic: list.isPublic,
+          type: list.type,
+          owner: {
+            id: list.ownerId,
+            name:
+              (`${firstName ?? ''} ${lastName ?? ''}`.trim() ||
+                externalAccounts[0]?.firstName) ??
+              "User that somehow doesn't have a name or a connected account",
+          },
+          collaborators: list.collaborators,
+        };
+
         if (isBucketList(list)) {
           return {
-            id: list.id,
-            title: list.title,
-            description: list.description,
-            isPublic: list.isPublic,
-            type: list.type,
-            ownerId: list.ownerId,
-            owner: list.owner,
-            collaborators: list.collaborators,
+            ...base,
             bucketListItems: list.bucketListItems,
             updatedAt: list.updatedAt,
             total: list.bucketListItems.length,
@@ -165,14 +182,7 @@ export const listsRouter = createTRPCRouter({
           const { checkedMovies } = list as DBMovieList;
 
           return {
-            id: list.id,
-            title: list.title,
-            description: list.description,
-            isPublic: list.isPublic,
-            type: list.type,
-            ownerId: list.ownerId,
-            owner: list.owner,
-            collaborators: list.collaborators,
+            ...base,
             collections: list.collections.map((collection) => ({
               ...collection,
               movies: collection.movies.map((movie) => ({
@@ -204,14 +214,7 @@ export const listsRouter = createTRPCRouter({
           const { checkedEpisodes } = list;
 
           return {
-            id: list.id,
-            title: list.title,
-            description: list.description,
-            isPublic: list.isPublic,
-            type: list.type,
-            ownerId: list.ownerId,
-            owner: list.owner,
-            collaborators: list.collaborators,
+            ...base,
             checkedEpisodes: list.checkedEpisodes,
             shows: list.shows.map((show) => ({
               ...show,
@@ -278,7 +281,7 @@ export const listsRouter = createTRPCRouter({
         data: {
           title: input.title,
           description: input.description,
-          ownerId: ctx.session.user.id,
+          ownerId: ctx.auth.userId,
           type: input.type,
         },
       });
@@ -295,7 +298,7 @@ export const listsRouter = createTRPCRouter({
           code: 'NOT_FOUND',
           message: "The list you're requesting to delete cannot be found.",
         });
-      if (requestedList.ownerId !== ctx.session.user.id)
+      if (requestedList.ownerId !== ctx.auth.userId)
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You do not have access to delete this list.',
@@ -315,7 +318,7 @@ export const listsRouter = createTRPCRouter({
           code: 'NOT_FOUND',
           message: "The list you're requesting to update cannot be found.",
         });
-      if (requestedList.ownerId !== ctx.session.user.id)
+      if (requestedList.ownerId !== ctx.auth.userId)
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You do not have access to update this list.',
@@ -341,7 +344,7 @@ export const listsRouter = createTRPCRouter({
           code: 'NOT_FOUND',
           message: "The list you're requesting to update cannot be found.",
         });
-      if (requestedList.ownerId !== ctx.session.user.id)
+      if (requestedList.ownerId !== ctx.auth.userId)
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You do not have access to update this list.',
@@ -375,15 +378,13 @@ export const listsRouter = createTRPCRouter({
           message: "The list you're requesting to leave cannot be found.",
         });
 
-      if (requestedList.ownerId === ctx.session.user.id)
+      if (requestedList.ownerId === ctx.auth.userId)
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You cannot leave a list you own.',
         });
 
-      if (
-        !requestedList.collaborators.find((c) => c.id === ctx.session.user.id)
-      )
+      if (!requestedList.collaborators.find((c) => c.id === ctx.auth.userId))
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You are not a collaborator on this list.',
@@ -394,7 +395,7 @@ export const listsRouter = createTRPCRouter({
         data: {
           collaborators: {
             disconnect: {
-              id: ctx.session.user.id,
+              id: ctx.auth.userId,
             },
           },
         },
