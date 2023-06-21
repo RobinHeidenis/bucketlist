@@ -16,6 +16,7 @@ interface AutocompleteProps {
     | z.infer<typeof TMDBSearchTVShow>
   )[];
   isLoading: boolean;
+  hasHiddenItems: boolean;
 }
 
 export const Autocomplete = ({
@@ -24,12 +25,13 @@ export const Autocomplete = ({
   items,
   setSelectedResult,
   isLoading,
+  hasHiddenItems,
 }: AutocompleteProps) => {
   const [open, setOpen] = useState(false);
 
   return (
     <div
-      className={`dropdown-end dropdown mt-3 w-full ${
+      className={`dropdown-end dropdown z-40 mt-3 w-full ${
         open ? 'dropdown-open' : ''
       }`}
     >
@@ -42,7 +44,7 @@ export const Autocomplete = ({
         tabIndex={0}
       />
       <div className="dropdown-content top-14 max-h-96 w-full flex-col overflow-auto rounded-md bg-base-200">
-        <ul className="menu menu-compact m-0 mt-2 p-0">
+        <ul className="menu menu-compact m-0 mt-2 flex-grow p-0">
           {items.length === 0 && (
             <li className="m-0 w-full border-b border-b-base-content/10 p-0">
               <div className="flex flex-row items-center justify-center">
@@ -80,6 +82,11 @@ export const Autocomplete = ({
             );
           })}
         </ul>
+        {hasHiddenItems && (
+          <div className="sticky bottom-0 flex items-center justify-center bg-base-200 p-1">
+            Some results have been hidden due to them already being in the list.
+          </div>
+        )}
       </div>
     </div>
   );
