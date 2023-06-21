@@ -8,6 +8,7 @@ import { StarIcon } from '@heroicons/react/24/solid';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { ErrorToast } from '~/components/toasts/ErrorToast';
+import { type MovieList } from '~/types/List';
 
 export const MovieListHeader = ({ listId }: { listId: string }) => {
   const [searchValue, setSearchValue] = useState('');
@@ -57,6 +58,15 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
       },
     });
 
+  const { data: listDataRaw } = api.lists.getList.useQuery({ id: listId });
+  const listData = listDataRaw as MovieList;
+
+  const filteredData = data?.filter(
+    (result) =>
+      !listData?.movies.some((movie) => movie.id === result.id) &&
+      !listData?.collections.some((collection) => collection.id === result.id),
+  );
+
   const isMovie = selectedResult && 'title' in selectedResult;
 
   return (
@@ -64,9 +74,12 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
       <Autocomplete
         value={searchValue}
         onChange={setSearchValue}
-        items={data ?? []}
+        items={filteredData ?? []}
         setSelectedResult={setSelectedResult}
         isLoading={isFetching}
+        hasHiddenItems={
+          filteredData && data ? filteredData.length < data.length : false
+        }
       />
       {selectedResult && (
         <>

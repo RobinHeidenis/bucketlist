@@ -93,7 +93,7 @@ export const MovieListItems = ({ list }: { list: MovieList }) => {
 
   return (
     <>
-      <div className="sticky top-[65px] z-50 flex items-start justify-between backdrop-blur-md">
+      <div className="sticky top-[65px] z-30 flex items-start justify-between backdrop-blur-md">
         <CustomDropdown
           items={filterModeOptions}
           label={

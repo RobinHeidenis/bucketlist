@@ -8,6 +8,7 @@ import { StarIcon } from '@heroicons/react/24/solid';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { ErrorToast } from '~/components/toasts/ErrorToast';
+import { type ShowList } from '~/types/List';
 
 export const ShowListHeader = ({ listId }: { listId: string }) => {
   const [searchValue, setSearchValue] = useState('');
@@ -38,14 +39,24 @@ export const ShowListHeader = ({ listId }: { listId: string }) => {
     },
   });
 
+  const { data: listDataRaw } = api.lists.getList.useQuery({ id: listId });
+  const listData = listDataRaw as ShowList;
+
+  const filteredData = data?.filter(
+    (result) => !listData?.shows.some((show) => show.id === result.id),
+  );
+
   return (
     <div>
       <Autocomplete
         value={searchValue}
         onChange={setSearchValue}
-        items={data ?? []}
+        items={filteredData ?? []}
         setSelectedResult={setSelectedResult}
         isLoading={isFetching}
+        hasHiddenItems={
+          data && filteredData ? data.length > filteredData.length : false
+        }
       />
       {selectedResult && (
         <>
