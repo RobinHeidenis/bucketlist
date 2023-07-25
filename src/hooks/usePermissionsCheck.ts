@@ -2,9 +2,15 @@ import { useMemo } from 'react';
 import type { RouterOutputs } from '~/utils/api';
 import { useAuth } from '@clerk/nextjs';
 
+export interface Permissions {
+  isOwner: boolean;
+  isCollaborator: boolean;
+  hasPermissions: boolean;
+}
+
 export const usePermissionsCheck = (
   listData: Partial<RouterOutputs['lists']['getList']> | undefined,
-) => {
+): Permissions => {
   const { userId } = useAuth();
   const isOwner = userId === listData?.owner?.id;
   const isCollaborator = useMemo(() => {
@@ -14,5 +20,9 @@ export const usePermissionsCheck = (
     );
   }, [listData, userId]);
 
-  return { isOwner, isCollaborator: isCollaborator ?? false };
+  return {
+    isOwner,
+    isCollaborator: isCollaborator ?? false,
+    hasPermissions: (isOwner || isCollaborator) ?? false,
+  };
 };

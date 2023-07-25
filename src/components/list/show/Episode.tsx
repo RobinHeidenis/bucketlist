@@ -1,16 +1,15 @@
 import { type ShowListEpisode } from '~/types/List';
 import { useState } from 'react';
 import { api } from '~/utils/api';
+import { type Permissions } from '~/hooks/usePermissionsCheck';
 
 export const Episode = ({
   episode,
-  isOwner,
-  isCollaborator,
+  permissions,
   listId,
 }: {
   episode: ShowListEpisode;
-  isOwner: boolean;
-  isCollaborator: boolean;
+  permissions: Permissions;
   listId: string;
 }) => {
   const [showDescription, setShowDescription] = useState(false);
@@ -27,7 +26,7 @@ export const Episode = ({
           checked={episode.checked}
           className="checkbox mr-3 mt-2"
           onChange={(event) => {
-            if (!isOwner && !isCollaborator) {
+            if (!permissions.hasPermissions) {
               event.preventDefault();
               event.target.checked = episode.checked;
               return;

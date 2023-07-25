@@ -14,22 +14,16 @@ import { DropdownHeader } from '~/components/dropdown/DropdownHeader';
 import { DropdownItem } from '~/components/dropdown/DropdownItem';
 import { api } from '~/utils/api';
 import { FlexRowCenter } from '~/components/style/FlexRowCenter';
+import { type Permissions } from '~/hooks/usePermissionsCheck';
 
 interface ShowProps {
   show: ShowListShow;
   listId: string;
-  isOwner: boolean;
-  isCollaborator: boolean;
+  permissions: Permissions;
   hideDivider?: boolean;
 }
 
-export const Show = ({
-  listId,
-  isOwner,
-  isCollaborator,
-  hideDivider,
-  show,
-}: ShowProps) => {
+export const Show = ({ listId, permissions, hideDivider, show }: ShowProps) => {
   const [open, setOpen] = useState(false);
 
   const context = api.useContext();
@@ -109,7 +103,7 @@ export const Show = ({
             </div>
           </div>
         </div>
-        {(isOwner || isCollaborator) && (
+        {permissions.hasPermissions && (
           <DropdownHeader>
             <DropdownItem
               onClick={() => deleteShow({ showId: show.id, listId })}
@@ -128,12 +122,7 @@ export const Show = ({
       >
         {show.seasons.map((season) => (
           <div key={season.id}>
-            <Season
-              season={season}
-              isCollaborator={isCollaborator}
-              listId={listId}
-              isOwner={isOwner}
-            />
+            <Season season={season} permissions={permissions} listId={listId} />
           </div>
         ))}
       </div>

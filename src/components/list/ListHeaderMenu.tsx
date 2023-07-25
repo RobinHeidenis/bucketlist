@@ -1,5 +1,4 @@
 import { DropdownMenu } from '../dropdown/DropdownMenu';
-import type { RouterOutputs } from '~/utils/api';
 import { api } from '~/utils/api';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
@@ -20,15 +19,25 @@ import { DropdownItem } from '../dropdown/DropdownItem';
 import { usePermissionsCheck } from '~/hooks/usePermissionsCheck';
 import { FlexRowCenter } from '~/components/style/FlexRowCenter';
 import { DropdownHeader } from '~/components/dropdown/DropdownHeader';
+import { DiceIcon } from '~/components/list/movie/DiceIcon';
+import { RandomItemModal } from '~/components/modals/RandomItemModal';
+import {
+  type BucketList,
+  isBucketList,
+  isMovieList,
+  type MovieList,
+  type MovieListCollection,
+  type ShowList,
+} from '~/types/List';
 
 export const ListHeaderMenu = ({
-  listData,
+  list,
 }: {
-  listData: RouterOutputs['lists']['getList'];
+  list: BucketList | MovieList | ShowList;
 }) => {
   const router = useRouter();
-  const { id, owner, total, title, description, isPublic, type } = listData;
-  const { isOwner, isCollaborator } = usePermissionsCheck(listData);
+  const { id, owner, total, title, description, isPublic, type } = list;
+  const { isOwner, isCollaborator, hasPermissions } = usePermissionsCheck(list);
   const context = api.useContext();
 
   const { mutateAsync: deleteList } = api.lists.deleteList.useMutation({
@@ -78,7 +87,7 @@ export const ListHeaderMenu = ({
         </FlexRowCenter>
         <FlexRowCenter>
           <ListBulletIcon className="mr-1 h-5 w-5" />
-          {'shows' in listData ? listData.shows.length : total}{' '}
+          {'shows' in list ? list.shows.length : total}{' '}
           {type === 'BUCKET'
             ? "to-do's"
             : type === 'MOVIE'
@@ -102,6 +111,7 @@ export const ListHeaderMenu = ({
             void deleteList({ id }).then(() => router.push('/lists'));
           }}
         >
+          <RandomItemMenuItem list={list} />
           <DropdownItem
             onClick={() => void togglePublic({ id, isPublic: !isPublic })}
           >
@@ -120,6 +130,7 @@ export const ListHeaderMenu = ({
       )}
       {isCollaborator && (
         <DropdownHeader>
+          <RandomItemMenuItem list={list} />
           <DropdownItem
             onClick={() =>
               void leaveList({ id }).then(() => router.push('/lists'))
@@ -132,5 +143,34 @@ export const ListHeaderMenu = ({
         </DropdownHeader>
       )}
     </div>
+  );
+};
+
+const RandomItemMenuItem = ({
+  list,
+}: {
+  list: BucketList | MovieList | ShowList;
+}) => {
+  if (isBucketList(list)) return null;
+
+  const items = isMovieList(list)
+    ? [
+        ...list.movies.filter((m) => !m.checked),
+        // I'm not completely sure why this cast is necessary, but without it the allChecked property doesn't exist.
+        ...(list.collections as MovieListCollection[]).filter(
+          (c) => !c.allChecked,
+        ),
+      ]
+    : list.shows.filter((s) => !s.allChecked);
+
+  return (
+    <DropdownItem
+      onClick={() => {
+        void NiceModal.show(RandomItemModal, { items });
+      }}
+    >
+      <DiceIcon />
+      Random Item
+    </DropdownItem>
   );
 };
