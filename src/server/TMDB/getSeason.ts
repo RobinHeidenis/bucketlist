@@ -37,7 +37,12 @@ export const Episode = z.object({
   guest_stars: z.array(GuestStar).optional(),
   id: z.number(),
   name: z.string(),
-  overview: z.string().optional(),
+  overview: z
+    .string()
+    .optional()
+    .transform((val) =>
+      val && val.length > 1000 ? val.slice(0, 995) + '...' : val,
+    ),
   production_code: z.string().optional(),
   season_number: z.number().optional(),
   still_path: z.string().nullable().optional(),
@@ -50,7 +55,12 @@ export const seasonSchema = z.object({
   air_date: z.string().nullable().optional(),
   episodes: z.array(Episode).optional(),
   name: z.string(),
-  overview: z.string().optional(),
+  overview: z
+    .string()
+    .optional()
+    .transform((val) =>
+      val && val.length > 1000 ? val.slice(0, 995) + '...' : val,
+    ),
   id: z.number(),
   poster_path: z.string().nullable().optional(),
   season_number: z.number().nullable().optional(),
