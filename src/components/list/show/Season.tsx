@@ -4,19 +4,17 @@ import { type ShowListSeason } from '~/types/List';
 import { Episode } from '~/components/list/show/Episode';
 import { CalendarIcon, CheckIcon, TvIcon } from '@heroicons/react/24/outline';
 import { FlexRowCenter } from '~/components/style/FlexRowCenter';
+import { type Permissions } from '~/hooks/usePermissionsCheck';
 
 export const Season = ({
   season,
-  isOwner,
-  isCollaborator,
+  permissions,
   listId,
 }: {
   season: ShowListSeason;
-  isOwner: boolean;
-  isCollaborator: boolean;
+  permissions: Permissions;
   listId: string;
 }) => {
-  const [showDescription, setShowDescription] = useState(false);
   const [showChildren, setShowChildren] = useState(false);
   const context = api.useContext();
   const setSeasonCheckedMutation = api.showList.setSeasonWatched.useMutation({
@@ -32,7 +30,7 @@ export const Season = ({
             checked={season.allChecked}
             className="checkbox mr-3 mt-2"
             onChange={(event) => {
-              if (!isOwner && !isCollaborator) {
+              if (!permissions.hasPermissions) {
                 event.preventDefault();
                 event.target.checked = season.allChecked;
                 return;
@@ -58,11 +56,9 @@ export const Season = ({
                 {season.title}
               </h3>
               <p
-                className={`
-            m-0 
-            ${showDescription ? '' : 'line-clamp-2'} 
-            ${season.allChecked ? 'text-slate-500 line-through' : ''}
-          `}
+                className={`m-0 line-clamp-2 ${
+                  season.allChecked ? 'text-slate-500 line-through' : ''
+                }`}
               >
                 {season.overview}
               </p>
@@ -90,8 +86,7 @@ export const Season = ({
             <Episode
               key={episode.id}
               episode={episode}
-              isOwner={isOwner}
-              isCollaborator={isCollaborator}
+              permissions={permissions}
               listId={listId}
             />
           ))}

@@ -8,7 +8,13 @@ import { StandardPage } from '~/components/page/StandardPage';
 import { BucketListItems } from '~/components/list/bucket/BucketListItems';
 import { MovieListHeader } from '~/components/list/movie/MovieListHeader';
 import { usePermissionsCheck } from '~/hooks/usePermissionsCheck';
-import { isBucketList, isMovieList } from '~/types/List';
+import {
+  type BucketList,
+  isBucketList,
+  isMovieList,
+  type MovieList,
+  type ShowList,
+} from '~/types/List';
 import { MovieListItems } from '~/components/list/movie/MovieListItems';
 import { ShowListHeader } from '~/components/list/show/ShowListHeader';
 import { ShowListItems } from '~/components/list/show/ShowListItems';
@@ -25,7 +31,7 @@ const List = () => {
     { id: listId as string },
     { enabled: !!listId, retry: false },
   );
-  const { isOwner, isCollaborator } = usePermissionsCheck(listData);
+  const { hasPermissions } = usePermissionsCheck(listData);
 
   const showCreateModal = () => {
     void NiceModal.show(CreateItemModal, { listId: listId as string });
@@ -57,26 +63,12 @@ const List = () => {
         <div className="prose w-full max-w-[95%] min-[823px]:max-w-[85%] 2xl:max-w-[50%]">
           <h1 className="m-0 text-4xl">{listData.title}</h1>
           <p className="mt-3 text-xl">{listData.description}</p>
-          <ListHeaderMenu listData={listData} />
-          {listData.type === 'MOVIE' && (isOwner || isCollaborator) && (
-            <MovieListHeader listId={listData.id} />
-          )}
-          {listData.type === 'SHOW' && (isOwner || isCollaborator) && (
-            <ShowListHeader listId={listData.id} />
-          )}
+          <ListHeader list={listData} hasPermissions={hasPermissions} />
           <div className="divider mb-0" />
           <div className="w-full">
-            {isBucketList(listData) ? (
-              <BucketListItems list={listData} />
-            ) : isMovieList(listData) ? (
-              <div className="mt-2">
-                <MovieListItems list={listData} />
-              </div>
-            ) : (
-              <ShowListItems list={listData} />
-            )}
+            <ListItems list={listData} />
           </div>
-          {(isOwner || isCollaborator) && isBucketList(listData) && (
+          {hasPermissions && isBucketList(listData) && (
             <div
               className={`mb-10 flex w-full flex-row ${
                 listData.total === 0 ? 'justify-start' : 'mt-10 justify-end'
@@ -96,6 +88,30 @@ const List = () => {
       </StandardPage>
     </>
   );
+};
+
+const ListHeader = ({
+  list,
+  hasPermissions,
+}: {
+  list: BucketList | MovieList | ShowList;
+  hasPermissions: boolean;
+}) => {
+  if (!hasPermissions) return <ListHeaderMenu list={list} />;
+
+  return (
+    <>
+      <ListHeaderMenu list={list} />
+      {list.type === 'MOVIE' && <MovieListHeader listId={list.id} />}
+      {list.type === 'SHOW' && <ShowListHeader listId={list.id} />}
+    </>
+  );
+};
+
+const ListItems = ({ list }: { list: BucketList | MovieList | ShowList }) => {
+  if (isBucketList(list)) return <BucketListItems list={list} />;
+  if (isMovieList(list)) return <MovieListItems list={list} />;
+  return <ShowListItems list={list} />;
 };
 
 export default List;

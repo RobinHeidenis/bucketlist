@@ -14,6 +14,7 @@ import { PosterImage } from '../../movie/PosterImage';
 import type { MovieListMovie } from '~/types/List';
 import { FlexRowCenter } from '~/components/style/FlexRowCenter';
 import { useState } from 'react';
+import { type Permissions } from '~/hooks/usePermissionsCheck';
 
 const toHoursAndMinutes = (totalMinutes: number) => {
   if (totalMinutes === 0) return '0';
@@ -25,15 +26,13 @@ const toHoursAndMinutes = (totalMinutes: number) => {
 interface MovieProps {
   movie: MovieListMovie;
   listId: string;
-  isOwner: boolean;
-  isCollaborator: boolean;
+  permissions: Permissions;
   hideDivider?: boolean;
 }
 
 export const Movie = ({
   listId,
-  isOwner,
-  isCollaborator,
+  permissions,
   hideDivider,
   movie,
 }: MovieProps) => {
@@ -110,7 +109,7 @@ export const Movie = ({
             </div>
           </div>
         </div>
-        {(isOwner || isCollaborator) && (
+        {permissions.hasPermissions && (
           <DropdownHeader>
             <DropdownItem
               onClick={() =>

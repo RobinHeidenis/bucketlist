@@ -9,7 +9,7 @@ import {
   sortReleaseDateReverse,
   sortSeen,
   sortSeenReverse,
-} from './filterModes';
+} from './filterModes/movies';
 import type { MovieList } from '~/types/List';
 
 export const sortMap = {

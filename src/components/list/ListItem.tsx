@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { ErrorToast } from '../toasts/ErrorToast';
 import NiceModal from '@ebay/nice-modal-react';
 import { EditItemModal } from '../modals/EditItemModal';
+import { type Permissions } from '~/hooks/usePermissionsCheck';
 
 export const ListItem = ({
   id,
@@ -13,9 +14,8 @@ export const ListItem = ({
   title,
   description,
   listId,
-  isOwner,
-  isCollaborator,
-}: ListItemType & { isOwner: boolean; isCollaborator: boolean }) => {
+  permissions,
+}: ListItemType & { permissions: Permissions }) => {
   const [showDescription, setShowDescription] = useState(false);
   const context = api.useContext();
   const ref = useRef<HTMLInputElement>(null);
@@ -53,7 +53,7 @@ export const ListItem = ({
           defaultChecked={checked}
           className="checkbox mr-3 mt-2"
           onChange={(event) => {
-            if (!isOwner && !isCollaborator) {
+            if (!permissions.hasPermissions) {
               event.preventDefault();
               event.target.checked = checked;
               return;
@@ -81,7 +81,7 @@ export const ListItem = ({
           </p>
         </div>
       </div>
-      {(isOwner || isCollaborator) && (
+      {permissions.hasPermissions && (
         <DropdownMenu
           editOnClick={() => openEditItemModal()}
           deleteOnClick={() => deleteItemMutation.mutate({ id })}

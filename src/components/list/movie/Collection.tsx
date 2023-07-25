@@ -13,19 +13,18 @@ import { useState } from 'react';
 import { Movie } from './Movie';
 import { api } from '~/utils/api';
 import type { MovieListCollection } from '~/types/List';
+import { type Permissions } from '~/hooks/usePermissionsCheck';
 
 interface CollectionProps {
   collection: MovieListCollection;
-  isOwner: boolean;
-  isCollaborator: boolean;
+  permissions: Permissions;
   listId: string;
   style?: CSSProperties;
 }
 
 export const Collection = ({
   collection,
-  isOwner,
-  isCollaborator,
+  permissions,
   listId,
   style,
 }: CollectionProps) => {
@@ -89,7 +88,7 @@ export const Collection = ({
             </div>
           </div>
         </div>
-        {(isOwner || isCollaborator) && (
+        {permissions.hasPermissions && (
           <DropdownHeader>
             <DropdownItem
               onClick={() => {
@@ -129,8 +128,7 @@ export const Collection = ({
           <Movie
             key={item.id}
             listId={listId}
-            isOwner={isOwner}
-            isCollaborator={isCollaborator}
+            permissions={permissions}
             hideDivider={index === collection.movies.length - 1}
             movie={item}
           />
