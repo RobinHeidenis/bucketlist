@@ -110,7 +110,7 @@ export const showListRouter = createTRPCRouter({
       return ctx.prisma.checkedEpisode.deleteMany({
         where: {
           episodeId: {
-            in: [list.shows[0].seasons[0]?.episodes.map((e) => e.id) ?? []],
+            in: list.shows[0].seasons[0]?.episodes.map((e) => e.id) ?? [],
           },
           listId: input.listId,
         },
