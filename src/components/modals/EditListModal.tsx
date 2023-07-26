@@ -6,6 +6,7 @@ import { api } from '~/utils/api';
 import { TextInput } from '../form/TextInput';
 import { TextArea } from '../form/TextArea';
 import { ModalHeader } from './ModalHeader';
+import { showErrorToast } from '~/utils/showErrorToast';
 
 export const EditListModal = NiceModal.create(
   ({
@@ -32,6 +33,7 @@ export const EditListModal = NiceModal.create(
         void modal.remove();
         void utils.lists.getList.invalidate({ id: listId });
       },
+      onError: showErrorToast,
     });
 
     return (

@@ -9,6 +9,7 @@ import { CalendarIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { ErrorToast } from '~/components/toasts/ErrorToast';
 import { type MovieList } from '~/types/List';
+import { showErrorToast } from '~/utils/showErrorToast';
 
 export const MovieListHeader = ({ listId }: { listId: string }) => {
   const [searchValue, setSearchValue] = useState('');
@@ -37,7 +38,7 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
         );
         setSearchValue('');
         setSelectedResult(null);
-      }
+      } else showErrorToast(error);
     },
   });
   const { mutate: createCollection } =
@@ -54,7 +55,7 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
           );
           setSearchValue('');
           setSelectedResult(null);
-        }
+        } else showErrorToast(error);
       },
     });
 

@@ -5,6 +5,7 @@ import { api } from '~/utils/api';
 import type { InviteLink } from '@prisma/client';
 import toast from 'react-hot-toast';
 import { SuccessToast } from '../toasts/SuccessToast';
+import { showErrorToast } from '~/utils/showErrorToast';
 
 interface InviteLinkRowProps {
   invite: InviteLink & { url: string };
@@ -20,6 +21,7 @@ export const InviteLinkRow = ({ invite }: InviteLinkRowProps) => {
         });
         toast.custom(<SuccessToast message="Invite link deleted!" />);
       },
+      onError: showErrorToast,
     });
   const clipboard = useClipboard();
 

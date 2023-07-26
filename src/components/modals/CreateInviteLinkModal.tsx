@@ -3,6 +3,7 @@ import { isPast } from 'date-fns';
 import { api } from '~/utils/api';
 import { ModalHeader } from './ModalHeader';
 import { InviteLinkRow } from '../inviteLinks/InviteLinkRow';
+import { showErrorToast } from '~/utils/showErrorToast';
 
 interface CreateInviteLinkModalProps {
   listId: string;
@@ -16,6 +17,7 @@ export const CreateInviteLinkModal = NiceModal.create(
       onSuccess: () => {
         void utils.invite.getInvitesByListId.invalidate({ id: listId });
       },
+      onError: showErrorToast,
     });
     const { data: invites } = api.invite.getInvitesByListId.useQuery({
       id: listId,
