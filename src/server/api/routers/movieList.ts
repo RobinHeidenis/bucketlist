@@ -116,7 +116,9 @@ export const movieListRouter = createTRPCRouter({
       return ctx.prisma.checkedMovie.deleteMany({
         where: {
           listId: input.listId,
-          movieId: { in: list.collections[0].movies.map((movie) => movie.id) },
+          movieId: {
+            in: [list.collections[0].movies.map((movie) => movie.id)],
+          },
         },
       });
     }),
@@ -292,7 +294,7 @@ export const movieListRouter = createTRPCRouter({
       await ctx.prisma.checkedMovie.deleteMany({
         where: {
           AND: [
-            { movieId: { in: list.collections[0].movies.map((m) => m.id) } },
+            { movieId: { in: [list.collections[0].movies.map((m) => m.id)] } },
             { listId: input.listId },
           ],
         },
