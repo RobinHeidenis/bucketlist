@@ -37,7 +37,7 @@ export const ListHeaderMenu = ({
 }) => {
   const router = useRouter();
   const { id, owner, total, title, description, isPublic, type } = list;
-  const { isOwner, isCollaborator, hasPermissions } = usePermissionsCheck(list);
+  const { isOwner, isCollaborator } = usePermissionsCheck(list);
   const context = api.useContext();
 
   const { mutateAsync: deleteList } = api.lists.deleteList.useMutation({

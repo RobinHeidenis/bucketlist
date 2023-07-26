@@ -116,7 +116,9 @@ export const movieListRouter = createTRPCRouter({
       return ctx.prisma.checkedMovie.deleteMany({
         where: {
           listId: input.listId,
-          movieId: { in: list.collections[0].movies.map((movie) => movie.id) },
+          movieId: {
+            in: list.collections[0].movies.map((movie) => movie.id),
+          },
         },
       });
     }),
