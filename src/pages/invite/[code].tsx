@@ -3,7 +3,7 @@ import { StandardPage } from '~/components/page/StandardPage';
 import { api } from '~/utils/api';
 import toast from 'react-hot-toast';
 import { SuccessToast } from '~/components/toasts/SuccessToast';
-import { ErrorToast } from '~/components/toasts/ErrorToast';
+import { showErrorToast } from '~/utils/showErrorToast';
 
 const InvitePage = () => {
   const router = useRouter();
@@ -18,9 +18,7 @@ const InvitePage = () => {
       toast.custom(<SuccessToast message="Successfully joined list!" />);
       void router.push(`/lists/${data.id}`);
     },
-    onError: (error) => {
-      toast.custom(<ErrorToast message={error.message} />);
-    },
+    onError: showErrorToast,
   });
 
   if (!data && error && error.data?.code === 'NOT_FOUND')

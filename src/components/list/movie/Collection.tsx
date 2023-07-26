@@ -14,6 +14,7 @@ import { Movie } from './Movie';
 import { api } from '~/utils/api';
 import type { MovieListCollection } from '~/types/List';
 import { type Permissions } from '~/hooks/usePermissionsCheck';
+import { showErrorToast } from '~/utils/showErrorToast';
 
 interface CollectionProps {
   collection: MovieListCollection;
@@ -35,6 +36,7 @@ export const Collection = ({
       onSuccess: () => {
         void context.lists.getList.invalidate({ id: listId });
       },
+      onError: showErrorToast,
     });
 
   const { mutate: setCollectionWatched } =
@@ -42,6 +44,7 @@ export const Collection = ({
       onSuccess: () => {
         void context.lists.getList.invalidate({ id: listId });
       },
+      onError: showErrorToast,
     });
 
   return (

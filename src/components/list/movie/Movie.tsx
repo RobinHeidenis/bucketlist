@@ -15,6 +15,7 @@ import type { MovieListMovie } from '~/types/List';
 import { FlexRowCenter } from '~/components/style/FlexRowCenter';
 import { useState } from 'react';
 import { type Permissions } from '~/hooks/usePermissionsCheck';
+import { showErrorToast } from '~/utils/showErrorToast';
 
 const toHoursAndMinutes = (totalMinutes: number) => {
   if (totalMinutes === 0) return '0';
@@ -42,11 +43,13 @@ export const Movie = ({
     onSuccess: () => {
       void context.lists.getList.invalidate({ id: listId });
     },
+    onError: showErrorToast,
   });
   const { mutate: deleteMovie } = api.movieList.deleteMovie.useMutation({
     onSuccess: () => {
       void context.lists.getList.invalidate({ id: listId });
     },
+    onError: showErrorToast,
   });
 
   return (

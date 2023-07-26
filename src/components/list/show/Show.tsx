@@ -15,6 +15,7 @@ import { DropdownItem } from '~/components/dropdown/DropdownItem';
 import { api } from '~/utils/api';
 import { FlexRowCenter } from '~/components/style/FlexRowCenter';
 import { type Permissions } from '~/hooks/usePermissionsCheck';
+import { showErrorToast } from '~/utils/showErrorToast';
 
 interface ShowProps {
   show: ShowListShow;
@@ -31,6 +32,7 @@ export const Show = ({ listId, permissions, hideDivider, show }: ShowProps) => {
     onSuccess: () => {
       void context.lists.getList.invalidate({ id: listId });
     },
+    onError: showErrorToast,
   });
 
   return (

@@ -7,6 +7,7 @@ import { ErrorToast } from '../toasts/ErrorToast';
 import NiceModal from '@ebay/nice-modal-react';
 import { EditItemModal } from '../modals/EditItemModal';
 import { type Permissions } from '~/hooks/usePermissionsCheck';
+import { showErrorToast } from '~/utils/showErrorToast';
 
 export const ListItem = ({
   id,
@@ -31,9 +32,7 @@ export const ListItem = ({
   });
   const deleteItemMutation = api.bucketList.deleteItem.useMutation({
     onSuccess: () => context.lists.getList.invalidate({ id: listId }),
-    onError: ({ message }) => {
-      toast.custom(<ErrorToast message={message} />);
-    },
+    onError: showErrorToast,
   });
   const openEditItemModal = () => {
     void NiceModal.show(EditItemModal, {
