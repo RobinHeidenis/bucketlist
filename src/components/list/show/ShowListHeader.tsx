@@ -9,6 +9,7 @@ import { CalendarIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { ErrorToast } from '~/components/toasts/ErrorToast';
 import { type ShowList } from '~/types/List';
+import { showErrorToast } from '~/utils/showErrorToast';
 
 export const ShowListHeader = ({ listId }: { listId: string }) => {
   const [searchValue, setSearchValue] = useState('');
@@ -35,7 +36,7 @@ export const ShowListHeader = ({ listId }: { listId: string }) => {
         );
         setSearchValue('');
         setSelectedResult(null);
-      }
+      } else showErrorToast(error);
     },
   });
 

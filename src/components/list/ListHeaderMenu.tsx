@@ -2,7 +2,6 @@ import { DropdownMenu } from '../dropdown/DropdownMenu';
 import { api } from '~/utils/api';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
-import { ErrorToast } from '../toasts/ErrorToast';
 import { SuccessToast } from '../toasts/SuccessToast';
 import NiceModal from '@ebay/nice-modal-react';
 import { EditListModal } from '../modals/EditListModal';
@@ -29,6 +28,7 @@ import {
   type MovieListCollection,
   type ShowList,
 } from '~/types/List';
+import { showErrorToast } from '~/utils/showErrorToast';
 
 export const ListHeaderMenu = ({
   list,
@@ -45,18 +45,14 @@ export const ListHeaderMenu = ({
       toast.custom(<SuccessToast message="List deleted!" />);
       return context.lists.getLists.invalidate();
     },
-    onError: ({ message }) => {
-      toast.custom(<ErrorToast message={message} />);
-    },
+    onError: showErrorToast,
   });
   const { mutateAsync: togglePublic } = api.lists.setPublic.useMutation({
     onSuccess: () => {
       toast.custom(<SuccessToast message="Visibility updated!" />);
       return context.lists.getList.invalidate({ id });
     },
-    onError: ({ message }) => {
-      toast.custom(<ErrorToast message={message} />);
-    },
+    onError: showErrorToast,
   });
 
   const { mutateAsync: leaveList } = api.lists.leaveList.useMutation({
@@ -64,9 +60,7 @@ export const ListHeaderMenu = ({
       toast.custom(<SuccessToast message="Successfully left list!" />);
       return context.lists.getLists.invalidate();
     },
-    onError: ({ message }) => {
-      toast.custom(<ErrorToast message={message} />);
-    },
+    onError: showErrorToast,
   });
 
   const showEditListModal = () => {

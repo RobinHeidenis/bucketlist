@@ -5,6 +5,7 @@ import { Episode } from '~/components/list/show/Episode';
 import { CalendarIcon, CheckIcon, TvIcon } from '@heroicons/react/24/outline';
 import { FlexRowCenter } from '~/components/style/FlexRowCenter';
 import { type Permissions } from '~/hooks/usePermissionsCheck';
+import { showErrorToast } from '~/utils/showErrorToast';
 
 export const Season = ({
   season,
@@ -19,6 +20,7 @@ export const Season = ({
   const context = api.useContext();
   const setSeasonCheckedMutation = api.showList.setSeasonWatched.useMutation({
     onSuccess: () => context.lists.getList.invalidate({ id: listId }),
+    onError: showErrorToast,
   });
 
   return (

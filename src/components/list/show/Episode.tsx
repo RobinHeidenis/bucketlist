@@ -2,6 +2,7 @@ import { type ShowListEpisode } from '~/types/List';
 import { useState } from 'react';
 import { api } from '~/utils/api';
 import { type Permissions } from '~/hooks/usePermissionsCheck';
+import { showErrorToast } from '~/utils/showErrorToast';
 
 export const Episode = ({
   episode,
@@ -16,6 +17,7 @@ export const Episode = ({
   const context = api.useContext();
   const setEpisodeWatchedMutation = api.showList.setEpisodeWatched.useMutation({
     onSuccess: () => context.lists.getList.invalidate({ id: listId }),
+    onError: showErrorToast,
   });
 
   return (

@@ -16,7 +16,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
       }}
       {...pageProps}
     >
-      <Toaster position="bottom-right" />
+      <Toaster position="bottom-right" toastOptions={{ duration: 10000 }} />
       <NiceModal.Provider>
         <Component {...pageProps} />
       </NiceModal.Provider>
