@@ -1,8 +1,6 @@
-import { type AppType } from 'next/app';
+import type { AppType } from 'next/app';
 import { ClerkProvider } from '@clerk/nextjs';
-
 import { api } from '~/utils/api';
-
 import '~/styles/globals.css';
 import NiceModal from '@ebay/nice-modal-react';
 import { Toaster } from 'react-hot-toast';
