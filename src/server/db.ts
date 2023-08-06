@@ -5,6 +5,7 @@ import { env } from '~/env.mjs';
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
 export const prisma =
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   globalForPrisma.prisma ||
   new PrismaClient({
     log:

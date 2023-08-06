@@ -35,8 +35,9 @@ export const CreateItemModal = NiceModal.create(
     return (
       <ModalHeader title="Add a to-do" modal={modal}>
         <form
-          onSubmit={form.onSubmit(({ title, description }) =>
-            mutate({ title, description, listId }),
+          onSubmit={form.onSubmit(
+            ({ title, description }) =>
+              void mutate({ title, description, listId }),
           )}
           className="flex w-full max-w-xs flex-col items-center pl-3 pr-3 xsm:w-3/4"
         >
@@ -55,7 +56,7 @@ export const CreateItemModal = NiceModal.create(
             {...form.getInputProps('description')}
           />
           <button
-            className={`btn-primary btn mt-5 self-end ${
+            className={`btn btn-primary mt-5 self-end ${
               isLoading ? 'loading' : ''
             }`}
             type="submit"

@@ -1,6 +1,8 @@
+import { type ReactElement } from 'react';
+
 interface CustomDropdownProps {
-  items: { label: string; value: string; icon?: JSX.Element }[];
-  label: string | JSX.Element;
+  items: { label: string; value: string; icon?: ReactElement }[];
+  label: string | ReactElement;
   selected: string;
   setSelected: (value: string) => void;
   justifyStart?: boolean;
@@ -13,9 +15,9 @@ export const CustomDropdown = ({
   setSelected,
   justifyStart = false,
 }: CustomDropdownProps) => (
-  <div className="dropdown">
+  <div className="dropdown z-50">
     <label
-      className={`btn-ghost btn flex w-44 p-0 ${
+      className={`btn btn-ghost flex w-44 p-0 ${
         justifyStart ? 'justify-start' : ''
       }`}
       tabIndex={0}
@@ -23,7 +25,7 @@ export const CustomDropdown = ({
       {label}
     </label>
     <ul
-      className="dropdown-content menu rounded-box mt-4 w-40 bg-base-100 p-2 shadow"
+      className="menu dropdown-content rounded-box mt-4 w-40 bg-base-100 p-2 shadow"
       tabIndex={0}
     >
       {items.map((item, index) => (
@@ -34,8 +36,8 @@ export const CustomDropdown = ({
           }`}
         >
           <a
-            className="btn-ghost btn-md btn flex w-full justify-start p-0"
-            onClick={() => setSelected(item.value)}
+            className="btn btn-ghost btn-md flex w-full justify-start p-0"
+            onClick={() => void setSelected(item.value)}
           >
             <div className={'flex flex-row items-center justify-start'}>
               {item.icon}

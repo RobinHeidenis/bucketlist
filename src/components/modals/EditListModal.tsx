@@ -24,7 +24,7 @@ export const EditListModal = NiceModal.create(
       initialValues: {
         id: listId,
         title,
-        description: description || '',
+        description: description ?? '',
       },
       validate: zodResolver(zEditListSchema),
     });
@@ -42,7 +42,7 @@ export const EditListModal = NiceModal.create(
           onSubmit={form.onSubmit(
             ({ title: newTitle, description: newDescription }) => {
               if (newTitle === title && newDescription === description) {
-                void modal.remove();
+                modal.remove();
                 return;
               }
               mutate({
@@ -67,7 +67,7 @@ export const EditListModal = NiceModal.create(
             {...form.getInputProps('description')}
           />
           <button
-            className={`btn-primary btn mt-5 self-end ${
+            className={`btn btn-primary mt-5 self-end ${
               isLoading ? 'loading' : ''
             }`}
             type="submit"

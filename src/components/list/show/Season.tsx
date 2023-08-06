@@ -47,7 +47,7 @@ export const Season = ({
           />
           <div
             className="flex flex-col"
-            onClick={() => setShowChildren(!showChildren)}
+            onClick={() => void setShowChildren(!showChildren)}
           >
             <div>
               <h3

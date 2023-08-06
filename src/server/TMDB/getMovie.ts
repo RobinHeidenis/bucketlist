@@ -1,6 +1,7 @@
 import { basicRequest } from '~/server/TMDB/basicRequest';
 import { z } from 'zod';
 import { type Movie } from '@prisma/client';
+import { TRPCError } from '@trpc/server';
 
 export const movieSchema = z.object({
   id: z.number().int(),
@@ -97,10 +98,18 @@ export const transformAPIMovie = (
 export const getMovie = async (id: number | string, options?: RequestInit) => {
   const { result, response } = await basicRequest(`movie/${id}`, options);
 
-  return {
-    result: movieSchema.parse(result),
-    eTag: response.headers.get('etag') ?? '',
-  };
+  try {
+    return {
+      result: movieSchema.parse(result),
+      eTag: response.headers.get('etag') ?? '',
+    };
+  } catch (e) {
+    console.error(e);
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: 'Something went wrong finding that movie on TMDB.',
+    });
+  }
 };
 
 export const hasMovieBeenUpdated = async (

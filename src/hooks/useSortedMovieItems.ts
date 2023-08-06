@@ -29,7 +29,7 @@ export const useSortedMovieItems = (
   sort: keyof typeof sortMap = 'default',
 ) => {
   const collections = useMemo(() => {
-    if (!('collections' in list) || !list.collections) return [];
+    if (!('collections' in list)) return [];
     const collections = Object.values(list.collections);
     return collections.map((collection) => {
       collection.movies = collection.movies.sort((a, b) => {
@@ -42,7 +42,7 @@ export const useSortedMovieItems = (
   }, [list]);
 
   return useMemo(() => {
-    if (!('movies' in list) || !list.movies) return [];
+    if (!('movies' in list)) return [];
     return [...list.movies, ...collections].sort(sortMap[sort]);
   }, [list, collections, sort]);
 };

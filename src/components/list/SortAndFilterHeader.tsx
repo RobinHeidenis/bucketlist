@@ -34,8 +34,8 @@ export const SortAndFilterHeader = ({
         <FunnelIcon className={'h-6 w-6'} />
         <input
           placeholder="Filter"
-          onChange={(e) => setFilterText(e.target.value)}
-          className="input-ghost input w-48"
+          onChange={(e) => void setFilterText(e.target.value)}
+          className="input input-ghost w-48"
         />
       </div>
     </div>

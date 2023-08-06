@@ -25,7 +25,7 @@ export const EditItemModal = NiceModal.create(
     const form = useForm<z.infer<typeof zEditListItemSchema>>({
       initialValues: {
         id: itemId,
-        title: title ?? '',
+        title: title,
         description: description ?? '',
       },
       validate: zodResolver(zEditListItemSchema),
@@ -69,7 +69,7 @@ export const EditItemModal = NiceModal.create(
             {...form.getInputProps('description')}
           />
           <button
-            className={`btn-primary btn mt-5 self-end ${
+            className={`btn btn-primary mt-5 self-end ${
               isLoading ? 'loading' : ''
             }`}
             type="submit"

@@ -34,9 +34,9 @@ import type {
 } from '@clerk/nextjs/api';
 import { getAuth } from '@clerk/nextjs/server';
 
-type AuthContext = {
+interface AuthContext {
   auth: SignedInAuthObject | SignedOutAuthObject;
-};
+}
 
 /**
  * This helper generates the "internals" for a tRPC context. If you need to use

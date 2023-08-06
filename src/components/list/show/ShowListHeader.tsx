@@ -41,7 +41,7 @@ export const ShowListHeader = ({ listId }: { listId: string }) => {
   });
 
   const { data: listDataRaw } = api.lists.getList.useQuery({ id: listId });
-  const listData = listDataRaw as ShowList;
+  const listData = listDataRaw as ShowList | undefined;
 
   const filteredData = data?.filter(
     (result) => !listData?.shows.some((show) => show.id === result.id),
@@ -83,10 +83,9 @@ export const ShowListHeader = ({ listId }: { listId: string }) => {
           </div>
           <div className="flex justify-end">
             <button
-              className="btn-primary btn"
+              className="btn btn-primary"
               onClick={() => {
-                if (!selectedResult) return;
-                const params = { listId, showId: selectedResult?.id };
+                const params = { listId, showId: selectedResult.id };
                 createShow(params);
               }}
             >

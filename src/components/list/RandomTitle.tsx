@@ -18,7 +18,7 @@ export const RandomTitle = ({
   const selectedItem = titles[selectedIndex];
   const title =
     selectedItem && 'title' in selectedItem
-      ? selectedItem?.title
+      ? selectedItem.title
       : selectedItem?.name;
 
   const roll = () => {
@@ -41,7 +41,7 @@ export const RandomTitle = ({
           </div>
         )}
       </div>
-      <button className="btn-ghost btn mt-5" onClick={roll}>
+      <button className="btn btn-ghost mt-5" onClick={roll}>
         <DiceIcon /> Reroll
       </button>
     </div>

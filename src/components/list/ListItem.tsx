@@ -74,7 +74,7 @@ export const ListItem = ({
             ${showDescription ? '' : 'line-clamp-2'} 
             ${checked ? 'text-slate-500 line-through' : ''}
           `}
-            onClick={() => setShowDescription(!showDescription)}
+            onClick={() => void setShowDescription(!showDescription)}
           >
             {description}
           </p>
@@ -82,8 +82,8 @@ export const ListItem = ({
       </div>
       {permissions.hasPermissions && (
         <DropdownMenu
-          editOnClick={() => openEditItemModal()}
-          deleteOnClick={() => deleteItemMutation.mutate({ id })}
+          editOnClick={openEditItemModal}
+          deleteOnClick={() => void deleteItemMutation.mutate({ id })}
           className="self-center"
         />
       )}

@@ -54,7 +54,7 @@ export const Episode = ({
             ${showDescription ? '' : 'line-clamp-2'} 
             ${episode.checked ? 'text-slate-500 line-through' : ''}
           `}
-            onClick={() => setShowDescription(!showDescription)}
+            onClick={() => void setShowDescription(!showDescription)}
           >
             {episode.overview}
           </p>

@@ -10,6 +10,9 @@ const config = {
       ...defaultTheme.screens,
     },
   },
+  daisyui: {
+    themes: ['night'],
+  },
   plugins: [require('@tailwindcss/typography'), require('daisyui')],
 } satisfies Config;
 

@@ -64,8 +64,8 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
 
   const filteredData = data?.filter(
     (result) =>
-      !listData?.movies.some((movie) => movie.id === result.id) &&
-      !listData?.collections.some((collection) => collection.id === result.id),
+      !listData.movies.some((movie) => movie.id === result.id) &&
+      !listData.collections.some((collection) => collection.id === result.id),
   );
 
   const isMovie = selectedResult && 'title' in selectedResult;
@@ -112,10 +112,9 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
           </div>
           <div className="flex justify-end">
             <button
-              className="btn-primary btn"
+              className="btn btn-primary"
               onClick={() => {
-                if (!selectedResult) return;
-                const params = { listId, externalId: selectedResult?.id };
+                const params = { listId, externalId: selectedResult.id };
                 isMovie ? createMovie(params) : createCollection(params);
               }}
             >

@@ -103,7 +103,7 @@ const Lists = () => {
         className="mb-12 mt-12 grid grid-cols-1 gap-10 lg:grid-cols-3"
         ref={parent}
       >
-        {sortedLists?.map((list) => (
+        {sortedLists.map((list) => (
           <ListCard {...list} key={list.id} />
         ))}
         <ListCardWrapper onClick={showCreateModal}>
