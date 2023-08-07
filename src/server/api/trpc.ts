@@ -24,6 +24,7 @@ import type {
   SignedOutAuthObject,
 } from '@clerk/nextjs/api';
 import { getAuth } from '@clerk/nextjs/server';
+import * as Sentry from '@sentry/nextjs';
 
 /**
  * 1. CONTEXT
@@ -77,6 +78,12 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
   },
 });
 
+const sentryMiddleware = t.middleware(
+  Sentry.Handlers.trpcMiddleware({
+    attachRpcInput: true,
+  }),
+);
+
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
  *
@@ -97,7 +104,7 @@ export const createTRPCRouter = t.router;
  * tRPC API. It does not guarantee that a user querying is authorized, but you
  * can still access user session data if they are logged in.
  */
-export const publicProcedure = t.procedure;
+export const publicProcedure = t.procedure.use(sentryMiddleware);
 
 /**
  * Reusable middleware that enforces users are logged in before running the
@@ -123,4 +130,6 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  *
  * @see https://trpc.io/docs/procedures
  */
-export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+export const protectedProcedure = t.procedure
+  .use(enforceUserIsAuthed)
+  .use(sentryMiddleware);

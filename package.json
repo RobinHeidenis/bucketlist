@@ -19,6 +19,8 @@
     "@mantine/form": "^6.0.17",
     "@mantine/hooks": "^6.0.17",
     "@prisma/client": "^5.1.1",
+    "@sentry/integrations": "^7.61.1",
+    "@sentry/nextjs": "^7.61.1",
     "@t3-oss/env-nextjs": "^0.6.0",
     "@tailwindcss/typography": "^0.5.9",
     "@tanstack/react-query": "^4.32.6",
