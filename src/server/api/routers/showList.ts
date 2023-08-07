@@ -1,6 +1,6 @@
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
 import { z } from 'zod';
-import { checkIfExistsAndAccess } from './movieList';
+import { checkIfExistsAndAccess } from '~/server/utils/checkIfExistsAndAccess';
 import { TRPCError } from '@trpc/server';
 import { getShow } from '~/server/TMDB/getShow';
 import { getSeasons } from '~/server/TMDB/getSeason';
@@ -17,29 +17,35 @@ export const showListRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const list = await ctx.prisma.list.findUnique({
         where: { id: input.listId },
-        select: { ownerId: true, collaborators: { select: { id: true } } },
-      });
-
-      checkIfExistsAndAccess(ctx, list);
-
-      await ctx.prisma.list.update({
-        where: { id: input.listId },
-        data: { updatedAt: new Date() },
-      });
-
-      if (input.checked) {
-        return ctx.prisma.checkedEpisode.create({
-          data: {
-            list: { connect: { id: input.listId } },
-            episode: { connect: { id: input.id } },
-          },
-        });
-      }
-
-      return ctx.prisma.checkedEpisode.delete({
-        where: {
-          episodeId_listId: { listId: input.listId, episodeId: input.id },
+        select: {
+          ownerId: true,
+          type: true,
+          collaborators: { select: { id: true } },
         },
+      });
+
+      checkIfExistsAndAccess(ctx, list, 'SHOW');
+
+      return await ctx.prisma.$transaction(async (prisma) => {
+        await prisma.list.update({
+          where: { id: input.listId },
+          data: { updatedAt: new Date() },
+        });
+
+        if (input.checked) {
+          return prisma.checkedEpisode.create({
+            data: {
+              list: { connect: { id: input.listId } },
+              episode: { connect: { id: input.id } },
+            },
+          });
+        } else {
+          return prisma.checkedEpisode.delete({
+            where: {
+              episodeId_listId: { listId: input.listId, episodeId: input.id },
+            },
+          });
+        }
       });
     }),
   setSeasonWatched: protectedProcedure
@@ -56,6 +62,7 @@ export const showListRouter = createTRPCRouter({
         where: { id: input.listId },
         select: {
           ownerId: true,
+          type: true,
           collaborators: { select: { id: true } },
           checkedEpisodes: {
             where: {
@@ -79,41 +86,48 @@ export const showListRouter = createTRPCRouter({
         },
       });
 
-      if (
-        !checkIfExistsAndAccess(ctx, list) ||
-        !list.shows[0]?.seasons.some(
-          (s) => s.seasonNumber === input.seasonNumber,
-        )
-      ) {
-        throw new Error('Not found');
-      }
+      checkIfExistsAndAccess(ctx, list, 'SHOW');
 
-      await ctx.prisma.list.update({
-        where: { id: input.listId },
-        data: { updatedAt: new Date() },
-      });
-
-      if (input.checked) {
-        return ctx.prisma.checkedEpisode.createMany({
-          data:
-            list.shows[0].seasons[0]?.episodes
-              .filter(
-                (e) => !list.checkedEpisodes.find((c) => c.episodeId === e.id),
-              )
-              .map((e) => ({
-                episodeId: e.id,
-                listId: input.listId,
-              })) ?? [],
+      return await ctx.prisma.$transaction(async (prisma) => {
+        await prisma.list.update({
+          where: { id: input.listId },
+          data: { updatedAt: new Date() },
         });
-      }
 
-      return ctx.prisma.checkedEpisode.deleteMany({
-        where: {
-          episodeId: {
-            in: list.shows[0].seasons[0]?.episodes.map((e) => e.id) ?? [],
-          },
-          listId: input.listId,
-        },
+        if (
+          !list.shows[0]?.seasons.some(
+            (s) => s.seasonNumber === input.seasonNumber,
+          )
+        ) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Season not found',
+          });
+        }
+
+        if (input.checked) {
+          return prisma.checkedEpisode.createMany({
+            data:
+              list.shows[0].seasons[0]?.episodes
+                .filter(
+                  (e) =>
+                    !list.checkedEpisodes.find((c) => c.episodeId === e.id),
+                )
+                .map((e) => ({
+                  episodeId: e.id,
+                  listId: input.listId,
+                })) ?? [],
+          });
+        } else {
+          return prisma.checkedEpisode.deleteMany({
+            where: {
+              episodeId: {
+                in: list.shows[0].seasons[0]?.episodes.map((e) => e.id) ?? [],
+              },
+              listId: input.listId,
+            },
+          });
+        }
       });
     }),
   createShow: protectedProcedure
@@ -127,45 +141,35 @@ export const showListRouter = createTRPCRouter({
       const list = await ctx.prisma.list.findUnique({
         where: { id: input.listId },
         select: {
+          _count: { select: { shows: { where: { id: input.showId } } } },
           ownerId: true,
           collaborators: { select: { id: true } },
           type: true,
-          shows: { where: { id: input.showId }, select: { id: true } },
         },
       });
 
-      if (!checkIfExistsAndAccess(ctx, list)) return;
+      checkIfExistsAndAccess(ctx, list, 'SHOW');
 
-      if (list.type !== 'SHOW')
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'You can only add shows to this list.',
-        });
-
-      if (list.shows.length) {
+      if (list._count.shows) {
         throw new TRPCError({
           code: 'CONFLICT',
           message: 'This show is already on this list.',
         });
       }
 
-      let show = await ctx.prisma.show.findUnique({
+      const show = await ctx.prisma.show.count({
         where: { id: input.showId },
-        select: { id: true },
       });
 
       if (!show) {
-        const tmdbShow = await getShow(input.showId);
-        if (!tmdbShow)
-          throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'Something went wrong finding that show on TMDB.',
-          });
+        const { result, eTag } = await getShow(input.showId);
+        const seasons = await getSeasons(
+          input.showId,
+          result.number_of_seasons ?? 1,
+        );
 
-        const { result, eTag } = tmdbShow;
-
-        await ctx.prisma.$transaction(async (prisma) => {
-          show = await prisma.show.create({
+        await ctx.prisma.$transaction([
+          ctx.prisma.show.create({
             data: {
               id: result.id,
               title: result.name,
@@ -176,26 +180,8 @@ export const showListRouter = createTRPCRouter({
               releaseDate: result.first_air_date ?? 'Unknown',
               etag: eTag,
             },
-          });
-
-          if (!show)
-            throw new TRPCError({
-              code: 'NOT_FOUND',
-              message: 'Something went wrong finding that show on TMDB.',
-            });
-
-          const seasons = await getSeasons(
-            input.showId,
-            result.number_of_seasons ?? 1,
-          );
-
-          if (!seasons)
-            throw new TRPCError({
-              code: 'NOT_FOUND',
-              message: 'Something went wrong finding that show on TMDB.',
-            });
-
-          await prisma.season.createMany({
+          }),
+          ctx.prisma.season.createMany({
             data: seasons.result.map((s) => ({
               id: s.id,
               seasonNumber: s.season_number ?? 0,
@@ -205,9 +191,8 @@ export const showListRouter = createTRPCRouter({
               releaseDate: s.air_date ?? 'Unknown',
               showId: input.showId,
             })),
-          });
-
-          await prisma.episode.createMany({
+          }),
+          ctx.prisma.episode.createMany({
             data: seasons.result.flatMap(
               (s) =>
                 s.episodes?.map((e) => ({
@@ -219,8 +204,8 @@ export const showListRouter = createTRPCRouter({
                   seasonId: s.id,
                 })) ?? [],
             ),
-          });
-        });
+          }),
+        ]);
       }
 
       return ctx.prisma.list.update({
@@ -242,27 +227,34 @@ export const showListRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const list = await ctx.prisma.list.findUnique({
         where: { id: input.listId },
-        select: { ownerId: true, collaborators: { select: { id: true } } },
-      });
-
-      if (!checkIfExistsAndAccess(ctx, list)) return;
-
-      await ctx.prisma.checkedEpisode.deleteMany({
-        where: {
-          AND: [
-            { listId: input.listId },
-            { episode: { season: { showId: input.showId } } },
-          ],
+        select: {
+          ownerId: true,
+          type: true,
+          collaborators: { select: { id: true } },
         },
       });
 
-      return ctx.prisma.list.update({
-        where: { id: input.listId },
-        data: {
-          shows: {
-            disconnect: { id: input.showId },
+      checkIfExistsAndAccess(ctx, list, 'SHOW');
+
+      const [updatedList] = await ctx.prisma.$transaction([
+        ctx.prisma.list.update({
+          where: { id: input.listId },
+          data: {
+            shows: {
+              disconnect: { id: input.showId },
+            },
           },
-        },
-      });
+        }),
+        ctx.prisma.checkedEpisode.deleteMany({
+          where: {
+            AND: [
+              { listId: input.listId },
+              { episode: { season: { showId: input.showId } } },
+            ],
+          },
+        }),
+      ]);
+
+      return updatedList;
     }),
 });

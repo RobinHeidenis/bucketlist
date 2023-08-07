@@ -39,7 +39,7 @@ export const InviteLinkRow = ({ invite }: InviteLinkRowProps) => {
             data-tip={`${clipboard.copied ? 'Copied!' : 'Copy to clipboard'}`}
           >
             <ClipboardIcon
-              onClick={() => clipboard.copy(invite.url)}
+              onClick={() => void clipboard.copy(invite.url)}
               className="ml-2 h-5 w-5 cursor-pointer"
             />
           </div>
@@ -53,11 +53,11 @@ export const InviteLinkRow = ({ invite }: InviteLinkRowProps) => {
       <td>
         <div className="tooltip tooltip-top" data-tip="Delete invite">
           <button
-            className={`btn-ghost btn-sm btn ${
+            className={`btn btn-ghost btn-sm ${
               deleteInviteLoading ? 'loading' : ''
             }`}
             disabled={deleteInviteLoading}
-            onClick={() => deleteInvite({ id: invite.id })}
+            onClick={() => void deleteInvite({ id: invite.id })}
           >
             {!deleteInviteLoading && (
               <TrashIcon className="h-5 w-5 cursor-pointer text-error" />

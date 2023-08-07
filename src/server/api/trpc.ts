@@ -6,6 +6,24 @@
  * TL;DR - this is where all the tRPC server stuff is created and plugged in.
  * The pieces you will need to use are documented accordingly near the end.
  */
+/**
+ * 2. INITIALIZATION
+ *
+ * This is where the tRPC API is initialized, connecting the context and transformer. We also parse
+ * ZodErrors so that you get typesafety on the frontend if your procedure fails due to validation
+ * errors on the backend.
+ */
+
+import { initTRPC, TRPCError } from '@trpc/server';
+import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
+import { prisma } from '../db';
+import superjson from 'superjson';
+import { ZodError } from 'zod';
+import type {
+  SignedInAuthObject,
+  SignedOutAuthObject,
+} from '@clerk/nextjs/api';
+import { getAuth } from '@clerk/nextjs/server';
 
 /**
  * 1. CONTEXT
@@ -15,28 +33,10 @@
  * These allow you to access things like the database, the session, etc, when processing a request.
  *
  */
-import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
-import { prisma } from '../db';
 
-/**
- * 2. INITIALIZATION
- *
- * This is where the tRPC API is initialized, connecting the context and transformer. We also parse
- * ZodErrors so that you get typesafety on the frontend if your procedure fails due to validation
- * errors on the backend.
- */
-import { initTRPC, TRPCError } from '@trpc/server';
-import superjson from 'superjson';
-import { ZodError } from 'zod';
-import type {
-  SignedInAuthObject,
-  SignedOutAuthObject,
-} from '@clerk/nextjs/api';
-import { getAuth } from '@clerk/nextjs/server';
-
-type AuthContext = {
+interface AuthContext {
   auth: SignedInAuthObject | SignedOutAuthObject;
-};
+}
 
 /**
  * This helper generates the "internals" for a tRPC context. If you need to use

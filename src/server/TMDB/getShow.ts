@@ -1,6 +1,7 @@
 import * as z from 'zod';
 import { basicRequest } from '~/server/TMDB/basicRequest';
 import { seasonSchema } from '~/server/TMDB/getSeason';
+import { TRPCError } from '@trpc/server';
 
 export const showSchema = z.object({
   id: z.number(),
@@ -114,8 +115,16 @@ export const showSchema = z.object({
 export const getShow = async (id: number | string, options?: RequestInit) => {
   const { result, response } = await basicRequest(`tv/${id}`, options);
 
-  return {
-    result: showSchema.parse(result),
-    eTag: response.headers.get('etag') ?? '',
-  };
+  try {
+    return {
+      result: showSchema.parse(result),
+      eTag: response.headers.get('etag') ?? '',
+    };
+  } catch (e) {
+    console.error(e);
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: 'Something went wrong finding that show on TMDB.',
+    });
+  }
 };

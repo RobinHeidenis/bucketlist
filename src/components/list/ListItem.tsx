@@ -50,7 +50,9 @@ export const ListItem = ({
           ref={ref}
           type="checkbox"
           defaultChecked={checked}
-          className="checkbox mr-3 mt-2"
+          className={`checkbox mr-3 mt-2 ${
+            setItemCheckedMutation.isLoading ? 'loading' : ''
+          }`}
           onChange={(event) => {
             if (!permissions.hasPermissions) {
               event.preventDefault();
@@ -74,7 +76,7 @@ export const ListItem = ({
             ${showDescription ? '' : 'line-clamp-2'} 
             ${checked ? 'text-slate-500 line-through' : ''}
           `}
-            onClick={() => setShowDescription(!showDescription)}
+            onClick={() => void setShowDescription(!showDescription)}
           >
             {description}
           </p>
@@ -82,8 +84,8 @@ export const ListItem = ({
       </div>
       {permissions.hasPermissions && (
         <DropdownMenu
-          editOnClick={() => openEditItemModal()}
-          deleteOnClick={() => deleteItemMutation.mutate({ id })}
+          editOnClick={openEditItemModal}
+          deleteOnClick={() => void deleteItemMutation.mutate({ id })}
           className="self-center"
         />
       )}

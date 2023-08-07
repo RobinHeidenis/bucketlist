@@ -17,8 +17,8 @@ export const SortAndFilterHeader = ({
         items={filterModeOptions}
         label={
           <div className={'flex flex-row items-center justify-start'}>
-            <ArrowsUpDownIcon className={'mr-2 h-6 w-6'} />
-            <span className={'text-start'}>
+            <ArrowsUpDownIcon className={'h-6 w-6'} />
+            <span className={'pl-2 text-start'}>
               {filterMode === 'default'
                 ? 'Sort'
                 : filterModeOptions.find((i) => i.value === filterMode)
@@ -34,8 +34,8 @@ export const SortAndFilterHeader = ({
         <FunnelIcon className={'h-6 w-6'} />
         <input
           placeholder="Filter"
-          onChange={(e) => setFilterText(e.target.value)}
-          className="input-ghost input w-48"
+          onChange={(e) => void setFilterText(e.target.value)}
+          className="input input-ghost w-48"
         />
       </div>
     </div>

@@ -119,8 +119,6 @@ export const getSeasons = async (
           const season = show[`season/${s.season_number}`];
           if (!season) throw new Error(`Season ${s.season_number} not found`);
 
-          delete show[`seasons/${s.season_number}`];
-
           return {
             ...season,
             id: s.id,

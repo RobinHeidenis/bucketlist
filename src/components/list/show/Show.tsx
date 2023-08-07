@@ -43,7 +43,7 @@ export const Show = ({ listId, permissions, hideDivider, show }: ShowProps) => {
     >
       <div
         className={`collapse-title flex flex-row items-start justify-between p-0 after:!right-[0.85rem]`}
-        onClick={() => setOpen(!open)}
+        onClick={() => void setOpen(!open)}
       >
         <div className="flex flex-row items-start">
           <PosterImage
@@ -108,7 +108,7 @@ export const Show = ({ listId, permissions, hideDivider, show }: ShowProps) => {
         {permissions.hasPermissions && (
           <DropdownHeader>
             <DropdownItem
-              onClick={() => deleteShow({ showId: show.id, listId })}
+              onClick={() => void deleteShow({ showId: show.id, listId })}
               danger
             >
               <TrashIcon className="h-6 w-6" />

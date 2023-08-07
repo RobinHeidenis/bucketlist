@@ -10,14 +10,14 @@ import type {
   Show,
 } from '@prisma/client';
 
-type Owner = {
+interface Owner {
   id: string;
   name: string | null;
-};
+}
 
-type Collaborator = {
+interface Collaborator {
   id: string;
-};
+}
 
 type List = Omit<DBList, 'ownerId'>;
 

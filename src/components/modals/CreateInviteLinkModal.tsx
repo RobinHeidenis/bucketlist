@@ -31,7 +31,7 @@ export const CreateInviteLinkModal = NiceModal.create(
       <ModalHeader title="Create invite link" modal={modal}>
         <div>
           {filteredInvites && filteredInvites.length > 0 && (
-            <table className="mt-5 table table-fixed">
+            <table className="table mt-5 table-fixed">
               <thead>
                 <tr>
                   <th>Link</th>
@@ -48,13 +48,13 @@ export const CreateInviteLinkModal = NiceModal.create(
           )}
         </div>
         <button
-          className={`btn-primary btn mt-5 ${
+          className={`btn btn-primary mt-5 ${
             filteredInvites && filteredInvites.length > 0
               ? 'self-end'
               : 'self-center'
           } ${isLoading ? 'loading' : ''}`}
           type="button"
-          onClick={() => mutate({ listId })}
+          onClick={() => void mutate({ listId })}
         >
           Create link
         </button>

@@ -5,6 +5,7 @@ import { Webhook, type WebhookRequiredHeaders } from 'svix';
 import { buffer } from 'micro';
 import { type IncomingHttpHeaders } from 'http';
 import { prisma } from '~/server/db';
+import { type WebhookEvent } from '@clerk/clerk-sdk-node';
 
 export const config = {
   api: {
@@ -12,7 +13,7 @@ export const config = {
   },
 };
 
-const webhookSecret: string = process.env.WEBHOOK_SECRET || '';
+const webhookSecret: string = process.env.WEBHOOK_SECRET ?? '';
 
 export default async function handler(
   req: NextApiRequestWithSvixRequiredHeaders,
@@ -23,21 +24,22 @@ export default async function handler(
   const payload = (await buffer(req)).toString();
   const headers = req.headers;
   const wh = new Webhook(webhookSecret);
-  let evt: Event | null = null;
+  let evt: null | WebhookEvent = null;
   try {
-    evt = wh.verify(payload, headers) as Event;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    evt = wh.verify(payload, headers) as WebhookEvent;
   } catch (_) {
-    return res.status(400).json({});
+    return void res.status(400).json({});
   }
 
   // Handle the webhook
-  const eventType: EventType = evt.type;
+  const eventType = evt.type;
   if (eventType === 'user.created') {
     const { id } = evt.data;
-    if (!id) return res.status(400).json({});
+    if (!id) return void res.status(400).json({});
     await prisma.user.create({
       data: {
-        id: id?.toString(),
+        id: id.toString(),
       },
     });
   }
@@ -48,13 +50,3 @@ export default async function handler(
 type NextApiRequestWithSvixRequiredHeaders = NextApiRequest & {
   headers: IncomingHttpHeaders & WebhookRequiredHeaders;
 };
-
-// Generic (and naive) way for the Clerk event
-// payload type.
-type Event = {
-  data: Record<string, string | number>;
-  object: 'event';
-  type: EventType;
-};
-
-type EventType = 'user.created';

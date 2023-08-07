@@ -17,11 +17,21 @@ export const searchRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input }) => {
+      const sanitizedQuery = encodeURIComponent(input.query);
+
       // search for both movies and collections in tmdb
       const [moviesJSON, collectionsJSON] = await Promise.all([
-        basicRequest(`search/movie?query=${input.query}&language=en-US`),
-        basicRequest(`search/collection?query=${input.query}&language=en-US`),
-      ]);
+        basicRequest(`search/movie?query=${sanitizedQuery}&language=en-US`),
+        basicRequest(
+          `search/collection?query=${sanitizedQuery}&language=en-US`,
+        ),
+      ]).catch((e) => {
+        console.error(e);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Something went wrong searching TMDB.',
+        });
+      });
 
       try {
         const parsedMovies = TMDBMovieSearchResult.parse(
@@ -60,8 +70,14 @@ export const searchRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       const showsJSON = await basicRequest(
-        `search/tv?query=${input.query}&language=en-US`,
-      );
+        `search/tv?query=${encodeURIComponent(input.query)}&language=en-US`,
+      ).catch((e) => {
+        console.error(e);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Something went wrong searching TMDB.',
+        });
+      });
 
       try {
         return TMDBTVShowSearchResult.parse(showsJSON.result).results;

@@ -179,92 +179,113 @@ export const listsRouter = createTRPCRouter({
         }
 
         if (isMovieList(list)) {
-          const { checkedMovies } = list as DBMovieList;
+          const checkedMoviesSet = new Set(
+            (list as DBMovieList).checkedMovies.map((m) => m.movieId),
+          );
+
+          const collections = list.collections.map((collection) => {
+            // Filter movies on having a release date, as this is usually a good indicator of if the movie is at all confirmed or just a speculation.
+            const filteredMovies = collection.movies.filter(
+              (movie) => movie.releaseDate,
+            );
+
+            const checkedMoviesInCollection = filteredMovies.filter((movie) =>
+              checkedMoviesSet.has(movie.id),
+            );
+
+            return {
+              ...collection,
+              movies: filteredMovies.map((movie) => ({
+                ...movie,
+                checked: checkedMoviesSet.has(movie.id),
+              })),
+              allChecked:
+                checkedMoviesInCollection.length === filteredMovies.length,
+              amountChecked: checkedMoviesInCollection.length,
+            };
+          });
+
+          const moviesWithCheckedFlag = list.movies.map((movie) => ({
+            ...movie,
+            checked: checkedMoviesSet.has(movie.id),
+          }));
 
           return {
             ...base,
-            collections: list.collections.map((collection) => ({
-              ...collection,
-              movies: collection.movies.map((movie) => ({
-                ...movie,
-                checked: !!checkedMovies.find((m) => m.movieId === movie.id),
-              })),
-              allChecked: collection.movies.every((movie) =>
-                checkedMovies.find((m) => m.movieId === movie.id),
-              ),
-              amountChecked: collection.movies.filter((movie) =>
-                checkedMovies.find((m) => m.movieId === movie.id),
-              ).length,
-            })),
-            movies: list.movies.map((movie) => ({
-              ...movie,
-              checked: !!checkedMovies.find((m) => m.movieId === movie.id),
-            })),
+            collections,
+            movies: moviesWithCheckedFlag,
             total:
-              list.movies.length +
-              list.collections
-                .map((c) => c.movies.length)
-                .reduce((a, b) => a + b, 0),
-            totalChecked: checkedMovies.length,
+              moviesWithCheckedFlag.length +
+              collections.reduce((sum, c) => sum + c.movies.length, 0),
+            totalChecked: checkedMoviesSet.size,
             updatedAt: list.updatedAt,
           };
         }
 
         if (isShowList(list)) {
-          const { checkedEpisodes } = list;
+          const { checkedEpisodes, shows, updatedAt } = list;
+          const checkedEpisodesSet = new Set(
+            checkedEpisodes.map((e) => e.episodeId),
+          );
+
+          let total = 0;
+          let totalChecked = 0;
+
+          const updatedShows = shows.map((show) => {
+            let showTotal = 0;
+            let showTotalChecked = 0;
+
+            const seasons = show.seasons
+              .map((season) => {
+                const episodes = season.episodes
+                  .map((episode) => ({
+                    ...episode,
+                    checked: checkedEpisodesSet.has(episode.id),
+                  }))
+                  .sort((a, b) => a.episodeNumber - b.episodeNumber);
+
+                const allChecked =
+                  episodes.length > 0 &&
+                  episodes.every((episode) =>
+                    checkedEpisodesSet.has(episode.id),
+                  );
+
+                const amountChecked = episodes.filter(
+                  (episode) => episode.checked,
+                ).length;
+                showTotal += season.episodes.length;
+                showTotalChecked += amountChecked;
+
+                return {
+                  ...season,
+                  episodes,
+                  allChecked,
+                  amountChecked,
+                };
+              })
+              .filter((season) => season.episodes.length > 0)
+              .sort((a, b) => a.seasonNumber - b.seasonNumber);
+
+            total += showTotal;
+            totalChecked += showTotalChecked;
+
+            const allChecked = seasons.every((season) => season.allChecked);
+
+            return {
+              ...show,
+              seasons,
+              allChecked,
+              amountChecked: showTotalChecked,
+            };
+          });
 
           return {
             ...base,
-            checkedEpisodes: list.checkedEpisodes,
-            shows: list.shows.map((show) => ({
-              ...show,
-              seasons: show.seasons
-                .map((season) => ({
-                  ...season,
-                  episodes: season.episodes
-                    .map((episode) => ({
-                      ...episode,
-                      checked: !!checkedEpisodes.find(
-                        (e) => e.episodeId === episode.id,
-                      ),
-                    }))
-                    .sort((a, b) => a.episodeNumber - b.episodeNumber),
-                  allChecked:
-                    season.episodes.length > 0
-                      ? season.episodes.every((episode) =>
-                          checkedEpisodes.find(
-                            (e) => e.episodeId === episode.id,
-                          ),
-                        )
-                      : false,
-                  amountChecked: season.episodes.filter((episode) =>
-                    checkedEpisodes.find((e) => e.episodeId === episode.id),
-                  ).length,
-                }))
-                .sort((a, b) => a.seasonNumber - b.seasonNumber),
-              allChecked: show.seasons.every((season) =>
-                season.episodes.every((episode) =>
-                  checkedEpisodes.find((e) => e.episodeId === episode.id),
-                ),
-              ),
-              amountChecked: show.seasons
-                .map(
-                  (season) =>
-                    season.episodes.filter((episode) =>
-                      checkedEpisodes.find((e) => e.episodeId === episode.id),
-                    ).length,
-                )
-                .reduce((a, b) => a + b, 0),
-            })),
-            total: list.shows
-              .map((show) =>
-                show.seasons
-                  .map((season) => season.episodes.length)
-                  .reduce((a, b) => a + b, 0),
-              )
-              .reduce((a, b) => a + b, 0),
-            totalChecked: list.checkedEpisodes.length,
-            updatedAt: list.updatedAt,
+            checkedEpisodes,
+            shows: updatedShows,
+            total,
+            totalChecked,
+            updatedAt,
           };
         }
 
@@ -291,6 +312,7 @@ export const listsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const requestedList = await ctx.prisma.list.findUnique({
         where: { id: input.id },
+        select: { ownerId: true },
       });
 
       if (!requestedList)
@@ -298,19 +320,21 @@ export const listsRouter = createTRPCRouter({
           code: 'NOT_FOUND',
           message: "The list you're requesting to delete cannot be found.",
         });
+
       if (requestedList.ownerId !== ctx.auth.userId)
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You do not have access to delete this list.',
         });
 
-      return await ctx.prisma.list.delete({ where: { id: input.id } });
+      return ctx.prisma.list.delete({ where: { id: input.id } });
     }),
   updateList: protectedProcedure
     .input(zEditListSchema)
     .mutation(async ({ ctx, input }) => {
       const requestedList = await ctx.prisma.list.findUnique({
         where: { id: input.id },
+        select: { ownerId: true },
       });
 
       if (!requestedList)
@@ -318,6 +342,7 @@ export const listsRouter = createTRPCRouter({
           code: 'NOT_FOUND',
           message: "The list you're requesting to update cannot be found.",
         });
+
       if (requestedList.ownerId !== ctx.auth.userId)
         throw new TRPCError({
           code: 'UNAUTHORIZED',
@@ -337,6 +362,7 @@ export const listsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const requestedList = await ctx.prisma.list.findUnique({
         where: { id: input.id },
+        select: { ownerId: true },
       });
 
       if (!requestedList)
@@ -344,6 +370,7 @@ export const listsRouter = createTRPCRouter({
           code: 'NOT_FOUND',
           message: "The list you're requesting to update cannot be found.",
         });
+
       if (requestedList.ownerId !== ctx.auth.userId)
         throw new TRPCError({
           code: 'UNAUTHORIZED',

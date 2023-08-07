@@ -26,7 +26,9 @@ export const Episode = ({
         <input
           type="checkbox"
           checked={episode.checked}
-          className="checkbox mr-3 mt-2"
+          className={`checkbox mr-3 mt-2 ${
+            setEpisodeWatchedMutation.isLoading ? 'loading' : ''
+          }`}
           onChange={(event) => {
             if (!permissions.hasPermissions) {
               event.preventDefault();
@@ -54,7 +56,7 @@ export const Episode = ({
             ${showDescription ? '' : 'line-clamp-2'} 
             ${episode.checked ? 'text-slate-500 line-through' : ''}
           `}
-            onClick={() => setShowDescription(!showDescription)}
+            onClick={() => void setShowDescription(!showDescription)}
           >
             {episode.overview}
           </p>

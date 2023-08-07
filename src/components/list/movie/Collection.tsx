@@ -33,17 +33,13 @@ export const Collection = ({
   const [open, setOpen] = useState(false);
   const { mutate: deleteCollection } =
     api.movieList.deleteCollection.useMutation({
-      onSuccess: () => {
-        void context.lists.getList.invalidate({ id: listId });
-      },
+      onSuccess: () => context.lists.getList.invalidate({ id: listId }),
       onError: showErrorToast,
     });
 
   const { mutate: setCollectionWatched } =
     api.movieList.setCollectionChecked.useMutation({
-      onSuccess: () => {
-        void context.lists.getList.invalidate({ id: listId });
-      },
+      onSuccess: () => context.lists.getList.invalidate({ id: listId }),
       onError: showErrorToast,
     });
 
@@ -56,7 +52,7 @@ export const Collection = ({
     >
       <div
         className="collapse-title flex flex-row items-start justify-between p-0 after:!right-[0.85rem]"
-        onClick={() => setOpen(!open)}
+        onClick={() => void setOpen(!open)}
       >
         <div className="flex flex-row items-start">
           <PosterImage
@@ -113,7 +109,9 @@ export const Collection = ({
               )}
             </DropdownItem>
             <DropdownItem
-              onClick={() => deleteCollection({ id: collection.id, listId })}
+              onClick={() =>
+                void deleteCollection({ id: collection.id, listId })
+              }
               danger
             >
               <TrashIcon className="h-6 w-6" />

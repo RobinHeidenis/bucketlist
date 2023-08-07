@@ -7,10 +7,12 @@ export const DropdownHeader = ({
   children,
 }: PropsWithClassName<PropsWithChildren>) => (
   <div
-    className={`dropdown justify-self-end ${className ?? ''} dropdown-left`}
-    onClick={(e) => e.stopPropagation()}
+    className={`dropdown justify-self-end ${
+      className ?? ''
+    } dropdown-left z-50`}
+    onClick={(e) => void e.stopPropagation()}
   >
-    <label tabIndex={0} className="btn-ghost btn-xs btn-circle btn m-1">
+    <label tabIndex={0} className="btn btn-circle btn-ghost btn-xs m-1">
       <EllipsisVerticalIcon />
     </label>
     <ul

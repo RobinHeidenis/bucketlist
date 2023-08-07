@@ -18,6 +18,8 @@ export const checkAndUpdateMovie = async (
 
     const tmdbMovie = await getMovie(movie.id);
 
+    // I am pretty sure there are cases where this can happen, as I've seen this error before. However, I am not going to try to find out now, so consider this a TODO for later.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!tmdbMovie)
       throw new TRPCError({
         code: 'NOT_FOUND',

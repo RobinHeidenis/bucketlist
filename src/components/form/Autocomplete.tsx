@@ -6,27 +6,27 @@ import { MovieResult } from './MovieResult';
 import { CollectionResult } from './CollectionResult';
 import { ShowResult } from '~/components/form/ShowResult';
 
-interface AutocompleteProps {
+type PossibleResultTypes =
+  | (z.infer<typeof TMDBSearchMovie> | z.infer<typeof TMDBSearchCollection>)
+  | z.infer<typeof TMDBSearchTVShow>;
+
+interface AutocompleteProps<TResult extends PossibleResultTypes> {
   value: string;
   onChange: (value: string) => void;
-  setSelectedResult: (value: any) => void;
-  items: (
-    | z.infer<typeof TMDBSearchMovie>
-    | z.infer<typeof TMDBSearchCollection>
-    | z.infer<typeof TMDBSearchTVShow>
-  )[];
+  setSelectedResult: (value: TResult | null) => void;
+  items: TResult[];
   isLoading: boolean;
   hasHiddenItems: boolean;
 }
 
-export const Autocomplete = ({
+export const Autocomplete = <TResult extends PossibleResultTypes>({
   value,
   onChange,
   items,
   setSelectedResult,
   isLoading,
   hasHiddenItems,
-}: AutocompleteProps) => {
+}: AutocompleteProps<TResult>) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -37,13 +37,13 @@ export const Autocomplete = ({
     >
       <input
         type="text"
-        className="input-bordered input-ghost input w-full"
+        className="input input-bordered input-ghost w-full"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => void onChange(e.target.value)}
         placeholder="Cars 2"
         tabIndex={0}
       />
-      <div className="dropdown-content top-14 max-h-96 w-full flex-col overflow-auto rounded-md bg-base-200">
+      <div className="dropdown-content top-14 max-h-96 w-full flex-col overflow-auto rounded-md bg-base-100">
         <ul className="menu menu-compact m-0 mt-2 flex-grow p-0">
           {items.length === 0 && (
             <li className="m-0 w-full border-b border-b-base-content/10 p-0">
@@ -83,7 +83,7 @@ export const Autocomplete = ({
           })}
         </ul>
         {hasHiddenItems && (
-          <div className="sticky bottom-0 flex items-center justify-center bg-base-200 p-1">
+          <div className="sticky bottom-0 flex items-center justify-center bg-base-100 p-1">
             Some results have been hidden due to them already being in the list.
           </div>
         )}

@@ -4,11 +4,18 @@ import defaultTheme from 'tailwindcss/defaultTheme';
 const config = {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      zIndex: {
+        '60': '60',
+      },
+    },
     screens: {
       xsm: '410px',
       ...defaultTheme.screens,
     },
+  },
+  daisyui: {
+    themes: ['night'],
   },
   plugins: [require('@tailwindcss/typography'), require('daisyui')],
 } satisfies Config;

@@ -15,7 +15,7 @@ export const usePermissionsCheck = (
   const isOwner = userId === listData?.owner?.id;
   const isCollaborator = useMemo(() => {
     if (!listData) return false;
-    return listData?.collaborators?.some(
+    return listData.collaborators?.some(
       (collaborator) => collaborator.id === userId,
     );
   }, [listData, userId]);

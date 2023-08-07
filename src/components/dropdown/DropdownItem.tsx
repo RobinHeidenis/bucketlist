@@ -11,7 +11,7 @@ export const DropdownItem = ({
   return (
     <li className="w-full">
       <button
-        className={`btn-ghost btn-sm btn w-full justify-start gap-2 p-0 ${
+        className={`btn btn-ghost btn-sm w-full justify-start p-0 ${
           danger ? 'text-error' : ''
         }`}
         onClick={onClick}

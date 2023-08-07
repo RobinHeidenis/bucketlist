@@ -76,7 +76,7 @@ export const Movie = ({
                 className={`m-0 ${showDescription ? '' : 'line-clamp-2'} ${
                   movie.checked ? 'text-slate-500 line-through' : ''
                 }`}
-                onClick={() => setShowDescription(!showDescription)}
+                onClick={() => void setShowDescription(!showDescription)}
               >
                 {movie.description}
               </p>
@@ -116,7 +116,7 @@ export const Movie = ({
           <DropdownHeader>
             <DropdownItem
               onClick={() =>
-                setWatched({
+                void setWatched({
                   id: movie.id,
                   listId,
                   checked: !movie.checked,
@@ -134,7 +134,7 @@ export const Movie = ({
               )}
             </DropdownItem>
             <DropdownItem
-              onClick={() => deleteMovie({ id: movie.id, listId })}
+              onClick={() => void deleteMovie({ id: movie.id, listId })}
               danger
             >
               <TrashIcon className="h-6 w-6" />

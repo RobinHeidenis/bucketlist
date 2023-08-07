@@ -30,8 +30,9 @@ export const CreateListModal = NiceModal.create(() => {
   return (
     <ModalHeader title="Create a new list" modal={modal}>
       <form
-        onSubmit={form.onSubmit(({ title, description, type }) =>
-          mutate({ title, description, type }),
+        onSubmit={form.onSubmit(
+          ({ title, description, type }) =>
+            void mutate({ title, description, type }),
         )}
         className="flex w-3/4 max-w-xs flex-col items-center"
       >
@@ -42,7 +43,7 @@ export const CreateListModal = NiceModal.create(() => {
             </span>
           </label>
           <select
-            className="select-bordered select w-full max-w-xs"
+            className="select select-bordered w-full max-w-xs"
             {...form.getInputProps('type')}
           >
             <option selected value="BUCKET">
@@ -67,7 +68,7 @@ export const CreateListModal = NiceModal.create(() => {
           {...form.getInputProps('description')}
         />
         <button
-          className={`btn-primary btn mr-3 mt-5 self-end ${
+          className={`btn btn-primary mr-3 mt-5 self-end ${
             isLoading ? 'loading' : ''
           }`}
           type="submit"
