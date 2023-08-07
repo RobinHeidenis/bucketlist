@@ -4,6 +4,7 @@
 
 import * as Sentry from '@sentry/nextjs';
 import { prisma } from '~/server/db';
+import { env } from '~/env.mjs';
 
 Sentry.init({
   dsn: 'https://2844681f750f04f62534c46b59ad044e@o4505630625824768.ingest.sentry.io/4505630635393024',
@@ -13,5 +14,11 @@ Sentry.init({
 
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,
-  integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
+  integrations:
+    // There is a bug in the Prisma integration that causes it to crash in development.
+    // See https://github.com/getsentry/sentry-javascript/issues/8532
+    // See https://fractum.sentry.io/issues/4376755051
+    env.NODE_ENV !== 'development'
+      ? [new Sentry.Integrations.Prisma({ client: prisma })]
+      : [],
 });
