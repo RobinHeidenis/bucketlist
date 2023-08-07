@@ -7,7 +7,7 @@ export const DiceIcon = () => (
     strokeWidth={2}
     strokeLinecap="round"
     strokeLinejoin="round"
-    className={'mr-2 h-6 w-6'}
+    className={'h-6 w-6'}
   >
     <rect x={2} y={2} width={20} height={20} rx={5} ry={5} />
     <circle cx={7} cy={7} r={1.5} />

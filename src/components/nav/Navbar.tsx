@@ -5,7 +5,7 @@ export const Navbar = () => {
   const { isSignedIn, user } = useUser();
 
   return (
-    <nav className="navbar sticky top-0 z-50 bg-base-100">
+    <nav className="z-60 navbar sticky top-0 bg-base-100">
       {isSignedIn ? (
         <>
           <NavbarLink href="/lists" name="BucketList" />

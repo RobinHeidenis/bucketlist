@@ -50,7 +50,9 @@ export const ListItem = ({
           ref={ref}
           type="checkbox"
           defaultChecked={checked}
-          className="checkbox mr-3 mt-2"
+          className={`checkbox mr-3 mt-2 ${
+            setItemCheckedMutation.isLoading ? 'loading' : ''
+          }`}
           onChange={(event) => {
             if (!permissions.hasPermissions) {
               event.preventDefault();

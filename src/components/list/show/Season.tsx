@@ -30,7 +30,9 @@ export const Season = ({
           <input
             type="checkbox"
             checked={season.allChecked}
-            className="checkbox mr-3 mt-2"
+            className={`checkbox mr-3 mt-2 ${
+              setSeasonCheckedMutation.isLoading ? 'loading' : ''
+            }`}
             onChange={(event) => {
               if (!permissions.hasPermissions) {
                 event.preventDefault();

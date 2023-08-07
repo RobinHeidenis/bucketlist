@@ -17,8 +17,8 @@ export const SortAndFilterHeader = ({
         items={filterModeOptions}
         label={
           <div className={'flex flex-row items-center justify-start'}>
-            <ArrowsUpDownIcon className={'mr-2 h-6 w-6'} />
-            <span className={'text-start'}>
+            <ArrowsUpDownIcon className={'h-6 w-6'} />
+            <span className={'pl-2 text-start'}>
               {filterMode === 'default'
                 ? 'Sort'
                 : filterModeOptions.find((i) => i.value === filterMode)

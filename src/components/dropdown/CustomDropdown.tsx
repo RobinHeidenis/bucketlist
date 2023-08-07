@@ -25,24 +25,19 @@ export const CustomDropdown = ({
       {label}
     </label>
     <ul
-      className="menu dropdown-content rounded-box mt-4 w-40 bg-base-100 p-2 shadow"
+      className="dropdown-content menu rounded-box mt-4 bg-base-100 p-2 font-semibold"
       tabIndex={0}
     >
       {items.map((item, index) => (
-        <li
-          key={index}
-          className={`menu-item text-wrap flex flex-row items-center justify-start ${
-            selected === item.value ? 'bg-primary text-black' : ''
-          }`}
-        >
+        <li key={index} className={'not-prose'}>
           <a
-            className="btn btn-ghost btn-md flex w-full justify-start p-0"
+            className={`${selected === item.value ? 'active' : ''} pl-1`}
             onClick={() => void setSelected(item.value)}
           >
-            <div className={'flex flex-row items-center justify-start'}>
-              {item.icon}
-              <span className={'ml-2 text-start'}>{item.label}</span>
-            </div>
+            {item.icon}
+            <span className={'ml-2 text-start'}>
+              {item.label.toUpperCase()}
+            </span>
           </a>
         </li>
       ))}
