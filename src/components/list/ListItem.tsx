@@ -86,6 +86,7 @@ export const ListItem = ({
         <DropdownMenu
           editOnClick={openEditItemModal}
           deleteOnClick={() => void deleteItemMutation.mutate({ id })}
+          isDeleteLoading={deleteItemMutation.isLoading}
           className="self-center"
         />
       )}

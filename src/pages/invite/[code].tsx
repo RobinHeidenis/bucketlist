@@ -13,7 +13,7 @@ const InvitePage = () => {
     { enabled: !!code, retry: false },
   );
 
-  const { mutate } = api.invite.joinList.useMutation({
+  const { mutate, isLoading } = api.invite.joinList.useMutation({
     onSuccess: (data) => {
       toast.custom(<SuccessToast message="Successfully joined list!" />);
       void router.push(`/lists/${data.id}`);
@@ -25,14 +25,14 @@ const InvitePage = () => {
     return (
       <StandardPage>
         <div className="mx-0 grid h-[calc(100vh-200px)] place-content-center px-0">
-          <div className="alert prose flex w-full flex-col p-5 shadow-xl">
+          <div className="prose alert flex w-full flex-col p-5 shadow-xl">
             <h1 className="mb-2">Not Found</h1>
             <h3 className="mb-0">That invite was not found :(</h3>
             <h3 className="mt-0">
               Please check if the URL is correct and try again
             </h3>
             <button
-              className="btn-primary btn"
+              className="btn btn-primary"
               onClick={() => void router.push('/lists')}
             >
               Go back
@@ -46,7 +46,7 @@ const InvitePage = () => {
     return (
       <StandardPage>
         <div className="mx-0 grid h-[calc(100vh-200px)] max-w-none place-content-center px-0">
-          <div className="alert prose flex flex-col p-5 shadow-xl">
+          <div className="prose alert flex flex-col p-5 shadow-xl">
             <h1 className="mb-3 mt-3">
               {error?.message ?? 'Something went wrong'}
             </h1>
@@ -55,7 +55,7 @@ const InvitePage = () => {
               later.
             </h3>
             <button
-              className="btn-primary btn mt-3"
+              className="btn btn-primary mt-3"
               onClick={() => void router.push('/lists')}
             >
               Go back
@@ -75,11 +75,12 @@ const InvitePage = () => {
           {data.list.owner.name} has invited you to join {data.list.title}
         </p>
         <button
-          className="btn-primary btn mt-5 w-2/3 place-self-center"
+          className="btn btn-primary mt-5 w-2/3 place-self-center"
           onClick={() => {
             mutate({ id: data.id });
           }}
         >
+          <span className={isLoading ? 'loading' : ''} />
           Accept invite
         </button>
       </div>

@@ -31,21 +31,23 @@ export const Collection = ({
 }: CollectionProps) => {
   const context = api.useContext();
   const [open, setOpen] = useState(false);
-  const { mutate: deleteCollection } =
+  const { mutate: deleteCollection, isLoading: isDeleteCollectionLoading } =
     api.movieList.deleteCollection.useMutation({
       onSuccess: () => context.lists.getList.invalidate({ id: listId }),
       onError: showErrorToast,
     });
 
-  const { mutate: setCollectionWatched } =
-    api.movieList.setCollectionChecked.useMutation({
-      onSuccess: () => context.lists.getList.invalidate({ id: listId }),
-      onError: showErrorToast,
-    });
+  const {
+    mutate: setCollectionWatched,
+    isLoading: isSetCollectionWatchedLoading,
+  } = api.movieList.setCollectionChecked.useMutation({
+    onSuccess: () => context.lists.getList.invalidate({ id: listId }),
+    onError: showErrorToast,
+  });
 
   return (
     <div
-      className={`collapse-arrow collapse ${
+      className={`collapse collapse-arrow ${
         open ? 'collapse-open' : 'collapse-close'
       } overflow-visible`}
       style={style}
@@ -100,11 +102,21 @@ export const Collection = ({
             >
               {collection.allChecked ? (
                 <>
-                  <EyeSlashIcon className="h-6 w-6" /> Mark as unseen
+                  <EyeSlashIcon
+                    className={`${
+                      isSetCollectionWatchedLoading ? 'loading' : ''
+                    } h-6 w-6`}
+                  />{' '}
+                  Mark as unseen
                 </>
               ) : (
                 <>
-                  <EyeIcon className="h-6 w-6" /> mark as seen
+                  <EyeIcon
+                    className={`${
+                      isSetCollectionWatchedLoading ? 'loading' : ''
+                    } h-6 w-6`}
+                  />{' '}
+                  mark as seen
                 </>
               )}
             </DropdownItem>
@@ -114,7 +126,11 @@ export const Collection = ({
               }
               danger
             >
-              <TrashIcon className="h-6 w-6" />
+              <TrashIcon
+                className={`${
+                  isDeleteCollectionLoading ? 'loading' : ''
+                } h-6 w-6`}
+              />
               Delete
             </DropdownItem>
           </DropdownHeader>
@@ -132,6 +148,7 @@ export const Collection = ({
             permissions={permissions}
             hideDivider={index === collection.movies.length - 1}
             movie={item}
+            inCollection
           />
         ))}
       </div>

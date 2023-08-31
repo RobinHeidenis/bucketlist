@@ -15,7 +15,7 @@ export const Episode = ({
 }) => {
   const [showDescription, setShowDescription] = useState(false);
   const context = api.useContext();
-  const setEpisodeWatchedMutation = api.showList.setEpisodeWatched.useMutation({
+  const { mutate, isLoading } = api.showList.setEpisodeWatched.useMutation({
     onSuccess: () => context.lists.getList.invalidate({ id: listId }),
     onError: showErrorToast,
   });
@@ -26,16 +26,14 @@ export const Episode = ({
         <input
           type="checkbox"
           checked={episode.checked}
-          className={`checkbox mr-3 mt-2 ${
-            setEpisodeWatchedMutation.isLoading ? 'loading' : ''
-          }`}
+          className={`checkbox mr-3 mt-2 ${isLoading ? 'loading' : ''}`}
           onChange={(event) => {
             if (!permissions.hasPermissions) {
               event.preventDefault();
               event.target.checked = episode.checked;
               return;
             }
-            setEpisodeWatchedMutation.mutate({
+            mutate({
               id: episode.id,
               listId,
               checked: event.target.checked,

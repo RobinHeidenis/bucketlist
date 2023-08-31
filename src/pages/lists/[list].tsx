@@ -29,7 +29,7 @@ const List = () => {
     error,
   } = api.lists.getList.useQuery(
     { id: listId as string },
-    { enabled: !!listId, retry: false },
+    { enabled: !!listId, retry: 3 },
   );
   const { hasPermissions } = usePermissionsCheck(listData);
 
@@ -42,12 +42,12 @@ const List = () => {
   if (!listData || error)
     return (
       <StandardPage>
-        <div className="alert prose flex flex-col shadow-xl">
+        <div className="prose alert flex flex-col shadow-xl">
           <h1>Not Found</h1>
           <h3>That list was not found :(</h3>
           <h3>Please check if the URL is correct and try again</h3>
           <button
-            className="btn-primary btn"
+            className="btn btn-primary"
             onClick={() => void router.push('/lists')}
           >
             Go back
@@ -60,7 +60,7 @@ const List = () => {
     <>
       <ScrollToTop />
       <StandardPage>
-        <div className="prose w-full max-w-[95%] min-[823px]:max-w-[85%] 2xl:max-w-[50%]">
+        <div className="prose w-full max-w-[95%] overflow-hidden min-[823px]:max-w-[85%] 2xl:max-w-[50%]">
           <h1 className="m-0 text-4xl">{listData.title}</h1>
           <p className="mt-3 text-xl">{listData.description}</p>
           <ListHeader list={listData} hasPermissions={hasPermissions} />
@@ -75,7 +75,7 @@ const List = () => {
               }`}
             >
               <button
-                className={`btn-primary btn ${
+                className={`btn btn-primary ${
                   listData.total === 0 ? 'mt-5' : ''
                 }`}
                 onClick={showCreateModal}

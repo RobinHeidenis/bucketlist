@@ -23,22 +23,24 @@ export const ShowListHeader = ({ listId }: { listId: string }) => {
     { enabled: !!searchValue && searchValue.length > 2 },
   );
 
-  const { mutate: createShow } = api.showList.createShow.useMutation({
-    onSuccess: () => {
-      setSearchValue('');
-      setSelectedResult(null);
-      void context.lists.getList.invalidate({ id: listId });
-    },
-    onError: (error) => {
-      if (error.shape?.data.code === 'CONFLICT') {
-        toast.custom(
-          <ErrorToast message="That show is already on your list!" />,
-        );
+  const { mutate: createShow, isLoading } = api.showList.createShow.useMutation(
+    {
+      onSuccess: () => {
         setSearchValue('');
         setSelectedResult(null);
-      } else showErrorToast(error);
+        void context.lists.getList.invalidate({ id: listId });
+      },
+      onError: (error) => {
+        if (error.shape?.data.code === 'CONFLICT') {
+          toast.custom(
+            <ErrorToast message="That show is already on your list!" />,
+          );
+          setSearchValue('');
+          setSelectedResult(null);
+        } else showErrorToast(error);
+      },
     },
-  });
+  );
 
   const { data: listDataRaw } = api.lists.getList.useQuery({ id: listId });
   const listData = listDataRaw as ShowList | undefined;
@@ -89,6 +91,7 @@ export const ShowListHeader = ({ listId }: { listId: string }) => {
                 createShow(params);
               }}
             >
+              <span className={isLoading ? 'loading' : ''} />
               Add show
             </button>
           </div>

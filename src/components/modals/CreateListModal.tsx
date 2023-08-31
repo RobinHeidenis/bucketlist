@@ -67,12 +67,8 @@ export const CreateListModal = NiceModal.create(() => {
           placeholder="All the things I would still like to do before I die."
           {...form.getInputProps('description')}
         />
-        <button
-          className={`btn btn-primary mr-3 mt-5 self-end ${
-            isLoading ? 'loading' : ''
-          }`}
-          type="submit"
-        >
+        <button className="btn btn-primary mr-3 mt-5 self-end" type="submit">
+          <span className={isLoading ? 'loading' : ''} />
           Create
         </button>
       </form>

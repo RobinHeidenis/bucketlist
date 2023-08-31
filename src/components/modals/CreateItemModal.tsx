@@ -55,12 +55,8 @@ export const CreateItemModal = NiceModal.create(
             placeholder="Visit the Eiffel Tower in Paris and have a picnic there."
             {...form.getInputProps('description')}
           />
-          <button
-            className={`btn btn-primary mt-5 self-end ${
-              isLoading ? 'loading' : ''
-            }`}
-            type="submit"
-          >
+          <button className={'btn btn-primary mt-5 self-end'} type="submit">
+            <span className={isLoading ? 'loading' : ''} />
             Add To-do
           </button>
         </form>

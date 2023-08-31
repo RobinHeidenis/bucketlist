@@ -7,11 +7,13 @@ import { DropdownHeader } from './DropdownHeader';
 interface DropdownMenuProps {
   editOnClick: () => void;
   deleteOnClick: () => void;
+  isDeleteLoading?: boolean;
 }
 
 export const DropdownMenu = ({
   editOnClick,
   deleteOnClick,
+  isDeleteLoading,
   className,
   children,
 }: PropsWithChildren<PropsWithClassName<DropdownMenuProps>>) => {
@@ -23,7 +25,7 @@ export const DropdownMenu = ({
       </DropdownItem>
       {children}
       <DropdownItem onClick={deleteOnClick} danger>
-        <TrashIcon className="h-6 w-6" />
+        <TrashIcon className={`${isDeleteLoading ? 'loading' : ''} h-6 w-6`} />
         Delete
       </DropdownItem>
     </DropdownHeader>

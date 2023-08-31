@@ -31,7 +31,7 @@ export const Autocomplete = <TResult extends PossibleResultTypes>({
 
   return (
     <div
-      className={`dropdown-end dropdown z-40 mt-3 w-full ${
+      className={`dropdown dropdown-end z-40 mt-3 w-full ${
         open ? 'dropdown-open' : ''
       }`}
     >
@@ -44,7 +44,7 @@ export const Autocomplete = <TResult extends PossibleResultTypes>({
         tabIndex={0}
       />
       <div className="dropdown-content top-14 max-h-96 w-full flex-col overflow-auto rounded-md bg-base-100">
-        <ul className="menu menu-compact m-0 mt-2 flex-grow p-0">
+        <ul className="menu-compact menu m-0 mt-2 flex-grow p-0">
           {items.length === 0 && (
             <li className="m-0 w-full border-b border-b-base-content/10 p-0">
               <div className="flex flex-row items-center justify-center">
@@ -55,7 +55,10 @@ export const Autocomplete = <TResult extends PossibleResultTypes>({
           {isLoading && (
             <li className="m-0 w-full border-b border-b-base-content/10 p-0">
               <div className="flex flex-row items-center justify-center">
-                <p className="m-0">Loading...</p>
+                <span>Loading</span>
+                <span
+                  className={'loading loading-dots loading-xs left-1 m-0'}
+                ></span>
               </div>
             </li>
           )}
