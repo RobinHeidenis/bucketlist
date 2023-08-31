@@ -68,12 +68,8 @@ export const EditItemModal = NiceModal.create(
             label="Description"
             {...form.getInputProps('description')}
           />
-          <button
-            className={`btn btn-primary mt-5 self-end ${
-              isLoading ? 'loading' : ''
-            }`}
-            type="submit"
-          >
+          <button className="btn btn-primary mt-5 self-end" type="submit">
+            <span className={isLoading ? 'loading' : ''} />
             Save
           </button>
         </form>

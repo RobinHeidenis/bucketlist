@@ -28,16 +28,18 @@ export const Show = ({ listId, permissions, hideDivider, show }: ShowProps) => {
   const [open, setOpen] = useState(false);
 
   const context = api.useContext();
-  const { mutate: deleteShow } = api.showList.deleteShow.useMutation({
-    onSuccess: () => {
-      void context.lists.getList.invalidate({ id: listId });
+  const { mutate: deleteShow, isLoading } = api.showList.deleteShow.useMutation(
+    {
+      onSuccess: () => {
+        void context.lists.getList.invalidate({ id: listId });
+      },
+      onError: showErrorToast,
     },
-    onError: showErrorToast,
-  });
+  );
 
   return (
     <div
-      className={`collapse-arrow collapse max-w-full ${
+      className={`collapse collapse-arrow max-w-full ${
         open ? 'collapse-open' : 'collapse-close'
       } overflow-visible`}
     >
@@ -111,7 +113,7 @@ export const Show = ({ listId, permissions, hideDivider, show }: ShowProps) => {
               onClick={() => void deleteShow({ showId: show.id, listId })}
               danger
             >
-              <TrashIcon className="h-6 w-6" />
+              <TrashIcon className={`${isLoading ? 'loading' : ''} h-6 w-6`} />
               Delete
             </DropdownItem>
           </DropdownHeader>

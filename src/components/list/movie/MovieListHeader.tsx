@@ -10,9 +10,11 @@ import toast from 'react-hot-toast';
 import { ErrorToast } from '~/components/toasts/ErrorToast';
 import { type MovieList } from '~/types/List';
 import { showErrorToast } from '~/utils/showErrorToast';
+import { useDebouncedValue } from '@mantine/hooks';
 
 export const MovieListHeader = ({ listId }: { listId: string }) => {
   const [searchValue, setSearchValue] = useState('');
+  const [debouncedSearchValue] = useDebouncedValue(searchValue, 500);
   const [selectedResult, setSelectedResult] = useState<
     | z.infer<typeof TMDBSearchMovie>
     | z.infer<typeof TMDBSearchCollection>
@@ -21,27 +23,28 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
   const context = api.useContext();
 
   const { data, isFetching } = api.search.movie.useQuery(
-    { query: searchValue },
-    { enabled: !!searchValue && searchValue.length > 2 },
+    { query: debouncedSearchValue },
+    { enabled: !!debouncedSearchValue && debouncedSearchValue.length > 2 },
   );
 
-  const { mutate: createMovie } = api.movieList.createMovie.useMutation({
-    onSuccess: () => {
-      setSearchValue('');
-      setSelectedResult(null);
-      void context.lists.getList.invalidate({ id: listId });
-    },
-    onError: (error) => {
-      if (error.shape?.data.code === 'CONFLICT') {
-        toast.custom(
-          <ErrorToast message="That movie is already in your list!" />,
-        );
+  const { mutate: createMovie, isLoading: isCreateMovieLoading } =
+    api.movieList.createMovie.useMutation({
+      onSuccess: () => {
         setSearchValue('');
         setSelectedResult(null);
-      } else showErrorToast(error);
-    },
-  });
-  const { mutate: createCollection } =
+        void context.lists.getList.invalidate({ id: listId });
+      },
+      onError: (error) => {
+        if (error.shape?.data.code === 'CONFLICT') {
+          toast.custom(
+            <ErrorToast message="That movie is already in your list!" />,
+          );
+          setSearchValue('');
+          setSelectedResult(null);
+        } else showErrorToast(error);
+      },
+    });
+  const { mutate: createCollection, isLoading: isCreateCollectionLoading } =
     api.movieList.createCollection.useMutation({
       onSuccess: () => {
         setSearchValue('');
@@ -118,7 +121,14 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
                 isMovie ? createMovie(params) : createCollection(params);
               }}
             >
-              Add movie
+              <span
+                className={
+                  isCreateCollectionLoading || isCreateMovieLoading
+                    ? 'loading'
+                    : ''
+                }
+              />
+              Add {isMovie ? 'movie' : 'collection'}
             </button>
           </div>
         </>

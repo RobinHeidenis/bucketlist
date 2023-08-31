@@ -29,28 +29,32 @@ interface MovieProps {
   listId: string;
   permissions: Permissions;
   hideDivider?: boolean;
+  inCollection?: boolean;
 }
 
 export const Movie = ({
   listId,
   permissions,
   hideDivider,
+  inCollection,
   movie,
 }: MovieProps) => {
   const [showDescription, setShowDescription] = useState(false);
   const context = api.useContext();
-  const { mutate: setWatched } = api.movieList.setMovieWatched.useMutation({
-    onSuccess: () => {
-      void context.lists.getList.invalidate({ id: listId });
-    },
-    onError: showErrorToast,
-  });
-  const { mutate: deleteMovie } = api.movieList.deleteMovie.useMutation({
-    onSuccess: () => {
-      void context.lists.getList.invalidate({ id: listId });
-    },
-    onError: showErrorToast,
-  });
+  const { mutate: setWatched, isLoading: isSetWatchedLoading } =
+    api.movieList.setMovieWatched.useMutation({
+      onSuccess: () => {
+        void context.lists.getList.invalidate({ id: listId });
+      },
+      onError: showErrorToast,
+    });
+  const { mutate: deleteMovie, isLoading: isDeleteMovieLoading } =
+    api.movieList.deleteMovie.useMutation({
+      onSuccess: () => {
+        void context.lists.getList.invalidate({ id: listId });
+      },
+      onError: showErrorToast,
+    });
 
   return (
     <div>
@@ -125,21 +129,35 @@ export const Movie = ({
             >
               {movie.checked ? (
                 <>
-                  <EyeSlashIcon className="h-6 w-6" /> Mark as unseen
+                  <EyeSlashIcon
+                    className={`h-6 w-6 ${
+                      isSetWatchedLoading ? 'loading' : ''
+                    }`}
+                  />{' '}
+                  Mark as unseen
                 </>
               ) : (
                 <>
-                  <EyeIcon className="h-6 w-6" /> mark as seen
+                  <EyeIcon
+                    className={`h-6 w-6 ${
+                      isSetWatchedLoading ? 'loading' : ''
+                    }`}
+                  />{' '}
+                  mark as seen
                 </>
               )}
             </DropdownItem>
-            <DropdownItem
-              onClick={() => void deleteMovie({ id: movie.id, listId })}
-              danger
-            >
-              <TrashIcon className="h-6 w-6" />
-              Delete
-            </DropdownItem>
+            {!inCollection && (
+              <DropdownItem
+                onClick={() => void deleteMovie({ id: movie.id, listId })}
+                danger
+              >
+                <TrashIcon
+                  className={`${isDeleteMovieLoading ? 'loading' : ''} h-6 w-6`}
+                />
+                Delete
+              </DropdownItem>
+            )}
           </DropdownHeader>
         )}
       </div>

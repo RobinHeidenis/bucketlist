@@ -40,28 +40,31 @@ export const ListHeaderMenu = ({
   const { isOwner, isCollaborator } = usePermissionsCheck(list);
   const context = api.useContext();
 
-  const { mutateAsync: deleteList } = api.lists.deleteList.useMutation({
-    onSuccess: () => {
-      toast.custom(<SuccessToast message="List deleted!" />);
-      return context.lists.getLists.invalidate();
-    },
-    onError: showErrorToast,
-  });
-  const { mutateAsync: togglePublic } = api.lists.setPublic.useMutation({
-    onSuccess: () => {
-      toast.custom(<SuccessToast message="Visibility updated!" />);
-      return context.lists.getList.invalidate({ id });
-    },
-    onError: showErrorToast,
-  });
+  const { mutateAsync: deleteList, isLoading: isDeleteListLoading } =
+    api.lists.deleteList.useMutation({
+      onSuccess: () => {
+        toast.custom(<SuccessToast message="List deleted!" />);
+        return context.lists.getLists.invalidate();
+      },
+      onError: showErrorToast,
+    });
+  const { mutateAsync: togglePublic, isLoading: isTogglePublicLoading } =
+    api.lists.setPublic.useMutation({
+      onSuccess: () => {
+        toast.custom(<SuccessToast message="Visibility updated!" />);
+        return context.lists.getList.invalidate({ id });
+      },
+      onError: showErrorToast,
+    });
 
-  const { mutateAsync: leaveList } = api.lists.leaveList.useMutation({
-    onSuccess: () => {
-      toast.custom(<SuccessToast message="Successfully left list!" />);
-      return context.lists.getLists.invalidate();
-    },
-    onError: showErrorToast,
-  });
+  const { mutateAsync: leaveList, isLoading: isLeaveListLoading } =
+    api.lists.leaveList.useMutation({
+      onSuccess: () => {
+        toast.custom(<SuccessToast message="Successfully left list!" />);
+        return context.lists.getLists.invalidate();
+      },
+      onError: showErrorToast,
+    });
 
   const showEditListModal = () => {
     void NiceModal.show(EditListModal, { listId: id, title, description });
@@ -104,15 +107,20 @@ export const ListHeaderMenu = ({
           deleteOnClick={() => {
             void deleteList({ id }).then(() => router.push('/lists'));
           }}
+          isDeleteLoading={isDeleteListLoading}
         >
           <RandomItemMenuItem list={list} />
           <DropdownItem
             onClick={() => void togglePublic({ id, isPublic: !isPublic })}
           >
             {isPublic ? (
-              <EyeSlashIcon className="h-6 w-6" />
+              <EyeSlashIcon
+                className={`${isTogglePublicLoading ? 'loading' : ''} h-6 w-6`}
+              />
             ) : (
-              <EyeIcon className="h-6 w-6" />
+              <EyeIcon
+                className={`${isTogglePublicLoading ? 'loading' : ''} h-6 w-6`}
+              />
             )}
             Make {isPublic ? 'Private' : 'Public'}
           </DropdownItem>
@@ -131,7 +139,9 @@ export const ListHeaderMenu = ({
             }
             danger
           >
-            <ArrowLeftOnRectangleIcon className="h-6 w-6" />
+            <ArrowLeftOnRectangleIcon
+              className={`${isLeaveListLoading ? 'loading' : ''} h-6 w-6`}
+            />
             Leave List
           </DropdownItem>
         </DropdownHeader>
