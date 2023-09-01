@@ -23,14 +23,29 @@ import { ScrollToTop } from '~/components/nav/ScrollToTop';
 const List = () => {
   const router = useRouter();
   const { list: listId } = router.query;
+  const queryClient = api.useContext();
+  const previousUpdatedAtQueryData = queryClient.lists.getList.getData({
+    id: listId as string,
+  })?.updatedAt;
+  const previousUpdatedAt =
+    previousUpdatedAtQueryData && typeof previousUpdatedAtQueryData === 'string'
+      ? previousUpdatedAtQueryData
+      : previousUpdatedAtQueryData instanceof Date
+      ? previousUpdatedAtQueryData.toISOString()
+      : undefined;
   const {
     data: listData,
     isFetched,
     error,
+    refetch,
   } = api.lists.getList.useQuery(
-    { id: listId as string },
+    {
+      id: listId as string,
+      updatedAt: previousUpdatedAt,
+    },
     { enabled: !!listId, retry: 3 },
   );
+
   const { hasPermissions } = usePermissionsCheck(listData);
 
   const showCreateModal = () => {
@@ -55,6 +70,18 @@ const List = () => {
         </div>
       </StandardPage>
     );
+
+  if ('code' in listData) {
+    queryClient.lists.getList.setData(
+      { id: listId as string, updatedAt: previousUpdatedAt },
+      (oldData) => ({ ...oldData }) as BucketList | MovieList | ShowList,
+    );
+    void queryClient.lists.getList.invalidate({
+      id: listId as string,
+      updatedAt: undefined,
+    });
+    return;
+  }
 
   return (
     <>
