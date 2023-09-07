@@ -1,8 +1,6 @@
 import { useRouter } from 'next/router';
 import { api } from '~/utils/api';
 import { ListHeaderMenu } from '~/components/list/ListHeaderMenu';
-import NiceModal from '@ebay/nice-modal-react';
-import { CreateItemModal } from '~/components/modals/CreateItemModal';
 import { ListSkeleton } from '~/components/skeletons/ListSkeleton';
 import { StandardPage } from '~/components/page/StandardPage';
 import { BucketListItems } from '~/components/list/bucket/BucketListItems';
@@ -22,12 +20,10 @@ import { ScrollToTop } from '~/components/nav/ScrollToTop';
 const List = () => {
   const router = useRouter();
   const { list: listId } = router.query;
-  if (!listId || typeof listId !== 'string')
-    throw new Error('List ID is not a string');
 
   const queryClient = api.useContext();
   const previousQueryData = queryClient.lists.getList.getData({
-    id: listId,
+    id: listId as string,
   });
 
   const previousUpdatedAt =
@@ -41,13 +37,11 @@ const List = () => {
     error,
   } = api.lists.getList.useQuery(
     {
-      id: listId,
+      id: listId as string,
       updatedAt: previousUpdatedAt,
     },
     { enabled: !!listId, retry: 3 },
   );
-
-  const { hasPermissions } = usePermissionsCheck(list);
 
   if (!list && !isFetched) return <ListSkeleton />;
 
@@ -72,7 +66,7 @@ const List = () => {
   // This means that our local data is the same as the server data, so we can just use set data to the previous query data.
   if (previousQueryData && 'code' in list) {
     queryClient.lists.getList.setData(
-      { id: listId, updatedAt: previousUpdatedAt },
+      { id: listId as string, updatedAt: previousUpdatedAt },
       () => {
         return { ...previousQueryData };
       },
@@ -94,22 +88,6 @@ const List = () => {
           <div className="w-full">
             <ListItems list={list} />
           </div>
-          {hasPermissions && isBucketList(list) && (
-            <div
-              className={`mb-10 flex w-full flex-row ${
-                list.total === 0 ? 'justify-start' : 'mt-10 justify-end'
-              }`}
-            >
-              <button
-                className={`btn btn-primary ${list.total === 0 ? 'mt-5' : ''}`}
-                onClick={() =>
-                  void NiceModal.show(CreateItemModal, { listId: listId })
-                }
-              >
-                Add to-do
-              </button>
-            </div>
-          )}
         </div>
       </StandardPage>
     </>
