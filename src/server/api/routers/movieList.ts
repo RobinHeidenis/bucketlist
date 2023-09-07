@@ -84,11 +84,26 @@ export const movieListRouter = createTRPCRouter({
           });
 
         if (input.checked) {
+          const alreadyCheckedMovies = (
+            await prisma.checkedMovie.findMany({
+              where: {
+                listId: input.listId,
+                movieId: {
+                  in: list.collections[0].movies.map((movie) => movie.id),
+                },
+              },
+            })
+          ).map((m) => m.movieId);
+
           return ctx.prisma.checkedMovie.createMany({
-            data: list.collections[0].movies.map((movie) => ({
-              listId: input.listId,
-              movieId: movie.id,
-            })),
+            data: list.collections[0].movies
+              .filter(
+                (movie) => !alreadyCheckedMovies.find((id) => id === movie.id),
+              )
+              .map((movie) => ({
+                listId: input.listId,
+                movieId: movie.id,
+              })),
           });
         } else {
           return ctx.prisma.checkedMovie.deleteMany({
