@@ -5,6 +5,7 @@ import '~/styles/globals.css';
 import NiceModal from '@ebay/nice-modal-react';
 import { Toaster } from 'react-hot-toast';
 import { dark } from '@clerk/themes';
+import { SentryUserManager } from '~/components/SentryUserManager';
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
@@ -18,6 +19,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
       <NiceModal.Provider>
         <Component {...pageProps} />
       </NiceModal.Provider>
+      <SentryUserManager />
     </ClerkProvider>
   );
 };

@@ -32,7 +32,7 @@ export const inviteRouter = createTRPCRouter({
           message: 'You are not allowed to create an invite for this list.',
         });
 
-      return await ctx.prisma.inviteLink.create({
+      return ctx.prisma.inviteLink.create({
         data: {
           list: { connect: { id: input.listId } },
           code: Math.random().toString(36).substring(2, 7),
@@ -132,7 +132,7 @@ export const inviteRouter = createTRPCRouter({
           message: 'You are not allowed to delete this invite.',
         });
 
-      return await ctx.prisma.inviteLink.delete({
+      return ctx.prisma.inviteLink.delete({
         where: { id: input.id },
       });
     }),
