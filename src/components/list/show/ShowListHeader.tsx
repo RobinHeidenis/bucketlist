@@ -8,10 +8,10 @@ import { StarIcon } from '@heroicons/react/24/solid';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { ErrorToast } from '~/components/toasts/ErrorToast';
-import { type ShowList } from '~/types/List';
+import { type PropsWithShowList } from '~/types/List';
 import { showErrorToast } from '~/utils/showErrorToast';
 
-export const ShowListHeader = ({ listId }: { listId: string }) => {
+export const ShowListHeader = ({ list }: PropsWithShowList) => {
   const [searchValue, setSearchValue] = useState('');
   const [selectedResult, setSelectedResult] = useState<z.infer<
     typeof TMDBSearchTVShow
@@ -28,7 +28,7 @@ export const ShowListHeader = ({ listId }: { listId: string }) => {
       onSuccess: () => {
         setSearchValue('');
         setSelectedResult(null);
-        void context.lists.getList.invalidate({ id: listId });
+        void context.lists.getList.invalidate({ id: list.id });
       },
       onError: (error) => {
         if (error.shape?.data.code === 'CONFLICT') {
@@ -42,11 +42,8 @@ export const ShowListHeader = ({ listId }: { listId: string }) => {
     },
   );
 
-  const { data: listDataRaw } = api.lists.getList.useQuery({ id: listId });
-  const listData = listDataRaw as ShowList | undefined;
-
   const filteredData = data?.filter(
-    (result) => !listData?.shows.some((show) => show.id === result.id),
+    (result) => !list.shows.some((show) => show.id === result.id),
   );
 
   return (
@@ -87,8 +84,7 @@ export const ShowListHeader = ({ listId }: { listId: string }) => {
             <button
               className="btn btn-primary"
               onClick={() => {
-                const params = { listId, showId: selectedResult.id };
-                createShow(params);
+                createShow({ listId: list.id, showId: selectedResult.id });
               }}
             >
               <span className={isLoading ? 'loading' : ''} />

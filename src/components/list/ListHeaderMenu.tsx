@@ -26,15 +26,12 @@ import {
   isMovieList,
   type MovieList,
   type MovieListCollection,
+  type PropsWithList,
   type ShowList,
 } from '~/types/List';
 import { showErrorToast } from '~/utils/showErrorToast';
 
-export const ListHeaderMenu = ({
-  list,
-}: {
-  list: BucketList | MovieList | ShowList;
-}) => {
+export const ListHeaderMenu = ({ list }: PropsWithList) => {
   const router = useRouter();
   const { id, owner, total, title, description, isPublic, type } = list;
   const { isOwner, isCollaborator } = usePermissionsCheck(list);

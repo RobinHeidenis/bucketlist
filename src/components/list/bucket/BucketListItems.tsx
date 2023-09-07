@@ -1,9 +1,9 @@
 import { ListItem } from '../ListItem';
 import { usePermissionsCheck } from '~/hooks/usePermissionsCheck';
-import type { BucketList } from '~/types/List';
+import type { PropsWithBucketList } from '~/types/List';
 import { NoItemsMessage } from '~/components/list/NoItemsMessage';
 
-export const BucketListItems = ({ list }: { list: BucketList }) => {
+export const BucketListItems = ({ list }: PropsWithBucketList) => {
   const permissions = usePermissionsCheck(list);
 
   return (

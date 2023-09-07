@@ -8,11 +8,11 @@ import { StarIcon } from '@heroicons/react/24/solid';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { ErrorToast } from '~/components/toasts/ErrorToast';
-import { type MovieList } from '~/types/List';
+import { type PropsWithMovieList } from '~/types/List';
 import { showErrorToast } from '~/utils/showErrorToast';
 import { useDebouncedValue } from '@mantine/hooks';
 
-export const MovieListHeader = ({ listId }: { listId: string }) => {
+export const MovieListHeader = ({ list }: PropsWithMovieList) => {
   const [searchValue, setSearchValue] = useState('');
   const [debouncedSearchValue] = useDebouncedValue(searchValue, 500);
   const [selectedResult, setSelectedResult] = useState<
@@ -32,7 +32,7 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
       onSuccess: () => {
         setSearchValue('');
         setSelectedResult(null);
-        void context.lists.getList.invalidate({ id: listId });
+        void context.lists.getList.invalidate({ id: list.id });
       },
       onError: (error) => {
         if (error.shape?.data.code === 'CONFLICT') {
@@ -49,7 +49,7 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
       onSuccess: () => {
         setSearchValue('');
         setSelectedResult(null);
-        void context.lists.getList.invalidate({ id: listId });
+        void context.lists.getList.invalidate({ id: list.id });
       },
       onError: (error) => {
         if (error.shape?.data.code === 'CONFLICT') {
@@ -62,13 +62,10 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
       },
     });
 
-  const { data: listDataRaw } = api.lists.getList.useQuery({ id: listId });
-  const listData = listDataRaw as MovieList;
-
   const filteredData = data?.filter(
     (result) =>
-      !listData.movies.some((movie) => movie.id === result.id) &&
-      !listData.collections.some((collection) => collection.id === result.id),
+      !list.movies.some((movie) => movie.id === result.id) &&
+      !list.collections.some((collection) => collection.id === result.id),
   );
 
   const isMovie = selectedResult && 'title' in selectedResult;
@@ -117,7 +114,10 @@ export const MovieListHeader = ({ listId }: { listId: string }) => {
             <button
               className="btn btn-primary"
               onClick={() => {
-                const params = { listId, externalId: selectedResult.id };
+                const params = {
+                  listId: list.id,
+                  externalId: selectedResult.id,
+                } satisfies Parameters<typeof createMovie>[number];
                 isMovie ? createMovie(params) : createCollection(params);
               }}
             >

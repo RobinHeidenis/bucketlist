@@ -9,11 +9,10 @@ import { BucketListItems } from '~/components/list/bucket/BucketListItems';
 import { MovieListHeader } from '~/components/list/movie/MovieListHeader';
 import { usePermissionsCheck } from '~/hooks/usePermissionsCheck';
 import {
-  type BucketList,
   isBucketList,
   isMovieList,
-  type MovieList,
-  type ShowList,
+  isShowList,
+  type PropsWithList,
 } from '~/types/List';
 import { MovieListItems } from '~/components/list/movie/MovieListItems';
 import { ShowListHeader } from '~/components/list/show/ShowListHeader';
@@ -23,38 +22,36 @@ import { ScrollToTop } from '~/components/nav/ScrollToTop';
 const List = () => {
   const router = useRouter();
   const { list: listId } = router.query;
+  if (!listId || typeof listId !== 'string')
+    throw new Error('List ID is not a string');
+
   const queryClient = api.useContext();
-  const previousUpdatedAtQueryData = queryClient.lists.getList.getData({
-    id: listId as string,
-  })?.updatedAt;
+  const previousQueryData = queryClient.lists.getList.getData({
+    id: listId,
+  });
+
   const previousUpdatedAt =
-    previousUpdatedAtQueryData && typeof previousUpdatedAtQueryData === 'string'
-      ? previousUpdatedAtQueryData
-      : previousUpdatedAtQueryData instanceof Date
-      ? previousUpdatedAtQueryData.toISOString()
+    previousQueryData?.updatedAt instanceof Date
+      ? previousQueryData.updatedAt.toISOString()
       : undefined;
+
   const {
-    data: listData,
+    data: list,
     isFetched,
     error,
-    refetch,
   } = api.lists.getList.useQuery(
     {
-      id: listId as string,
+      id: listId,
       updatedAt: previousUpdatedAt,
     },
     { enabled: !!listId, retry: 3 },
   );
 
-  const { hasPermissions } = usePermissionsCheck(listData);
+  const { hasPermissions } = usePermissionsCheck(list);
 
-  const showCreateModal = () => {
-    void NiceModal.show(CreateItemModal, { listId: listId as string });
-  };
+  if (!list && !isFetched) return <ListSkeleton />;
 
-  if (!listData && !isFetched) return <ListSkeleton />;
-
-  if (!listData || error)
+  if (!list || error)
     return (
       <StandardPage>
         <div className="prose alert flex flex-col shadow-xl">
@@ -71,41 +68,43 @@ const List = () => {
       </StandardPage>
     );
 
-  if ('code' in listData) {
+  // If code is set in the current query data, it means the updatedAt parameter sent to the server is the same as the one in the database.
+  // This means that our local data is the same as the server data, so we can just use set data to the previous query data.
+  if (previousQueryData && 'code' in list) {
     queryClient.lists.getList.setData(
-      { id: listId as string, updatedAt: previousUpdatedAt },
-      (oldData) => ({ ...oldData }) as BucketList | MovieList | ShowList,
+      { id: listId, updatedAt: previousUpdatedAt },
+      () => {
+        return { ...previousQueryData };
+      },
     );
-    void queryClient.lists.getList.invalidate({
-      id: listId as string,
-      updatedAt: undefined,
-    });
     return;
   }
+
+  if ('code' in list) throw new Error('Data is not a list');
 
   return (
     <>
       <ScrollToTop />
       <StandardPage>
         <div className="prose w-full max-w-[95%] overflow-hidden min-[823px]:max-w-[85%] 2xl:max-w-[50%]">
-          <h1 className="m-0 text-4xl">{listData.title}</h1>
-          <p className="mt-3 text-xl">{listData.description}</p>
-          <ListHeader list={listData} hasPermissions={hasPermissions} />
+          <h1 className="m-0 text-4xl">{list.title}</h1>
+          <p className="mt-3 text-xl">{list.description}</p>
+          <ListHeader list={list} />
           <div className="divider mb-0" />
           <div className="w-full">
-            <ListItems list={listData} />
+            <ListItems list={list} />
           </div>
-          {hasPermissions && isBucketList(listData) && (
+          {hasPermissions && isBucketList(list) && (
             <div
               className={`mb-10 flex w-full flex-row ${
-                listData.total === 0 ? 'justify-start' : 'mt-10 justify-end'
+                list.total === 0 ? 'justify-start' : 'mt-10 justify-end'
               }`}
             >
               <button
-                className={`btn btn-primary ${
-                  listData.total === 0 ? 'mt-5' : ''
-                }`}
-                onClick={showCreateModal}
+                className={`btn btn-primary ${list.total === 0 ? 'mt-5' : ''}`}
+                onClick={() =>
+                  void NiceModal.show(CreateItemModal, { listId: listId })
+                }
               >
                 Add to-do
               </button>
@@ -117,25 +116,20 @@ const List = () => {
   );
 };
 
-const ListHeader = ({
-  list,
-  hasPermissions,
-}: {
-  list: BucketList | MovieList | ShowList;
-  hasPermissions: boolean;
-}) => {
+const ListHeader = ({ list }: PropsWithList) => {
+  const { hasPermissions } = usePermissionsCheck(list);
   if (!hasPermissions) return <ListHeaderMenu list={list} />;
 
   return (
     <>
       <ListHeaderMenu list={list} />
-      {list.type === 'MOVIE' && <MovieListHeader listId={list.id} />}
-      {list.type === 'SHOW' && <ShowListHeader listId={list.id} />}
+      {isMovieList(list) && <MovieListHeader list={list} />}
+      {isShowList(list) && <ShowListHeader list={list} />}
     </>
   );
 };
 
-const ListItems = ({ list }: { list: BucketList | MovieList | ShowList }) => {
+const ListItems = ({ list }: PropsWithList) => {
   if (isBucketList(list)) return <BucketListItems list={list} />;
   if (isMovieList(list)) return <MovieListItems list={list} />;
   return <ShowListItems list={list} />;

@@ -1,4 +1,4 @@
-import { type ShowList } from '~/types/List';
+import { type PropsWithShowList } from '~/types/List';
 import { usePermissionsCheck } from '~/hooks/usePermissionsCheck';
 import { Show } from '~/components/list/show/Show';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
@@ -8,7 +8,7 @@ import { useDebouncedState } from '@mantine/hooks';
 import { SortAndFilterHeader } from '~/components/list/SortAndFilterHeader';
 import { NoItemsMessage } from '~/components/list/NoItemsMessage';
 
-export const ShowListItems = ({ list }: { list: ShowList }) => {
+export const ShowListItems = ({ list }: PropsWithShowList) => {
   const permissions = usePermissionsCheck(list);
   const [filterMode, setFilterMode] = useState<string>('default');
   const showItems = useSortedShows(list.shows, filterMode);

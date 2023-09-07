@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import type { RouterOutputs } from '~/utils/api';
 import { useAuth } from '@clerk/nextjs';
+import { type ListType } from '~/types/List';
 
 export interface Permissions {
   isOwner: boolean;
@@ -9,20 +9,20 @@ export interface Permissions {
 }
 
 export const usePermissionsCheck = (
-  listData: Partial<RouterOutputs['lists']['getList']> | undefined,
+  list: ListType | undefined,
 ): Permissions => {
   const { userId } = useAuth();
-  const isOwner = userId === listData?.owner?.id;
+  const isOwner = userId === list?.owner.id;
   const isCollaborator = useMemo(() => {
-    if (!listData) return false;
-    return listData.collaborators?.some(
+    if (!list) return false;
+    return list.collaborators.some(
       (collaborator) => collaborator.id === userId,
     );
-  }, [listData, userId]);
+  }, [list, userId]);
 
   return {
     isOwner,
-    isCollaborator: isCollaborator ?? false,
-    hasPermissions: (isOwner || isCollaborator) ?? false,
+    isCollaborator: isCollaborator,
+    hasPermissions: isOwner || isCollaborator,
   };
 };

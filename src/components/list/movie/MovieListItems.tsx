@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import RenderIfVisible from 'react-render-if-visible';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
-import type { MovieList } from '~/types/List';
+import type { PropsWithMovieList } from '~/types/List';
 import { isCollection } from '~/types/List';
 import { usePermissionsCheck } from '~/hooks/usePermissionsCheck';
 import type { sortMap } from '~/hooks/useSortedMovieItems';
@@ -12,7 +12,7 @@ import { useDebouncedState } from '@mantine/hooks';
 import { SortAndFilterHeader } from '~/components/list/SortAndFilterHeader';
 import { NoItemsMessage } from '~/components/list/NoItemsMessage';
 
-export const MovieListItems = ({ list }: { list: MovieList }) => {
+export const MovieListItems = ({ list }: PropsWithMovieList) => {
   const permissions = usePermissionsCheck(list);
   const [filterMode, setFilterMode] = useState<string>('default');
   const movieItems = useSortedMovieItems(

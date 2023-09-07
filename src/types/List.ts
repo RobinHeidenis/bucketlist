@@ -82,7 +82,28 @@ export type MovieList = Omit<
   'checkedMovies'
 >;
 
-export type ListType =
+export type ListType = BucketList | MovieList | ShowList;
+
+export type PropsWithGenericList<
+  T = unknown,
+  L extends ListType = ListType,
+> = T & { list: L };
+
+export type PropsWithList<T = unknown> = PropsWithGenericList<T>;
+
+export type PropsWithMovieList<T = unknown> = PropsWithGenericList<
+  T,
+  MovieList
+>;
+
+export type PropsWithShowList<T = unknown> = PropsWithGenericList<T, ShowList>;
+
+export type PropsWithBucketList<T = unknown> = PropsWithGenericList<
+  T,
+  BucketList
+>;
+
+export type LooseListType =
   | Omit<BucketList, 'total' | 'totalChecked' | 'owner'>
   | Omit<DBMovieList, 'owner'>
   | Omit<BucketList, 'owner'>
@@ -90,15 +111,15 @@ export type ListType =
   | Omit<ShowList, 'owner'>
   | Omit<DBShowList, 'owner'>;
 
-export const isBucketList = (list: ListType): list is BucketList =>
+export const isBucketList = (list: LooseListType): list is BucketList =>
   list.type === 'BUCKET';
 
 export const isCollection = (
   item: MovieListCollection | MovieListMovie,
 ): item is MovieListCollection => 'movies' in item;
 
-export const isMovieList = (list: ListType): list is MovieList =>
+export const isMovieList = (list: LooseListType): list is MovieList =>
   list.type === 'MOVIE';
 
-export const isShowList = (list: ListType): list is ShowList =>
+export const isShowList = (list: LooseListType): list is ShowList =>
   list.type === 'SHOW';
