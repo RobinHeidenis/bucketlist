@@ -81,7 +81,7 @@ export const checkAndUpdateCollection = async (
     const { id, name, overview, poster_path, backdrop_path } =
       tmdbCollection.result;
 
-    return await ctx.prisma.collection.upsert({
+    return ctx.prisma.collection.upsert({
       where: { id },
       create: {
         id,

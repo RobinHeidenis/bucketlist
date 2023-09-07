@@ -35,14 +35,14 @@ export const movieListRouter = createTRPCRouter({
         });
 
         if (input.checked) {
-          return await prisma.checkedMovie.create({
+          return prisma.checkedMovie.create({
             data: {
               list: { connect: { id: input.listId } },
               movie: { connect: { id: input.id } },
             },
           });
         } else {
-          return await prisma.checkedMovie.delete({
+          return prisma.checkedMovie.delete({
             where: {
               movieId_listId: { listId: input.listId, movieId: input.id },
             },
