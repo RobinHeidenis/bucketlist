@@ -14,6 +14,7 @@ import type {
 } from '~/types/List';
 import { isBucketList, isMovieList, isShowList } from '~/types/List';
 import { clerkClient } from '@clerk/nextjs';
+import { z } from 'zod';
 
 export const listsRouter = createTRPCRouter({
   getLists: protectedProcedure.query(async ({ ctx }) => {
@@ -77,9 +78,46 @@ export const listsRouter = createTRPCRouter({
     });
   }),
   getList: protectedProcedure
-    .input(zIdSchema)
+    .input(
+      zIdSchema.extend({
+        updatedAt: z.string().datetime().nullable().optional(),
+      }),
+    )
     .query(
-      async ({ ctx, input }): Promise<BucketList | MovieList | ShowList> => {
+      async ({
+        ctx,
+        input,
+      }): Promise<
+        | BucketList
+        | MovieList
+        | ShowList
+        | {
+            id: string;
+            updatedAt: string;
+            code: 'NOT_MODIFIED';
+          }
+      > => {
+        if (input.updatedAt) {
+          const list = await ctx.prisma.list.findUnique({
+            where: { id: input.id },
+            select: { updatedAt: true },
+          });
+
+          if (!list)
+            throw new TRPCError({
+              code: 'NOT_FOUND',
+              message: "The list you're requesting cannot be found.",
+            });
+
+          if (input.updatedAt === list.updatedAt.toISOString()) {
+            return {
+              id: input.id,
+              updatedAt: list.updatedAt.toISOString(),
+              code: 'NOT_MODIFIED',
+            };
+          }
+        }
+
         const listType = await ctx.prisma.list.findUnique({
           where: { id: input.id },
           select: { type: true },
