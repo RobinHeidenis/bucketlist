@@ -51,6 +51,9 @@ export const Show = ({ listId, permissions, hideDivider, show }: ShowProps) => {
           <PosterImage
             alt={show.title}
             url={show.posterUrl}
+            imageHash={
+              show.imageHash ? Buffer.from(show.imageHash, 'binary') : null
+            }
             width={80}
             height={120}
             className={`m-0 mr-4 ${show.allChecked ? 'grayscale' : ''}`}

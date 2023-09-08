@@ -148,7 +148,7 @@ export const movieListRouter = createTRPCRouter({
 
         movie = await ctx.prisma.movie.create({
           data: {
-            ...transformAPIMovie(tmdbMovie.result, tmdbMovie.eTag),
+            ...(await transformAPIMovie(tmdbMovie.result, tmdbMovie.eTag)),
           },
         });
       }

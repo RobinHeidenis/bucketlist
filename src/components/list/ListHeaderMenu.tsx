@@ -25,7 +25,6 @@ import {
   isBucketList,
   isMovieList,
   type MovieList,
-  type MovieListCollection,
   type PropsWithList,
   type ShowList,
 } from '~/types/List';
@@ -157,10 +156,7 @@ const RandomItemMenuItem = ({
   const items = isMovieList(list)
     ? [
         ...list.movies.filter((m) => !m.checked),
-        // I'm not completely sure why this cast is necessary, but without it the allChecked property doesn't exist.
-        ...(list.collections as MovieListCollection[]).filter(
-          (c) => !c.allChecked,
-        ),
+        ...list.collections.filter((c) => !c.allChecked),
       ]
     : list.shows.filter((s) => !s.allChecked);
 

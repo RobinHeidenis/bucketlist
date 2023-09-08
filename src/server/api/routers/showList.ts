@@ -4,6 +4,7 @@ import { checkIfExistsAndAccess } from '~/server/utils/checkIfExistsAndAccess';
 import { TRPCError } from '@trpc/server';
 import { getShow } from '~/server/TMDB/getShow';
 import { getSeasons } from '~/server/TMDB/getSeason';
+import { convertImageToHash } from '~/utils/convertImageToHash';
 
 export const showListRouter = createTRPCRouter({
   setEpisodeWatched: protectedProcedure
@@ -177,6 +178,13 @@ export const showListRouter = createTRPCRouter({
               genres: result.genres?.map((g) => g.name).join(', ') ?? '',
               rating: result.vote_average?.toString() ?? 'Unknown',
               posterUrl: result.poster_path,
+              imageHash: result.poster_path
+                ? Buffer.from(
+                    await convertImageToHash(
+                      'https://image.tmdb.org/t/p/w500' + result.poster_path,
+                    ),
+                  )
+                : undefined,
               releaseDate: result.first_air_date ?? 'Unknown',
               etag: eTag,
             },
@@ -214,6 +222,7 @@ export const showListRouter = createTRPCRouter({
           shows: {
             connect: { id: input.showId },
           },
+          updatedAt: new Date(),
         },
       });
     }),
@@ -243,6 +252,7 @@ export const showListRouter = createTRPCRouter({
             shows: {
               disconnect: { id: input.showId },
             },
+            updatedAt: new Date(),
           },
         }),
         ctx.prisma.checkedEpisode.deleteMany({

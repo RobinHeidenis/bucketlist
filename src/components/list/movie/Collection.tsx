@@ -60,6 +60,11 @@ export const Collection = ({
           <PosterImage
             alt={collection.name}
             url={collection.posterUrl}
+            imageHash={
+              collection.imageHash
+                ? Buffer.from(collection.imageHash, 'binary')
+                : null
+            }
             width={80}
             height={120}
             className={`m-0 mr-4 ${collection.allChecked ? 'grayscale' : ''}`}

@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { PhotoIcon } from '@heroicons/react/24/outline';
 import type { PropsWithClassName } from '~/types/PropsWithClassName';
+import { thumbHashToDataURL } from 'thumbhash';
 
 export const PosterImage = ({
   url,
@@ -8,6 +9,7 @@ export const PosterImage = ({
   width = 64,
   height = 91,
   noMargin = false,
+  imageHash,
   className,
 }: PropsWithClassName<{
   alt: string;
@@ -15,6 +17,7 @@ export const PosterImage = ({
   width?: number;
   height?: number;
   noMargin?: boolean;
+  imageHash?: Buffer | null;
 }>) => {
   if (url)
     return (
@@ -23,9 +26,12 @@ export const PosterImage = ({
         alt={alt}
         width={width}
         height={height}
+        placeholder={imageHash ? 'blur' : 'empty'}
+        blurDataURL={imageHash ? thumbHashToDataURL(imageHash) : undefined}
         className={`m-0 ${noMargin ? '' : 'mr-4'} aspect-[2/3] p-0 ${
           className ?? ''
         }`}
+        style={{ height, width }}
         unoptimized
       />
     );

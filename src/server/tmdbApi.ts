@@ -7,6 +7,7 @@ import {
   transformAPIMovie,
 } from '~/server/TMDB/getMovie';
 import { hasCollectionBeenUpdated } from '~/server/TMDB/getCollection';
+import { convertImageToHash } from '~/utils/convertImageToHash';
 
 export const checkAndUpdateMovie = async (
   ctx: Awaited<ReturnType<typeof createTRPCContext>>,
@@ -29,7 +30,7 @@ export const checkAndUpdateMovie = async (
     await ctx.prisma.movie.update({
       where: { id: movie.id },
       data: {
-        ...transformAPIMovie(tmdbMovie.result, tmdbMovie.eTag),
+        ...(await transformAPIMovie(tmdbMovie.result, tmdbMovie.eTag)),
         updatedAt: new Date(),
       },
     });
@@ -50,7 +51,6 @@ export const checkAndUpdateCollection = async (
       );
       if (!tmdbCollection) return;
     } catch (e) {
-      console.log(e);
       throw new TRPCError({
         code: 'NOT_FOUND',
         message: 'Something went wrong finding that collection on TMDB.',
@@ -68,7 +68,7 @@ export const checkAndUpdateCollection = async (
           const { result, eTag } = await getMovie(part.id);
 
           movie = await ctx.prisma.movie.create({
-            data: transformAPIMovie(result, eTag),
+            data: await transformAPIMovie(result, eTag),
           });
         } else {
           await checkAndUpdateMovie(ctx, movie);
@@ -81,6 +81,12 @@ export const checkAndUpdateCollection = async (
     const { id, name, overview, poster_path, backdrop_path } =
       tmdbCollection.result;
 
+    const imageHash = Buffer.from(
+      await convertImageToHash(
+        'https://image.tmdb.org/t/p/w500' + (poster_path ?? backdrop_path),
+      ),
+    );
+
     return ctx.prisma.collection.upsert({
       where: { id },
       create: {
@@ -88,6 +94,7 @@ export const checkAndUpdateCollection = async (
         name,
         overview,
         posterUrl: poster_path ?? backdrop_path,
+        imageHash,
         movies: { connect: movies.map((movie) => ({ id: movie.id })) },
         etag: tmdbCollection.etag,
       },
@@ -96,6 +103,7 @@ export const checkAndUpdateCollection = async (
         name,
         overview,
         posterUrl: poster_path ?? backdrop_path,
+        imageHash,
         updatedAt: new Date(),
         movies: { connect: movies.map((movie) => ({ id: movie.id })) },
         etag: tmdbCollection.etag,
