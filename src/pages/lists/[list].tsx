@@ -16,6 +16,7 @@ import { MovieListItems } from '~/components/list/movie/MovieListItems';
 import { ShowListHeader } from '~/components/list/show/ShowListHeader';
 import { ShowListItems } from '~/components/list/show/ShowListItems';
 import { ScrollToTop } from '~/components/nav/ScrollToTop';
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 const List = () => {
   const router = useRouter();
@@ -56,6 +57,7 @@ const List = () => {
             className="btn btn-primary"
             onClick={() => void router.push('/lists')}
           >
+            <ArrowLeftIcon className="h-5 w-5" />
             Go back
           </button>
         </div>

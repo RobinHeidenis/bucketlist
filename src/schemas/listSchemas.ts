@@ -20,7 +20,7 @@ export const zNewListItemSchema = z.object({
 
 export const zEditListItemSchema = zNewListItemSchema.extend({
   id: z.string().uuid(),
-  listId: z.string().uuid().optional(),
+  listId: z.string().uuid(),
 });
 
 export const zIdSchema = z.object({

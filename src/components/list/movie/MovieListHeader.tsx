@@ -5,7 +5,7 @@ import type { z } from 'zod';
 import type { TMDBSearchCollection, TMDBSearchMovie } from '~/types/TMDBMovie';
 import { PosterImage } from '../../movie/PosterImage';
 import { StarIcon } from '@heroicons/react/24/solid';
-import { CalendarIcon } from '@heroicons/react/24/outline';
+import { CalendarIcon, PlusIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { ErrorToast } from '~/components/toasts/ErrorToast';
 import { type PropsWithMovieList } from '~/types/List';
@@ -121,12 +121,14 @@ export const MovieListHeader = ({ list }: PropsWithMovieList) => {
                 isMovie ? createMovie(params) : createCollection(params);
               }}
             >
-              <span
-                className={
-                  isCreateCollectionLoading || isCreateMovieLoading
-                    ? 'loading'
-                    : ''
-                }
+              <PlusIcon
+                className={`h-5 w-5
+                  ${
+                    isCreateCollectionLoading || isCreateMovieLoading
+                      ? 'loading'
+                      : ''
+                  }
+                `}
               />
               Add {isMovie ? 'movie' : 'collection'}
             </button>

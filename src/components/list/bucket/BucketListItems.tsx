@@ -4,6 +4,7 @@ import type { PropsWithBucketList } from '~/types/List';
 import { NoItemsMessage } from '~/components/list/NoItemsMessage';
 import NiceModal from '@ebay/nice-modal-react';
 import { CreateItemModal } from '~/components/modals/CreateItemModal';
+import { PlusIcon } from '@heroicons/react/24/outline';
 
 export const BucketListItems = ({ list }: PropsWithBucketList) => {
   const permissions = usePermissionsCheck(list);
@@ -34,6 +35,7 @@ export const BucketListItems = ({ list }: PropsWithBucketList) => {
               void NiceModal.show(CreateItemModal, { listId: list.id })
             }
           >
+            <PlusIcon className="h-5 w-5" />
             Add to-do
           </button>
         </div>
