@@ -26,6 +26,7 @@ model Movie {
   runtime     Int?           @db.SmallInt
   genres      String?        @db.VarChar(200)
   posterUrl   String?        @db.VarChar(200)
+  imageHash   Bytes?         @db.Binary(30)
   updatedAt   DateTime       @default(now())
   etag        String?        @db.VarChar(100)
   lists       List[]
@@ -51,6 +52,7 @@ model Collection {
   name      String   @db.VarChar(300)
   overview  String?  @db.VarChar(1000)
   posterUrl String?
+  imageHash Bytes?   @db.Binary(30)
   updatedAt DateTime @default(now()) @updatedAt
   etag      String?  @db.VarChar(100)
   movies    Movie[]
@@ -65,6 +67,7 @@ model Show {
   rating      String?  @db.VarChar(10)
   genres      String?  @db.VarChar(200)
   posterUrl   String?  @db.VarChar(200)
+  imageHash   Bytes?   @db.Binary(30)
   updatedAt   DateTime @default(now())
   etag        String?  @db.VarChar(100)
   seasons     Season[]

@@ -4,6 +4,7 @@ import { checkIfExistsAndAccess } from '~/server/utils/checkIfExistsAndAccess';
 import { TRPCError } from '@trpc/server';
 import { getShow } from '~/server/TMDB/getShow';
 import { getSeasons } from '~/server/TMDB/getSeason';
+import { convertImageToHash } from '~/utils/convertImageToHash';
 
 export const showListRouter = createTRPCRouter({
   setEpisodeWatched: protectedProcedure
@@ -177,6 +178,13 @@ export const showListRouter = createTRPCRouter({
               genres: result.genres?.map((g) => g.name).join(', ') ?? '',
               rating: result.vote_average?.toString() ?? 'Unknown',
               posterUrl: result.poster_path,
+              imageHash: result.poster_path
+                ? Buffer.from(
+                    await convertImageToHash(
+                      'https://image.tmdb.org/t/p/w500' + result.poster_path,
+                    ),
+                  )
+                : undefined,
               releaseDate: result.first_air_date ?? 'Unknown',
               etag: eTag,
             },
@@ -257,4 +265,32 @@ export const showListRouter = createTRPCRouter({
 
       return updatedList;
     }),
+  generateImageHashes: protectedProcedure.mutation(async ({ ctx }) => {
+    const shows = await ctx.prisma.show.findMany({
+      where: {
+        AND: [{ imageHash: null }, { posterUrl: { not: null } }],
+      },
+      select: { id: true, posterUrl: true },
+    });
+
+    return await Promise.all(
+      shows.map(async (show) => {
+        const imageHash = Buffer.from(
+          await convertImageToHash(
+            'https://image.tmdb.org/t/p/w500' + show.posterUrl,
+          ),
+        );
+
+        const result = await ctx.prisma.show.update({
+          where: { id: show.id },
+          data: { imageHash },
+        });
+
+        return {
+          ...result,
+          imageHash: imageHash.toString(),
+        };
+      }),
+    );
+  }),
 });

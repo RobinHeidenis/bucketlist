@@ -10,6 +10,8 @@ import type {
   BucketList,
   DBMovieList,
   MovieList,
+  MovieListCollection,
+  MovieListMovie,
   ShowList,
 } from '~/types/List';
 import { isBucketList, isMovieList, isShowList } from '~/types/List';
@@ -233,31 +235,37 @@ export const listsRouter = createTRPCRouter({
 
             return {
               ...collection,
+              imageHash: collection.imageHash?.toString() ?? null,
               movies: filteredMovies.map((movie) => ({
                 ...movie,
+                imageHash: movie.imageHash?.toString() ?? null,
                 checked: checkedMoviesSet.has(movie.id),
               })),
               allChecked:
                 checkedMoviesInCollection.length === filteredMovies.length,
               amountChecked: checkedMoviesInCollection.length,
-            };
+            } satisfies MovieListCollection;
           });
 
-          const moviesWithCheckedFlag = list.movies.map((movie) => ({
-            ...movie,
-            checked: checkedMoviesSet.has(movie.id),
-          }));
+          const moviesWithCheckedFlag = list.movies.map(
+            (movie) =>
+              ({
+                ...movie,
+                imageHash: movie.imageHash?.toString() ?? null,
+                checked: checkedMoviesSet.has(movie.id),
+              }) satisfies MovieListMovie,
+          );
 
           return {
             ...base,
-            collections,
+            collections: collections,
             movies: moviesWithCheckedFlag,
             total:
               moviesWithCheckedFlag.length +
               collections.reduce((sum, c) => sum + c.movies.length, 0),
             totalChecked: checkedMoviesSet.size,
             updatedAt: list.updatedAt,
-          };
+          } satisfies MovieList;
         }
 
         if (isShowList(list)) {
@@ -311,6 +319,7 @@ export const listsRouter = createTRPCRouter({
 
             return {
               ...show,
+              imageHash: show.imageHash?.toString() ?? null,
               seasons,
               allChecked,
               amountChecked: showTotalChecked,

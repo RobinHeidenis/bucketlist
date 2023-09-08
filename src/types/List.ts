@@ -45,7 +45,8 @@ export type ShowListSeason = Season & {
   amountChecked: number;
 };
 
-export type ShowListShow = Show & {
+export type ShowListShow = Omit<Show, 'imageHash'> & {
+  imageHash?: string | null;
   seasons: ShowListSeason[];
   allChecked: boolean;
   amountChecked: number;
@@ -64,16 +65,20 @@ export type ShowList = Omit<DBShowList, 'shows'> & {
   totalChecked: number;
 };
 
-export type MovieListMovie = Movie & { checked: boolean };
+export type MovieListMovie = Omit<Movie, 'imageHash'> & {
+  checked: boolean;
+  imageHash?: string | null;
+};
 
-export type MovieListCollection = Omit<Collection, 'movies'> & {
+export type MovieListCollection = Omit<Collection, 'movies' | 'imageHash'> & {
+  imageHash?: string | null;
   movies: MovieListMovie[];
   allChecked: boolean;
   amountChecked: number;
 };
 
 export type MovieList = Omit<
-  Omit<DBMovieList, 'movies'> & {
+  Omit<DBMovieList, 'movies' | 'collections'> & {
     movies: MovieListMovie[];
     collections: MovieListCollection[];
     total: number;

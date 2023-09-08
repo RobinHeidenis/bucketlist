@@ -2,6 +2,7 @@ import { basicRequest } from '~/server/TMDB/basicRequest';
 import { z } from 'zod';
 import { type Movie } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
+import { convertImageToHash } from '~/utils/convertImageToHash';
 
 export const movieSchema = z.object({
   id: z.number().int(),
@@ -81,10 +82,10 @@ export const movieSchema = z.object({
   vote_count: z.number().int().optional(),
 });
 
-export const transformAPIMovie = (
+export const transformAPIMovie = async (
   movie: z.infer<typeof movieSchema>,
   etag: string,
-): Omit<Movie, 'updatedAt'> => ({
+): Promise<Omit<Movie, 'updatedAt'>> => ({
   id: movie.id,
   title: movie.title,
   description: movie.overview ?? null,
@@ -93,6 +94,11 @@ export const transformAPIMovie = (
   runtime: movie.runtime ?? null,
   releaseDate: movie.release_date ?? 'Unknown',
   rating: movie.vote_average?.toFixed(1) ?? 'Unknown',
+  imageHash: Buffer.from(
+    await convertImageToHash(
+      'https://image.tmdb.org/t/p/w500' + movie.poster_path,
+    ),
+  ),
   etag,
 });
 export const getMovie = async (id: number | string, options?: RequestInit) => {

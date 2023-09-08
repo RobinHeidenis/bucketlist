@@ -7,7 +7,6 @@ export const SentryUserManager = () => {
 
   useEffect(() => {
     if (user) {
-      console.log(user);
       setUser({
         id: user.id,
         username: `${user.firstName ?? ''}${
