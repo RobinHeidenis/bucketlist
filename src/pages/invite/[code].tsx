@@ -1,9 +1,10 @@
 import { useRouter } from 'next/router';
 import { StandardPage } from '~/components/page/StandardPage';
 import { api } from '~/utils/api';
-import toast from 'react-hot-toast';
+import toast, { CheckmarkIcon } from 'react-hot-toast';
 import { SuccessToast } from '~/components/toasts/SuccessToast';
 import { showErrorToast } from '~/utils/showErrorToast';
+import { ArrowLeftIcon, CheckIcon } from '@heroicons/react/24/outline';
 
 const InvitePage = () => {
   const router = useRouter();
@@ -35,6 +36,7 @@ const InvitePage = () => {
               className="btn btn-primary"
               onClick={() => void router.push('/lists')}
             >
+              <ArrowLeftIcon className={'h-5 w-5'} />
               Go back
             </button>
           </div>
@@ -58,6 +60,7 @@ const InvitePage = () => {
               className="btn btn-primary mt-3"
               onClick={() => void router.push('/lists')}
             >
+              <CheckmarkIcon className={'h-5 w-5'} />
               Go back
             </button>
           </div>
@@ -80,7 +83,7 @@ const InvitePage = () => {
             mutate({ id: data.id });
           }}
         >
-          <span className={isLoading ? 'loading' : ''} />
+          <CheckIcon className={`h-5 w-5 ${isLoading ? 'loading' : ''}`} />
           Accept invite
         </button>
       </div>

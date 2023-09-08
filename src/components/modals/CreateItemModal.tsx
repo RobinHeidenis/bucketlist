@@ -7,6 +7,7 @@ import { TextInput } from '../form/TextInput';
 import { TextArea } from '../form/TextArea';
 import { ModalHeader } from './ModalHeader';
 import { showErrorToast } from '~/utils/showErrorToast';
+import { PlusIcon } from '@heroicons/react/24/outline';
 
 interface CreateItemModalProps {
   listId: string;
@@ -56,7 +57,7 @@ export const CreateItemModal = NiceModal.create(
             {...form.getInputProps('description')}
           />
           <button className={'btn btn-primary mt-5 self-end'} type="submit">
-            <span className={isLoading ? 'loading' : ''} />
+            <PlusIcon className={`h-5 w-5 ${isLoading ? 'loading' : ''}`} />
             Add To-do
           </button>
         </form>

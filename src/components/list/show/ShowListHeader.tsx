@@ -5,7 +5,7 @@ import type { z } from 'zod';
 import { type TMDBSearchTVShow } from '~/types/TMDBMovie';
 import { PosterImage } from '../../movie/PosterImage';
 import { StarIcon } from '@heroicons/react/24/solid';
-import { CalendarIcon } from '@heroicons/react/24/outline';
+import { CalendarIcon, PlusIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { ErrorToast } from '~/components/toasts/ErrorToast';
 import { type PropsWithShowList } from '~/types/List';
@@ -87,7 +87,7 @@ export const ShowListHeader = ({ list }: PropsWithShowList) => {
                 createShow({ listId: list.id, showId: selectedResult.id });
               }}
             >
-              <span className={isLoading ? 'loading' : ''} />
+              <PlusIcon className={`h-5 w-5 ${isLoading ? 'loading' : ''}`} />
               Add show
             </button>
           </div>

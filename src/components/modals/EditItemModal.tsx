@@ -7,6 +7,7 @@ import { TextInput } from '../form/TextInput';
 import { TextArea } from '../form/TextArea';
 import { ModalHeader } from './ModalHeader';
 import { showErrorToast } from '~/utils/showErrorToast';
+import { CheckIcon } from '@heroicons/react/24/outline';
 
 export const EditItemModal = NiceModal.create(
   ({
@@ -27,6 +28,7 @@ export const EditItemModal = NiceModal.create(
         id: itemId,
         title: title,
         description: description ?? '',
+        listId,
       },
       validate: zodResolver(zEditListItemSchema),
     });
@@ -51,6 +53,7 @@ export const EditItemModal = NiceModal.create(
                 id: itemId,
                 title: newTitle,
                 description: newDescription,
+                listId,
               });
             },
           )}
@@ -69,7 +72,7 @@ export const EditItemModal = NiceModal.create(
             {...form.getInputProps('description')}
           />
           <button className="btn btn-primary mt-5 self-end" type="submit">
-            <span className={isLoading ? 'loading' : ''} />
+            <CheckIcon className={`h-5 w-5 ${isLoading ? 'loading' : ''}`} />
             Save
           </button>
         </form>
