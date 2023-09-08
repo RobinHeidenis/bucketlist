@@ -222,6 +222,7 @@ export const showListRouter = createTRPCRouter({
           shows: {
             connect: { id: input.showId },
           },
+          updatedAt: new Date(),
         },
       });
     }),
@@ -251,6 +252,7 @@ export const showListRouter = createTRPCRouter({
             shows: {
               disconnect: { id: input.showId },
             },
+            updatedAt: new Date(),
           },
         }),
         ctx.prisma.checkedEpisode.deleteMany({
@@ -265,32 +267,4 @@ export const showListRouter = createTRPCRouter({
 
       return updatedList;
     }),
-  generateImageHashes: protectedProcedure.mutation(async ({ ctx }) => {
-    const shows = await ctx.prisma.show.findMany({
-      where: {
-        AND: [{ imageHash: null }, { posterUrl: { not: null } }],
-      },
-      select: { id: true, posterUrl: true },
-    });
-
-    return await Promise.all(
-      shows.map(async (show) => {
-        const imageHash = Buffer.from(
-          await convertImageToHash(
-            'https://image.tmdb.org/t/p/w500' + show.posterUrl,
-          ),
-        );
-
-        const result = await ctx.prisma.show.update({
-          where: { id: show.id },
-          data: { imageHash },
-        });
-
-        return {
-          ...result,
-          imageHash: imageHash.toString(),
-        };
-      }),
-    );
-  }),
 });

@@ -6,7 +6,6 @@ import type { Collection } from '@prisma/client';
 import { checkAndUpdateCollection, checkAndUpdateMovie } from '../../tmdbApi';
 import { getMovie, transformAPIMovie } from '~/server/TMDB/getMovie';
 import { checkIfExistsAndAccess } from '~/server/utils/checkIfExistsAndAccess';
-import { convertImageToHash } from '~/utils/convertImageToHash';
 
 export const movieListRouter = createTRPCRouter({
   setMovieWatched: protectedProcedure
@@ -294,62 +293,4 @@ export const movieListRouter = createTRPCRouter({
 
       return updatedList;
     }),
-  generateImageHashesForMovies: protectedProcedure.mutation(async ({ ctx }) => {
-    const movies = await ctx.prisma.movie.findMany({
-      where: {
-        AND: [{ imageHash: null }, { posterUrl: { not: null } }],
-      },
-      select: { id: true, posterUrl: true },
-    });
-
-    return await Promise.all(
-      movies.map(async (movie) => {
-        const imageHash = Buffer.from(
-          await convertImageToHash(
-            'https://image.tmdb.org/t/p/w500' + movie.posterUrl,
-          ),
-        );
-
-        const result = await ctx.prisma.movie.update({
-          where: { id: movie.id },
-          data: { imageHash },
-        });
-
-        return {
-          ...result,
-          imageHash: imageHash.toString(),
-        };
-      }),
-    );
-  }),
-  generateImageHashesForCollections: protectedProcedure.mutation(
-    async ({ ctx }) => {
-      const collections = await ctx.prisma.collection.findMany({
-        where: {
-          AND: [{ imageHash: null }, { posterUrl: { not: null } }],
-        },
-        select: { id: true, posterUrl: true },
-      });
-
-      return await Promise.all(
-        collections.map(async (collection) => {
-          const imageHash = Buffer.from(
-            await convertImageToHash(
-              'https://image.tmdb.org/t/p/w500' + collection.posterUrl,
-            ),
-          );
-
-          const result = await ctx.prisma.collection.update({
-            where: { id: collection.id },
-            data: { imageHash },
-          });
-
-          return {
-            ...result,
-            imageHash: imageHash.toString(),
-          };
-        }),
-      );
-    },
-  ),
 });
