@@ -17,7 +17,7 @@ export const PosterImage = ({
   width?: number;
   height?: number;
   noMargin?: boolean;
-  imageHash?: Buffer | null;
+  imageHash?: Uint8Array | null;
 }>) => {
   if (url)
     return (

@@ -46,7 +46,7 @@ export type ShowListSeason = Season & {
 };
 
 export type ShowListShow = Omit<Show, 'imageHash'> & {
-  imageHash?: string | null;
+  imageHash?: Uint8Array | null;
   seasons: ShowListSeason[];
   allChecked: boolean;
   amountChecked: number;
@@ -67,11 +67,11 @@ export type ShowList = Omit<DBShowList, 'shows'> & {
 
 export type MovieListMovie = Omit<Movie, 'imageHash'> & {
   checked: boolean;
-  imageHash?: string | null;
+  imageHash?: Uint8Array | null;
 };
 
 export type MovieListCollection = Omit<Collection, 'movies' | 'imageHash'> & {
-  imageHash?: string | null;
+  imageHash?: Uint8Array | null;
   movies: MovieListMovie[];
   allChecked: boolean;
   amountChecked: number;

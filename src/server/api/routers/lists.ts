@@ -235,10 +235,14 @@ export const listsRouter = createTRPCRouter({
 
             return {
               ...collection,
-              imageHash: collection.imageHash?.toString() ?? null,
+              imageHash: collection.imageHash
+                ? new Uint8Array(collection.imageHash)
+                : null,
               movies: filteredMovies.map((movie) => ({
                 ...movie,
-                imageHash: movie.imageHash?.toString() ?? null,
+                imageHash: movie.imageHash
+                  ? new Uint8Array(movie.imageHash)
+                  : null,
                 checked: checkedMoviesSet.has(movie.id),
               })),
               allChecked:
@@ -251,7 +255,9 @@ export const listsRouter = createTRPCRouter({
             (movie) =>
               ({
                 ...movie,
-                imageHash: movie.imageHash?.toString() ?? null,
+                imageHash: movie.imageHash
+                  ? new Uint8Array(movie.imageHash)
+                  : null,
                 checked: checkedMoviesSet.has(movie.id),
               }) satisfies MovieListMovie,
           );
@@ -319,7 +325,7 @@ export const listsRouter = createTRPCRouter({
 
             return {
               ...show,
-              imageHash: show.imageHash?.toString() ?? null,
+              imageHash: show.imageHash ? new Uint8Array(show.imageHash) : null,
               seasons,
               allChecked,
               amountChecked: showTotalChecked,
