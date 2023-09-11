@@ -47,7 +47,7 @@ export const Collection = ({
 
   return (
     <div
-      className={`collapse collapse-arrow ${
+      className={`collapse-arrow collapse ${
         open ? 'collapse-open' : 'collapse-close'
       } overflow-visible`}
       style={style}
@@ -60,11 +60,7 @@ export const Collection = ({
           <PosterImage
             alt={collection.name}
             url={collection.posterUrl}
-            imageHash={
-              collection.imageHash
-                ? Buffer.from(collection.imageHash, 'binary')
-                : null
-            }
+            imageHash={collection.imageHash ?? null}
             width={80}
             height={120}
             className={`m-0 mr-4 ${collection.allChecked ? 'grayscale' : ''}`}

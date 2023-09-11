@@ -63,9 +63,7 @@ export const Movie = ({
           <PosterImage
             alt={movie.title}
             url={movie.posterUrl}
-            imageHash={
-              movie.imageHash ? Buffer.from(movie.imageHash, 'binary') : null
-            }
+            imageHash={movie.imageHash ?? null}
             width={80}
             height={120}
             className={`m-0 mr-4 ${movie.checked ? 'grayscale' : ''}`}
