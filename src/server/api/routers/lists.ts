@@ -6,17 +6,20 @@ import {
 } from '~/schemas/listSchemas';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { TRPCError } from '@trpc/server';
-import type {
-  BucketList,
-  DBMovieList,
-  MovieList,
-  MovieListCollection,
-  MovieListMovie,
-  ShowList,
-} from '~/types/List';
+import type { BucketList, MovieList, ShowList } from '~/types/List';
 import { isBucketList, isMovieList, isShowList } from '~/types/List';
 import { clerkClient } from '@clerk/nextjs';
 import { z } from 'zod';
+import { getListBase } from '~/server/api/routers/utils/getList/list';
+import {
+  formatMovieList,
+  getMovieList,
+} from '~/server/api/routers/utils/getList/movieList';
+import {
+  formatShowList,
+  getShowList,
+} from '~/server/api/routers/utils/getList/showList';
+import { getBucketList } from '~/server/api/routers/utils/getList/bucketList';
 
 export const listsRouter = createTRPCRouter({
   getLists: protectedProcedure.query(async ({ ctx }) => {
@@ -134,37 +137,10 @@ export const listsRouter = createTRPCRouter({
         let list;
 
         if (listType.type === 'BUCKET')
-          list = await ctx.prisma.list.findUnique({
-            where: { id: input.id },
-            include: {
-              bucketListItems: {
-                orderBy: [{ title: 'asc' }, { checked: 'asc' }],
-              },
-              collaborators: { select: { id: true } },
-              owner: { select: { id: true } },
-            },
-          });
+          list = await getBucketList(ctx.prisma, input.id);
         else if (listType.type === 'MOVIE')
-          list = await ctx.prisma.list.findUnique({
-            where: { id: input.id },
-            include: {
-              movies: true,
-              collections: { include: { movies: true } },
-              checkedMovies: true,
-              owner: { select: { id: true } },
-              collaborators: { select: { id: true } },
-            },
-          });
-        else
-          list = await ctx.prisma.list.findUnique({
-            where: { id: input.id },
-            include: {
-              shows: { include: { seasons: { include: { episodes: true } } } },
-              checkedEpisodes: true,
-              owner: { select: { id: true } },
-              collaborators: { select: { id: true } },
-            },
-          });
+          list = await getMovieList(ctx.prisma, input.id);
+        else list = await getShowList(ctx.prisma, input.id);
 
         if (!list)
           throw new TRPCError({
@@ -184,28 +160,15 @@ export const listsRouter = createTRPCRouter({
             message: 'You do not have access to view this list.',
           });
 
-        const { firstName, lastName, externalAccounts } =
-          await clerkClient.users.getUser(list.ownerId).catch(() => ({
+        const clerkOwner = await clerkClient.users
+          .getUser(list.ownerId)
+          .catch(() => ({
             firstName: null,
             lastName: null,
             externalAccounts: [],
           }));
 
-        const base = {
-          id: list.id,
-          title: list.title,
-          description: list.description,
-          isPublic: list.isPublic,
-          type: list.type,
-          owner: {
-            id: list.ownerId,
-            name:
-              (`${firstName ?? ''} ${lastName ?? ''}`.trim() ||
-                externalAccounts[0]?.firstName) ??
-              "User that somehow doesn't have a name or a connected account",
-          },
-          collaborators: list.collaborators,
-        };
+        const base = getListBase(list, clerkOwner);
 
         if (isBucketList(list)) {
           return {
@@ -218,130 +181,11 @@ export const listsRouter = createTRPCRouter({
           };
         }
 
-        if (isMovieList(list)) {
-          const checkedMoviesSet = new Set(
-            (list as DBMovieList).checkedMovies.map((m) => m.movieId),
-          );
+        if (isMovieList(list)) return formatMovieList(list, base);
 
-          const collections = list.collections.map((collection) => {
-            // Filter movies on having a release date, as this is usually a good indicator of if the movie is at all confirmed or just a speculation.
-            const filteredMovies = collection.movies.filter(
-              (movie) => movie.releaseDate,
-            );
+        if (isShowList(list)) return formatShowList(list, base);
 
-            const checkedMoviesInCollection = filteredMovies.filter((movie) =>
-              checkedMoviesSet.has(movie.id),
-            );
-
-            return {
-              ...collection,
-              imageHash: collection.imageHash
-                ? new Uint8Array(collection.imageHash)
-                : null,
-              movies: filteredMovies.map((movie) => ({
-                ...movie,
-                imageHash: movie.imageHash
-                  ? new Uint8Array(movie.imageHash)
-                  : null,
-                checked: checkedMoviesSet.has(movie.id),
-              })),
-              allChecked:
-                checkedMoviesInCollection.length === filteredMovies.length,
-              amountChecked: checkedMoviesInCollection.length,
-            } satisfies MovieListCollection;
-          });
-
-          const moviesWithCheckedFlag = list.movies.map(
-            (movie) =>
-              ({
-                ...movie,
-                imageHash: movie.imageHash
-                  ? new Uint8Array(movie.imageHash)
-                  : null,
-                checked: checkedMoviesSet.has(movie.id),
-              }) satisfies MovieListMovie,
-          );
-
-          return {
-            ...base,
-            collections: collections,
-            movies: moviesWithCheckedFlag,
-            total:
-              moviesWithCheckedFlag.length +
-              collections.reduce((sum, c) => sum + c.movies.length, 0),
-            totalChecked: checkedMoviesSet.size,
-            updatedAt: list.updatedAt,
-          } satisfies MovieList;
-        }
-
-        if (isShowList(list)) {
-          const { checkedEpisodes, shows, updatedAt } = list;
-          const checkedEpisodesSet = new Set(
-            checkedEpisodes.map((e) => e.episodeId),
-          );
-
-          let total = 0;
-          let totalChecked = 0;
-
-          const updatedShows = shows.map((show) => {
-            let showTotal = 0;
-            let showTotalChecked = 0;
-
-            const seasons = show.seasons
-              .map((season) => {
-                const episodes = season.episodes
-                  .map((episode) => ({
-                    ...episode,
-                    checked: checkedEpisodesSet.has(episode.id),
-                  }))
-                  .sort((a, b) => a.episodeNumber - b.episodeNumber);
-
-                const allChecked =
-                  episodes.length > 0 &&
-                  episodes.every((episode) =>
-                    checkedEpisodesSet.has(episode.id),
-                  );
-
-                const amountChecked = episodes.filter(
-                  (episode) => episode.checked,
-                ).length;
-                showTotal += season.episodes.length;
-                showTotalChecked += amountChecked;
-
-                return {
-                  ...season,
-                  episodes,
-                  allChecked,
-                  amountChecked,
-                };
-              })
-              .filter((season) => season.episodes.length > 0)
-              .sort((a, b) => a.seasonNumber - b.seasonNumber);
-
-            total += showTotal;
-            totalChecked += showTotalChecked;
-
-            const allChecked = seasons.every((season) => season.allChecked);
-
-            return {
-              ...show,
-              imageHash: show.imageHash ? new Uint8Array(show.imageHash) : null,
-              seasons,
-              allChecked,
-              amountChecked: showTotalChecked,
-            };
-          });
-
-          return {
-            ...base,
-            checkedEpisodes,
-            shows: updatedShows,
-            total,
-            totalChecked,
-            updatedAt,
-          };
-        }
-
+        // If the list is somehow not one of the three types, throw an error.
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Something went wrong.',

@@ -30,12 +30,14 @@ export const SortAndFilterHeader = ({
         setSelected={setFilterMode}
         justifyStart
       />
-      <div className="input-group flex items-center justify-end">
+      <div className={`input-group flex items-center justify-end`}>
         <FunnelIcon className={'h-6 w-6'} />
         <input
           placeholder="Filter"
-          onChange={(e) => void setFilterText(e.target.value.trim())}
-          className="input input-ghost w-48"
+          onChange={(e) => {
+            setFilterText(e.target.value.trim());
+          }}
+          className={`input input-ghost w-48`}
         />
       </div>
     </div>
