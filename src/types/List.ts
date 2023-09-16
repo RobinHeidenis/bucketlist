@@ -15,7 +15,7 @@ interface Owner {
   name: string | null;
 }
 
-interface Collaborator {
+export interface Collaborator {
   id: string;
 }
 

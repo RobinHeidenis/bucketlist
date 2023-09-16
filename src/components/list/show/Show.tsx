@@ -8,7 +8,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { PosterImage } from '../../movie/PosterImage';
 import type { ShowListShow } from '~/types/List';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { Season } from '~/components/list/show/Season';
 import { DropdownHeader } from '~/components/dropdown/DropdownHeader';
 import { DropdownItem } from '~/components/dropdown/DropdownItem';
@@ -24,7 +24,7 @@ interface ShowProps {
   hideDivider?: boolean;
 }
 
-export const Show = ({ listId, permissions, hideDivider, show }: ShowProps) => {
+const Show = memo(({ listId, permissions, hideDivider, show }: ShowProps) => {
   const [open, setOpen] = useState(false);
 
   const context = api.useContext();
@@ -39,7 +39,7 @@ export const Show = ({ listId, permissions, hideDivider, show }: ShowProps) => {
 
   return (
     <div
-      className={`collapse collapse-arrow max-w-full ${
+      className={`collapse collapse-arrow max-w-full transition-none ${
         open ? 'collapse-open' : 'collapse-close'
       } overflow-visible`}
     >
@@ -79,15 +79,15 @@ export const Show = ({ listId, permissions, hideDivider, show }: ShowProps) => {
                 {show.rating ? parseFloat(show.rating).toFixed(1) : 'unknown'}
               </FlexRowCenter>
               <FlexRowCenter sx="whitespace-nowrap">
-                <CalendarIcon className="ml-2 mr-1 h-5 w-5 flex-shrink-0" />
+                <CalendarIcon className="mr-1 h-5 w-5 flex-shrink-0 md:ml-2" />
                 {show.releaseDate || 'unknown'}
               </FlexRowCenter>
               <FlexRowCenter sx="whitespace-nowrap">
-                <TvIcon className="ml-2 mr-1 h-5 w-5 flex-shrink-0" />
+                <TvIcon className="mr-1 h-5 w-5 flex-shrink-0 md:ml-2" />
                 {show.seasons.length} seasons
               </FlexRowCenter>
               <FlexRowCenter sx="whitespace-nowrap">
-                <CheckIcon className="ml-2 mr-1 h-5 w-5 flex-shrink-0" />
+                <CheckIcon className="mr-1 h-5 w-5 flex-shrink-0 md:ml-2" />
                 {show.amountChecked} episodes
               </FlexRowCenter>
               {show.genres ? (
@@ -95,14 +95,14 @@ export const Show = ({ listId, permissions, hideDivider, show }: ShowProps) => {
                   className="tooltip col-span-2 flex min-w-0 max-w-full flex-row items-center justify-start"
                   data-tip={show.genres}
                 >
-                  <TagIcon className="ml-2 mr-1 h-5 w-5 flex-shrink-0" />
+                  <TagIcon className="mr-1 h-5 w-5 flex-shrink-0 md:ml-2" />
                   <div className={'whitespace-wrap line-clamp-1 text-start'}>
                     {show.genres}
                   </div>
                 </div>
               ) : (
                 <>
-                  <TagIcon className="ml-2 mr-1 h-5 w-5" /> none
+                  <TagIcon className="mr-1 h-5 w-5 md:ml-2" /> none
                 </>
               )}
             </div>
@@ -134,4 +134,8 @@ export const Show = ({ listId, permissions, hideDivider, show }: ShowProps) => {
       {!hideDivider && <div className="divider mb-2 mt-2" />}
     </div>
   );
-};
+});
+
+Show.displayName = 'Show';
+
+export { Show };
