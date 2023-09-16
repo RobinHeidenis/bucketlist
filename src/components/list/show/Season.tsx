@@ -82,7 +82,7 @@ export const Season = ({
           </div>
         </div>
       </div>
-      <div className={`collapse-content ${showChildren ? 'mt-5' : ''} p-0`}>
+      <div className={`${showChildren ? 'mt-5' : ''} p-0`}>
         {showChildren &&
           season.episodes.map((episode) => (
             <Episode
