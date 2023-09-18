@@ -34,7 +34,7 @@ model Movie {
   lists       List[]
   checkedBy   CheckedMovie[]
   collections Collection[]
-  watchedBys  WatchedMovie[]
+  watchedBy   WatchedMovie[]
 }
 
 model CheckedMovie {
@@ -60,6 +60,7 @@ model WatchedMovie {
 
   @@index([userId, movieId])
   @@index([movieId])
+  @@index(userId)
 }
 
 model Collection {
@@ -144,6 +145,7 @@ model WatchedEpisode {
 
   @@index([userId, episodeId])
   @@index([episodeId])
+  @@index(userId)
 }
 
 model BucketListItem {

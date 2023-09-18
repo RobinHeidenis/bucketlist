@@ -8,6 +8,7 @@ import {
   showListRouter,
 } from './routers';
 import { createTRPCRouter } from './trpc';
+import { watchedRouter } from '~/server/api/routers/watched';
 
 /**
  * This is the primary router for your server.
@@ -22,6 +23,7 @@ export const appRouter = createTRPCRouter({
   showList: showListRouter,
   bucketList: bucketListRouter,
   search: searchRouter,
+  watched: watchedRouter,
 });
 
 // export type definition of API
