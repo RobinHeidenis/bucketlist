@@ -12,9 +12,11 @@ datasource db {
 }
 
 model User {
-  id           String @id @default(cuid())
-  lists        List[]
-  collaborator List[] @relation("ListCollaborators")
+  id             String           @id @default(cuid())
+  lists          List[]
+  collaborator   List[]           @relation("ListCollaborators")
+  watchedMovie   WatchedMovie[]
+  watchedEpisode WatchedEpisode[]
 }
 
 model Movie {
@@ -32,6 +34,7 @@ model Movie {
   lists       List[]
   checkedBy   CheckedMovie[]
   collections Collection[]
+  watchedBys  WatchedMovie[]
 }
 
 model CheckedMovie {
@@ -45,6 +48,18 @@ model CheckedMovie {
   @@index([listId])
   @@index([movieId])
   @@index([listId, movieId])
+}
+
+model WatchedMovie {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movieId   Int
+  movie     Movie     @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  watchedAt DateTime? @db.Date
+
+  @@index([userId, movieId])
+  @@index([movieId])
 }
 
 model Collection {
@@ -101,6 +116,7 @@ model Episode {
   releaseDate   String           @db.VarChar(50)
   updatedAt     DateTime         @default(now())
   checkedBy     CheckedEpisode[]
+  watchedBy     WatchedEpisode[]
 
   @@index([seasonId])
 }
@@ -116,6 +132,18 @@ model CheckedEpisode {
   @@index([listId])
   @@index([episodeId])
   @@index([listId, episodeId])
+}
+
+model WatchedEpisode {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  episodeId Int
+  episode   Episode   @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  watchedAt DateTime? @db.Date
+
+  @@index([userId, episodeId])
+  @@index([episodeId])
 }
 
 model BucketListItem {
