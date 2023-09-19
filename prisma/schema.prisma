@@ -60,7 +60,7 @@ model WatchedMovie {
 
   @@index([userId, movieId])
   @@index([movieId])
-  @@index(userId)
+  @@index([userId])
 }
 
 model Collection {
@@ -145,7 +145,7 @@ model WatchedEpisode {
 
   @@index([userId, episodeId])
   @@index([episodeId])
-  @@index(userId)
+  @@index([userId])
 }
 
 model BucketListItem {

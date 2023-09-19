@@ -155,4 +155,40 @@ export const watchedRouter = createTRPCRouter({
         },
       });
     }),
+  deleteAllWatchInstances: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        type: z.enum(['movie', 'episode']),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (input.type === 'movie') {
+        return ctx.prisma.watchedMovie.deleteMany({
+          where: {
+            AND: [
+              {
+                movieId: input.id,
+              },
+              {
+                userId: ctx.auth.userId,
+              },
+            ],
+          },
+        });
+      }
+
+      return ctx.prisma.watchedEpisode.deleteMany({
+        where: {
+          AND: [
+            {
+              episodeId: input.id,
+            },
+            {
+              userId: ctx.auth.userId,
+            },
+          ],
+        },
+      });
+    }),
 });
