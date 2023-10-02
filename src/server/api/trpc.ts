@@ -14,7 +14,7 @@
  * errors on the backend.
  */
 
-import { initTRPC, TRPCError } from '@trpc/server';
+import { initTRPC, TRPCError, type Unwrap } from '@trpc/server';
 import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
 import { prisma } from '../db';
 import superjson from 'superjson';
@@ -63,6 +63,8 @@ const createInnerTRPCContext = ({ auth }: AuthContext) => {
 export const createTRPCContext = ({ req }: CreateNextContextOptions) => {
   return createInnerTRPCContext({ auth: getAuth(req) });
 };
+
+export type TRPCContext = Unwrap<typeof createTRPCContext>;
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
