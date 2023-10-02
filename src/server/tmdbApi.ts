@@ -1,5 +1,5 @@
 import type { Collection as CollectionType, Movie } from '@prisma/client';
-import type { createTRPCContext } from './api/trpc';
+import type { TRPCContext } from './api/trpc';
 import { TRPCError } from '@trpc/server';
 import {
   getMovie,
@@ -10,7 +10,7 @@ import { hasCollectionBeenUpdated } from '~/server/TMDB/getCollection';
 import { convertImageToHash } from '~/utils/convertImageToHash';
 
 export const checkAndUpdateMovie = async (
-  ctx: Awaited<ReturnType<typeof createTRPCContext>>,
+  ctx: TRPCContext,
   movie: Pick<Movie, 'id' | 'updatedAt' | 'etag'>,
 ) => {
   // if movie data is at least 1 day old, update it
@@ -38,7 +38,7 @@ export const checkAndUpdateMovie = async (
 };
 
 export const checkAndUpdateCollection = async (
-  ctx: Awaited<ReturnType<typeof createTRPCContext>>,
+  ctx: TRPCContext,
   collection: Pick<CollectionType, 'id' | 'updatedAt' | 'etag'>,
 ) => {
   // if collection data is at least 1 day old, update it
@@ -81,11 +81,7 @@ export const checkAndUpdateCollection = async (
     const { id, name, overview, poster_path, backdrop_path } =
       tmdbCollection.result;
 
-    const imageHash = Buffer.from(
-      await convertImageToHash(
-        'https://image.tmdb.org/t/p/w500' + (poster_path ?? backdrop_path),
-      ),
-    );
+    const imageHash = await convertImageToHash(poster_path ?? backdrop_path);
 
     return ctx.prisma.collection.upsert({
       where: { id },

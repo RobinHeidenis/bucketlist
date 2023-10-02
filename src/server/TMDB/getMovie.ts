@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { type Movie } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { convertImageToHash } from '~/utils/convertImageToHash';
+import { propOrUnknown } from '~/utils/propOrUnknown';
 
 export const movieSchema = z.object({
   id: z.number().int(),
@@ -92,13 +93,9 @@ export const transformAPIMovie = async (
   posterUrl: movie.poster_path,
   genres: movie.genres ? movie.genres.map((g) => g.name).join(', ') : null,
   runtime: movie.runtime ?? null,
-  releaseDate: movie.release_date ?? 'Unknown',
-  rating: movie.vote_average?.toFixed(1) ?? 'Unknown',
-  imageHash: Buffer.from(
-    await convertImageToHash(
-      'https://image.tmdb.org/t/p/w500' + movie.poster_path,
-    ),
-  ),
+  releaseDate: propOrUnknown(movie.release_date),
+  rating: propOrUnknown(movie.vote_average?.toFixed(1)),
+  imageHash: await convertImageToHash(movie.poster_path),
   etag,
 });
 export const getMovie = async (id: number | string, options?: RequestInit) => {

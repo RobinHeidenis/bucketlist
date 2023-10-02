@@ -1,16 +1,16 @@
-import type { createTRPCContext } from '~/server/api/trpc';
+import type { TRPCContext } from '~/server/api/trpc';
 import type { List, ListType, User } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 
 export const checkAccess = (
-  ctx: Awaited<ReturnType<typeof createTRPCContext>>,
+  ctx: TRPCContext,
   list: Partial<List & { collaborators: Pick<User, 'id'>[] }>,
 ) =>
   list.ownerId === ctx.auth.userId ||
   list.collaborators?.some((c) => c.id === ctx.auth.userId);
 
 type assertFunction = (
-  ctx: Awaited<ReturnType<typeof createTRPCContext>>,
+  ctx: TRPCContext,
   list:
     | (Partial<List & { collaborators: Pick<User, 'id'>[] }> & {
         type: ListType;
