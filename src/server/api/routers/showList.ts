@@ -5,6 +5,7 @@ import { TRPCError } from '@trpc/server';
 import { getShow } from '~/server/TMDB/getShow';
 import { getSeasons } from '~/server/TMDB/getSeason';
 import { convertImageToHash } from '~/utils/convertImageToHash';
+import { propOrUnknown } from '~/utils/propOrUnknown';
 
 export const showListRouter = createTRPCRouter({
   setEpisodeWatched: protectedProcedure
@@ -176,16 +177,10 @@ export const showListRouter = createTRPCRouter({
               title: result.name,
               description: result.overview,
               genres: result.genres?.map((g) => g.name).join(', ') ?? '',
-              rating: result.vote_average?.toString() ?? 'Unknown',
+              rating: propOrUnknown(result.vote_average?.toString()),
               posterUrl: result.poster_path,
-              imageHash: result.poster_path
-                ? Buffer.from(
-                    await convertImageToHash(
-                      'https://image.tmdb.org/t/p/w500' + result.poster_path,
-                    ),
-                  )
-                : undefined,
-              releaseDate: result.first_air_date ?? 'Unknown',
+              imageHash: await convertImageToHash(result.poster_path),
+              releaseDate: propOrUnknown(result.first_air_date),
               etag: eTag,
             },
           }),
@@ -196,7 +191,7 @@ export const showListRouter = createTRPCRouter({
               title: s.name,
               overview: s.overview,
               posterUrl: s.poster_path,
-              releaseDate: s.air_date ?? 'Unknown',
+              releaseDate: propOrUnknown(s.air_date),
               showId: input.showId,
             })),
           }),
@@ -208,7 +203,7 @@ export const showListRouter = createTRPCRouter({
                   episodeNumber: e.episode_number,
                   title: e.name,
                   overview: e.overview?.slice(0, 999),
-                  releaseDate: e.air_date ?? 'Unknown',
+                  releaseDate: propOrUnknown(e.air_date),
                   seasonId: s.id,
                 })) ?? [],
             ),
