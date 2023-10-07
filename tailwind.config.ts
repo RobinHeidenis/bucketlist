@@ -2,6 +2,9 @@ import type { Config } from 'tailwindcss';
 import defaultTheme from 'tailwindcss/defaultTheme';
 
 const config = {
+  // corePlugins: {
+  //   preflight: false,
+  // },
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {

@@ -4,7 +4,7 @@ import { ColorSchemeScript } from '@mantine/core';
 const Document = () => (
   <Html lang="en" className="h-full" data-theme="night">
     <Head>
-      <ColorSchemeScript defaultColorScheme="dark" />
+      <ColorSchemeScript defaultColorScheme={'dark'} />
     </Head>
     <body className="h-full">
       <Main />

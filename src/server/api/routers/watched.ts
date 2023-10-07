@@ -61,6 +61,7 @@ export const watchedRouter = createTRPCRouter({
             watchedAt: true,
             id: true,
           },
+          orderBy: { watchedAt: 'desc' },
         },
       },
     });
@@ -100,6 +101,7 @@ export const watchedRouter = createTRPCRouter({
                     watchedAt: true,
                   },
                   where: { userId: ctx.auth.userId },
+                  orderBy: { watchedAt: 'desc' },
                 },
               },
             },
