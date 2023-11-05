@@ -39,26 +39,33 @@ const Watched = () => {
         <MagnifyingGlassIcon className={'mr-5 h-6 w-6'} />
       </div>
       <Collapse in={opened} className={'mb-2 mt-2 flex w-full'}>
-        <div className={'flex w-full flex-row justify-between pl-3 pr-3'}>
-          <Group gap={'xs'}>
-            <Chip
-              defaultChecked
-              variant={'light'}
-              value={'movies'}
-              onChange={setMoviesEnabled}
-            >
-              Movies
-            </Chip>
-            <Chip
-              defaultChecked
-              variant={'light'}
-              color={'red'}
-              value={'shows'}
-              onChange={setShowsEnabled}
-            >
-              Shows
-            </Chip>
-          </Group>
+        <div
+          className={
+            'flex w-full flex-row items-center justify-between pl-3 pr-3'
+          }
+        >
+          <div className={'flex flex-col'}>
+            <Text>Filter</Text>
+            <Group gap={'xs'}>
+              <Chip
+                defaultChecked
+                variant={'light'}
+                value={'movies'}
+                onChange={setMoviesEnabled}
+              >
+                Movies
+              </Chip>
+              <Chip
+                defaultChecked
+                variant={'light'}
+                color={'red'}
+                value={'shows'}
+                onChange={setShowsEnabled}
+              >
+                Shows
+              </Chip>
+            </Group>
+          </div>
           <Combobox
             store={combobox}
             onOptionSubmit={(val) => {
