@@ -2,10 +2,7 @@ import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
 import { z } from 'zod';
 import { checkIfExistsAndAccess } from '~/server/utils/checkIfExistsAndAccess';
 import { TRPCError } from '@trpc/server';
-import { getShow } from '~/server/TMDB/getShow';
-import { getSeasons } from '~/server/TMDB/getSeason';
-import { convertImageToHash } from '~/utils/convertImageToHash';
-import { propOrUnknown } from '~/utils/propOrUnknown';
+import { getAndUpdateOrCreateShow } from '~/server/api/routers/utils/getAndUpdateOrCreateShow';
 
 export const showListRouter = createTRPCRouter({
   setEpisodeWatched: protectedProcedure
@@ -159,56 +156,16 @@ export const showListRouter = createTRPCRouter({
         });
       }
 
-      const show = await ctx.prisma.show.count({
+      const show = await ctx.prisma.show.findUnique({
         where: { id: input.showId },
+        select: { id: true, updatedAt: true },
       });
 
-      if (!show) {
-        const { result, eTag } = await getShow(input.showId);
-        const seasons = await getSeasons(
-          input.showId,
-          result.number_of_seasons ?? 1,
-        );
-
-        await ctx.prisma.$transaction([
-          ctx.prisma.show.create({
-            data: {
-              id: result.id,
-              title: result.name,
-              description: result.overview,
-              genres: result.genres?.map((g) => g.name).join(', ') ?? '',
-              rating: propOrUnknown(result.vote_average?.toString()),
-              posterUrl: result.poster_path,
-              imageHash: await convertImageToHash(result.poster_path),
-              releaseDate: propOrUnknown(result.first_air_date),
-              etag: eTag,
-            },
-          }),
-          ctx.prisma.season.createMany({
-            data: seasons.result.map((s) => ({
-              id: s.id,
-              seasonNumber: s.season_number ?? 0,
-              title: s.name,
-              overview: s.overview,
-              posterUrl: s.poster_path,
-              releaseDate: propOrUnknown(s.air_date),
-              showId: input.showId,
-            })),
-          }),
-          ctx.prisma.episode.createMany({
-            data: seasons.result.flatMap(
-              (s) =>
-                s.episodes?.map((e) => ({
-                  id: e.id,
-                  episodeNumber: e.episode_number,
-                  title: e.name,
-                  overview: e.overview?.slice(0, 999),
-                  releaseDate: propOrUnknown(e.air_date),
-                  seasonId: s.id,
-                })) ?? [],
-            ),
-          }),
-        ]);
+      if (
+        !show ||
+        show.updatedAt < new Date(Date.now() - 1000 * 60 * 60 * 24)
+      ) {
+        await getAndUpdateOrCreateShow(ctx.prisma, input.showId);
       }
 
       return ctx.prisma.list.update({
