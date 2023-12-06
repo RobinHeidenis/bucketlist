@@ -16,7 +16,7 @@ export const ShowListHeader = ({ list }: PropsWithShowList) => {
   const [selectedResult, setSelectedResult] = useState<z.infer<
     typeof TMDBSearchTVShow
   > | null>(null);
-  const context = api.useContext();
+  const context = api.useUtils();
 
   const { data, isFetching } = api.search.show.useQuery(
     { query: searchValue },

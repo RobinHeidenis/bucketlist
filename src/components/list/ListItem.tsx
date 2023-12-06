@@ -18,7 +18,7 @@ export const ListItem = ({
   permissions,
 }: ListItemType & { permissions: Permissions }) => {
   const [showDescription, setShowDescription] = useState(false);
-  const context = api.useContext();
+  const context = api.useUtils();
   const ref = useRef<HTMLInputElement>(null);
   const setItemCheckedMutation = api.bucketList.setItemChecked.useMutation({
     onSuccess: () => context.lists.getList.invalidate({ id: listId }),

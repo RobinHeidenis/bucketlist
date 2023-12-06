@@ -20,7 +20,7 @@ export const EditListModal = NiceModal.create(
     description: string | null;
   }) => {
     const modal = useModal();
-    const utils = api.useContext();
+    const utils = api.useUtils();
     const form = useForm<z.infer<typeof zEditListSchema>>({
       initialValues: {
         id: listId,

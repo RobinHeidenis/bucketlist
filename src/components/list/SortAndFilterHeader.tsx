@@ -6,10 +6,12 @@ export const SortAndFilterHeader = ({
   filterMode,
   setFilterMode,
   setFilterText,
+  setAnimationsEnabled,
 }: {
   filterMode: string;
   setFilterMode: (filterMode: string) => void;
   setFilterText: (filterText: string) => void;
+  setAnimationsEnabled: (enabled: boolean) => void;
 }) => {
   return (
     <div className="sticky top-[65px] z-30 flex items-start justify-between backdrop-blur-md">
@@ -35,6 +37,7 @@ export const SortAndFilterHeader = ({
         <input
           placeholder="Filter"
           onChange={(e) => {
+            setAnimationsEnabled(false);
             setFilterText(e.target.value.trim());
           }}
           className={`input input-ghost w-48`}

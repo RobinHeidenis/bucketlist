@@ -12,7 +12,7 @@ interface InviteLinkRowProps {
 }
 
 export const InviteLinkRow = ({ invite }: InviteLinkRowProps) => {
-  const utils = api.useContext();
+  const utils = api.useUtils();
   const { mutate: deleteInvite, isLoading: deleteInviteLoading } =
     api.invite.deleteInvite.useMutation({
       onSuccess: () => {

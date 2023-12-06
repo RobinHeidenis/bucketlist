@@ -20,7 +20,7 @@ export const MovieListHeader = ({ list }: PropsWithMovieList) => {
     | z.infer<typeof TMDBSearchCollection>
     | null
   >(null);
-  const context = api.useContext();
+  const context = api.useUtils();
 
   const { data, isFetching } = api.search.movie.useQuery(
     { query: debouncedSearchValue },

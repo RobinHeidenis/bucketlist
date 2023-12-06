@@ -12,7 +12,7 @@ interface CreateInviteLinkModalProps {
 export const CreateInviteLinkModal = NiceModal.create(
   ({ listId }: CreateInviteLinkModalProps) => {
     const modal = useModal();
-    const utils = api.useContext();
+    const utils = api.useUtils();
     const { mutate, isLoading } = api.invite.create.useMutation({
       onSuccess: () => {
         void utils.invite.getInvitesByListId.invalidate({ id: listId });

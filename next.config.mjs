@@ -21,6 +21,7 @@ const config = {
     domains: ["cdn.discordapp.com", "ui-avatars.com", "www.themoviedb.org", "image.tmdb.org", "img.clerk.com"]
   }
 };
+
 export default withSentryConfig(config, {
   // For all available options, see:
   // https://github.com/getsentry/sentry-webpack-plugin#options
