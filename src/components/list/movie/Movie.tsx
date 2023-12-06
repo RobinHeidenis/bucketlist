@@ -35,7 +35,7 @@ interface MovieProps {
 const Movie = memo(
   ({ listId, permissions, hideDivider, inCollection, movie }: MovieProps) => {
     const [showDescription, setShowDescription] = useState(false);
-    const context = api.useContext();
+    const context = api.useUtils();
     const { mutate: setWatched, isLoading: isSetWatchedLoading } =
       api.movieList.setMovieWatched.useMutation({
         onSuccess: () => {

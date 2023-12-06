@@ -17,7 +17,7 @@ export const Season = ({
   listId: string;
 }) => {
   const [showChildren, setShowChildren] = useState(false);
-  const context = api.useContext();
+  const context = api.useUtils();
   const { mutate, isLoading } = api.showList.setSeasonWatched.useMutation({
     onSuccess: () => context.lists.getList.invalidate({ id: listId }),
     onError: showErrorToast,

@@ -14,7 +14,7 @@ export const Episode = ({
   listId: string;
 }) => {
   const [showDescription, setShowDescription] = useState(false);
-  const context = api.useContext();
+  const context = api.useUtils();
   const { mutate, isLoading } = api.showList.setEpisodeWatched.useMutation({
     onSuccess: () => context.lists.getList.invalidate({ id: listId }),
     onError: showErrorToast,

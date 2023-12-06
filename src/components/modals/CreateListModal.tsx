@@ -11,7 +11,7 @@ import { PlusIcon } from '@heroicons/react/24/outline';
 
 export const CreateListModal = NiceModal.create(() => {
   const modal = useModal();
-  const utils = api.useContext();
+  const utils = api.useUtils();
   const form = useForm<z.infer<typeof zNewListSchema>>({
     initialValues: {
       title: '',

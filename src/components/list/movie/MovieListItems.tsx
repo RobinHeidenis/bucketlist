@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import RenderIfVisible from 'react-render-if-visible';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import type { PropsWithMovieList } from '~/types/List';
@@ -28,7 +28,10 @@ export const MovieListItems = ({ list }: PropsWithMovieList) => {
             .toLowerCase()
             .includes(filterText.toLowerCase()),
         );
-  const [ref] = useAutoAnimate();
+  const [ref, enable] = useAutoAnimate();
+  useEffect(() => {
+    enable(true);
+  }, [filteredMovieItems, enable]);
 
   return (
     <div className={'mt-2'}>
@@ -36,6 +39,7 @@ export const MovieListItems = ({ list }: PropsWithMovieList) => {
         filterMode={filterMode}
         setFilterMode={setFilterMode}
         setFilterText={setFilterText}
+        setAnimationsEnabled={enable}
       />
       <div ref={ref} className="mt-5">
         {filteredMovieItems.map((item) => (

@@ -25,7 +25,7 @@ interface CollectionProps {
 
 const Collection = memo(
   ({ collection, permissions, listId, style }: CollectionProps) => {
-    const context = api.useContext();
+    const context = api.useUtils();
     const [open, setOpen] = useState(false);
     const { mutate: deleteCollection, isLoading: isDeleteCollectionLoading } =
       api.movieList.deleteCollection.useMutation({
@@ -138,16 +138,17 @@ const Collection = memo(
             open ? 'mt-5' : ''
           } ml-7 overflow-x-visible p-0 sm:ml-24`}
         >
-          {collection.movies.map((item, index) => (
-            <Movie
-              key={item.id}
-              listId={listId}
-              permissions={permissions}
-              hideDivider={index === collection.movies.length - 1}
-              movie={item}
-              inCollection
-            />
-          ))}
+          {open &&
+            collection.movies.map((item, index) => (
+              <Movie
+                key={item.id}
+                listId={listId}
+                permissions={permissions}
+                hideDivider={index === collection.movies.length - 1}
+                movie={item}
+                inCollection
+              />
+            ))}
         </div>
         <div className="divider mb-2 mt-2" />
       </div>

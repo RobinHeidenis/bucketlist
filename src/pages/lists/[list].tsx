@@ -22,7 +22,7 @@ const List = () => {
   const router = useRouter();
   const { list: listId } = router.query;
 
-  const queryClient = api.useContext();
+  const queryClient = api.useUtils();
   const previousQueryData = queryClient.lists.getList.getData({
     id: listId as string,
   });

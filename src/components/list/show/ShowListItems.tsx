@@ -20,7 +20,7 @@ export const ShowListItems = ({ list }: PropsWithShowList) => {
         )
       : showItems;
 
-  const [ref] = useAutoAnimate();
+  const [ref, enable] = useAutoAnimate();
 
   return (
     <div className={'mt-2'}>
@@ -28,6 +28,7 @@ export const ShowListItems = ({ list }: PropsWithShowList) => {
         filterMode={filterMode}
         setFilterMode={setFilterMode}
         setFilterText={setFilterText}
+        setAnimationsEnabled={enable}
       />
       <div className="mt-5" ref={ref}>
         {filteredShows.map((show) => (

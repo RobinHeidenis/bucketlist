@@ -34,7 +34,7 @@ export const ListHeaderMenu = ({ list }: PropsWithList) => {
   const router = useRouter();
   const { id, owner, total, title, description, isPublic, type } = list;
   const { isOwner, isCollaborator } = usePermissionsCheck(list);
-  const context = api.useContext();
+  const context = api.useUtils();
 
   const { mutateAsync: deleteList, isLoading: isDeleteListLoading } =
     api.lists.deleteList.useMutation({

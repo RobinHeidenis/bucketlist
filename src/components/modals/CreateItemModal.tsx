@@ -16,7 +16,7 @@ interface CreateItemModalProps {
 export const CreateItemModal = NiceModal.create(
   ({ listId }: CreateItemModalProps) => {
     const modal = useModal();
-    const utils = api.useContext();
+    const utils = api.useUtils();
     const form = useForm<z.infer<typeof zNewListItemSchema>>({
       initialValues: {
         title: '',

@@ -27,7 +27,7 @@ interface ShowProps {
 const Show = memo(({ listId, permissions, hideDivider, show }: ShowProps) => {
   const [open, setOpen] = useState(false);
 
-  const context = api.useContext();
+  const context = api.useUtils();
   const { mutate: deleteShow, isLoading } = api.showList.deleteShow.useMutation(
     {
       onSuccess: () => {
@@ -125,11 +125,16 @@ const Show = memo(({ listId, permissions, hideDivider, show }: ShowProps) => {
           open ? 'mt-5' : ''
         } overflow-x-visible p-0 sm:ml-24`}
       >
-        {show.seasons.map((season) => (
-          <div key={season.id}>
-            <Season season={season} permissions={permissions} listId={listId} />
-          </div>
-        ))}
+        {open &&
+          show.seasons.map((season) => (
+            <div key={season.id}>
+              <Season
+                season={season}
+                permissions={permissions}
+                listId={listId}
+              />
+            </div>
+          ))}
       </div>
       {!hideDivider && <div className="divider mb-2 mt-2" />}
     </div>
