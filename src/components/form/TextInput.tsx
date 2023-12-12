@@ -33,7 +33,7 @@ export const TextInput = ({
       <input
         type="text"
         placeholder={placeholder}
-        className={`input-bordered input w-full ${error ? 'input-error' : ''} ${
+        className={`input input-bordered w-full ${error ? 'input-error' : ''} ${
           inputClassName ?? ''
         }`}
         defaultValue={defaultValue}

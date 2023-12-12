@@ -22,16 +22,6 @@ const List = () => {
   const router = useRouter();
   const { list: listId } = router.query;
 
-  const queryClient = api.useUtils();
-  const previousQueryData = queryClient.lists.getList.getData({
-    id: listId as string,
-  });
-
-  const previousUpdatedAt =
-    previousQueryData?.updatedAt instanceof Date
-      ? previousQueryData.updatedAt.toISOString()
-      : undefined;
-
   const {
     data: list,
     isFetched,
@@ -39,7 +29,6 @@ const List = () => {
   } = api.lists.getList.useQuery(
     {
       id: listId as string,
-      updatedAt: previousUpdatedAt,
     },
     { enabled: !!listId, retry: 3 },
   );
@@ -63,18 +52,6 @@ const List = () => {
         </div>
       </StandardPage>
     );
-
-  // If code is set in the current query data, it means the updatedAt parameter sent to the server is the same as the one in the database.
-  // This means that our local data is the same as the server data, so we can just use set data to the previous query data.
-  if (previousQueryData && 'code' in list) {
-    queryClient.lists.getList.setData(
-      { id: listId as string, updatedAt: previousUpdatedAt },
-      () => {
-        return { ...previousQueryData };
-      },
-    );
-    return;
-  }
 
   if ('code' in list) throw new Error('Data is not a list');
 

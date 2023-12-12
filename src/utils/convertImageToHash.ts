@@ -12,7 +12,7 @@ export const convertImageToHash = async (
   let image;
 
   try {
-    image = await loadImage('https://image.tmdb.org/t/p/w500' + imageId);
+    image = await loadImage('https://image.tmdb.org/t/p/w92' + imageId);
   } catch (error) {
     console.error(error);
     return null;

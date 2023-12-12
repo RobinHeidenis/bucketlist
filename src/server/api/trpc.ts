@@ -14,17 +14,15 @@
  * errors on the backend.
  */
 
-import { initTRPC, TRPCError, type Unwrap } from '@trpc/server';
-import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
-import { prisma } from '../db';
+import {initTRPC, TRPCError, type Unwrap} from '@trpc/server';
+import type {CreateNextContextOptions} from '@trpc/server/adapters/next';
+import {prisma} from '../db';
 import superjson from 'superjson';
-import { ZodError } from 'zod';
-import type {
-  SignedInAuthObject,
-  SignedOutAuthObject,
-} from '@clerk/nextjs/api';
-import { getAuth } from '@clerk/nextjs/server';
+import {ZodError} from 'zod';
+import type {SignedInAuthObject, SignedOutAuthObject,} from '@clerk/nextjs/api';
+import {getAuth} from '@clerk/nextjs/server';
 import * as Sentry from '@sentry/nextjs';
+import {type NextApiRequest, type NextApiResponse} from 'next';
 
 /**
  * 1. CONTEXT
@@ -37,6 +35,8 @@ import * as Sentry from '@sentry/nextjs';
 
 interface AuthContext {
   auth: SignedInAuthObject | SignedOutAuthObject;
+  req: NextApiRequest;
+  res: NextApiResponse;
 }
 
 /**
@@ -48,10 +48,12 @@ interface AuthContext {
  * - trpc's `createSSGHelpers` where we don't have req/res.
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
-const createInnerTRPCContext = ({ auth }: AuthContext) => {
+const createInnerTRPCContext = ({ auth, req, res }: AuthContext) => {
   return {
     auth,
     prisma,
+    req,
+    res,
   };
 };
 
@@ -60,8 +62,8 @@ const createInnerTRPCContext = ({ auth }: AuthContext) => {
  * process every request that goes through your tRPC endpoint.
  * @link https://trpc.io/docs/context
  */
-export const createTRPCContext = ({ req }: CreateNextContextOptions) => {
-  return createInnerTRPCContext({ auth: getAuth(req) });
+export const createTRPCContext = ({ req, res }: CreateNextContextOptions) => {
+  return createInnerTRPCContext({ auth: getAuth(req), req, res });
 };
 
 export type TRPCContext = Unwrap<typeof createTRPCContext>;

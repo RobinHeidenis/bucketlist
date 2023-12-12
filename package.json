@@ -29,6 +29,7 @@
     "@trpc/next": "^10.43.1",
     "@trpc/react-query": "^10.43.1",
     "@trpc/server": "^10.43.1",
+    "@vercel/speed-insights": "^1.0.1",
     "daisyui": "^3.9.4",
     "date-fns": "^2.30.0",
     "dice-coefficient": "^2.1.1",

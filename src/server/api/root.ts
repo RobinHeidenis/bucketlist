@@ -1,14 +1,14 @@
 import {
-  authRouter,
-  bucketListRouter,
-  inviteRouter,
-  listsRouter,
-  movieListRouter,
-  searchRouter,
-  showListRouter,
+    authRouter,
+    bucketListRouter,
+    inviteRouter,
+    listsRouter,
+    movieListRouter,
+    searchRouter,
+    showListRouter,
 } from './routers';
-import { createTRPCRouter } from './trpc';
-import { watchedRouter } from '~/server/api/routers/watched';
+import {createTRPCRouter} from './trpc';
+import {watchedRouter} from '~/server/api/routers/watched';
 
 /**
  * This is the primary router for your server.

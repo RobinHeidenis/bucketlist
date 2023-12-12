@@ -6,6 +6,7 @@ import NiceModal from '@ebay/nice-modal-react';
 import { Toaster } from 'react-hot-toast';
 import { dark } from '@clerk/themes';
 import { SentryUserManager } from '~/components/SentryUserManager';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
@@ -20,6 +21,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         <Component {...pageProps} />
       </NiceModal.Provider>
       <SentryUserManager />
+      <SpeedInsights />
     </ClerkProvider>
   );
 };
