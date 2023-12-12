@@ -7,7 +7,7 @@ interface NavbarLinkProps {
 
 export const NavbarLink = ({ href, name }: NavbarLinkProps) => (
   <div className="flex-1">
-    <Link href={href} className="btn-ghost btn text-xl normal-case">
+    <Link href={href} className="btn btn-ghost text-xl normal-case">
       {name}
     </Link>
   </div>

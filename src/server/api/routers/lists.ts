@@ -9,7 +9,6 @@ import { TRPCError } from '@trpc/server';
 import type { BucketList, MovieList, ShowList } from '~/types/List';
 import { isBucketList, isMovieList, isShowList } from '~/types/List';
 import { clerkClient } from '@clerk/nextjs';
-import { z } from 'zod';
 import { getListBase } from '~/server/api/routers/utils/getList/list';
 import {
   formatMovieList,
@@ -83,26 +82,13 @@ export const listsRouter = createTRPCRouter({
     });
   }),
   getList: protectedProcedure
-    .input(
-      zIdSchema.extend({
-        updatedAt: z.string().datetime().nullable().optional(),
-      }),
-    )
+    .input(zIdSchema)
     .query(
       async ({
         ctx,
         input,
-      }): Promise<
-        | BucketList
-        | MovieList
-        | ShowList
-        | {
-            id: string;
-            updatedAt: string;
-            code: 'NOT_MODIFIED';
-          }
-      > => {
-        if (input.updatedAt) {
+      }): Promise<BucketList | MovieList | ShowList | undefined> => {
+        if (ctx.req.headers['if-modified-since']) {
           const list = await ctx.prisma.list.findUnique({
             where: { id: input.id },
             select: { updatedAt: true },
@@ -114,12 +100,13 @@ export const listsRouter = createTRPCRouter({
               message: "The list you're requesting cannot be found.",
             });
 
-          if (input.updatedAt === list.updatedAt.toISOString()) {
-            return {
-              id: input.id,
-              updatedAt: list.updatedAt.toISOString(),
-              code: 'NOT_MODIFIED',
-            };
+          if (
+            ctx.req.headers['if-modified-since'] ===
+            list.updatedAt.toISOString()
+          ) {
+            ctx.res.setHeader('Last-Modified', list.updatedAt.toISOString());
+            ctx.res.statusCode = 304;
+            return;
           }
         }
 
@@ -169,6 +156,8 @@ export const listsRouter = createTRPCRouter({
           }));
 
         const base = getListBase(list, clerkOwner);
+
+        ctx.res.setHeader('Last-Modified', list.updatedAt.toISOString());
 
         if (isBucketList(list)) {
           return {

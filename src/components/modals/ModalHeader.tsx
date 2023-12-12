@@ -21,7 +21,7 @@ export const ModalHeader = ({
         ref={ref}
       >
         <label
-          className="btn-neutral btn btn-circle btn-sm absolute right-2 top-2"
+          className="btn btn-circle btn-neutral btn-sm absolute right-2 top-2"
           onClick={() => void modal.remove()}
         >
           ✕

@@ -22,7 +22,7 @@ export const PosterImage = ({
   if (url)
     return (
       <Image
-        src={`https://image.tmdb.org/t/p/w500${url}`}
+        src={`https://image.tmdb.org/t/p/w92${url}`}
         alt={alt}
         width={width}
         height={height}
