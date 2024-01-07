@@ -46,7 +46,7 @@ export const Episode = ({
               episode.checked ? 'text-slate-500 line-through' : ''
             } font-normal`}
           >
-            {episode.title}
+            {episode.episodeNumber}. {episode.title}
           </h3>
           <p
             className={`
