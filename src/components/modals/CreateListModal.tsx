@@ -47,9 +47,7 @@ export const CreateListModal = NiceModal.create(() => {
             className="select select-bordered w-full max-w-xs"
             {...form.getInputProps('type')}
           >
-            <option selected value="BUCKET">
-              Bucket list
-            </option>
+            <option value="BUCKET">Bucket list</option>
             <option value="MOVIE">Movie list</option>
             <option value="SHOW">Show list</option>
           </select>

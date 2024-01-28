@@ -67,6 +67,7 @@ export const createTRPCContext = ({ req, res }: CreateNextContextOptions) => {
 };
 
 export type TRPCContext = Unwrap<typeof createTRPCContext>;
+export type AuthedTRPCContext = TRPCContext & { auth: SignedInAuthObject };
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,

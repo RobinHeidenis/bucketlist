@@ -8,6 +8,7 @@ import NiceModal from '@ebay/nice-modal-react';
 import { EditItemModal } from '../modals/EditItemModal';
 import { type Permissions } from '~/hooks/usePermissionsCheck';
 import { showErrorToast } from '~/utils/showErrorToast';
+import type { BucketList } from '~/types/List';
 
 export const ListItem = ({
   id,
@@ -21,7 +22,24 @@ export const ListItem = ({
   const context = api.useUtils();
   const ref = useRef<HTMLInputElement>(null);
   const setItemCheckedMutation = api.bucketList.setItemChecked.useMutation({
-    onSuccess: () => context.lists.getList.invalidate({ id: listId }),
+    onSuccess: () => {
+      context.lists.getList.setData({ id: listId }, (prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          bucketListItems: (prev as BucketList).bucketListItems.map((item) => {
+            if (item.id === id) {
+              return {
+                ...item,
+                checked: !item.checked,
+              };
+            }
+            return item;
+          }),
+        };
+      });
+      void context.lists.getList.invalidate({ id: listId });
+    },
     onError: () => {
       if (!ref.current) return;
       ref.current.checked = !ref.current.checked;
@@ -31,7 +49,18 @@ export const ListItem = ({
     },
   });
   const deleteItemMutation = api.bucketList.deleteItem.useMutation({
-    onSuccess: () => context.lists.getList.invalidate({ id: listId }),
+    onSuccess: () => {
+      context.lists.getList.setData({ id: listId }, (prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          bucketListItems: (prev as BucketList).bucketListItems.filter(
+            (item) => item.id !== id,
+          ),
+        };
+      });
+      void context.lists.getList.invalidate({ id: listId });
+    },
     onError: showErrorToast,
   });
   const openEditItemModal = () => {

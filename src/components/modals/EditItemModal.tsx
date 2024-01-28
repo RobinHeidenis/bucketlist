@@ -8,6 +8,7 @@ import { TextArea } from '../form/TextArea';
 import { ModalHeader } from './ModalHeader';
 import { showErrorToast } from '~/utils/showErrorToast';
 import { CheckIcon } from '@heroicons/react/24/outline';
+import type { BucketList } from '~/types/List';
 
 export const EditItemModal = NiceModal.create(
   ({
@@ -35,6 +36,24 @@ export const EditItemModal = NiceModal.create(
     const { mutate, isLoading } = api.bucketList.updateItem.useMutation({
       onSuccess: () => {
         void modal.remove();
+        utils.lists.getList.setData({ id: listId }, (prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            bucketListItems: (prev as BucketList).bucketListItems.map(
+              (item) => {
+                if (item.id === itemId) {
+                  return {
+                    ...item,
+                    title: form.values.title,
+                    description: form.values.description ?? null,
+                  };
+                }
+                return item;
+              },
+            ),
+          };
+        });
         void utils.lists.getList.invalidate({ id: listId });
       },
       onError: showErrorToast,

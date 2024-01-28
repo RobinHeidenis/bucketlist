@@ -53,8 +53,6 @@ const List = () => {
       </StandardPage>
     );
 
-  if ('code' in list) throw new Error('Data is not a list');
-
   return (
     <>
       <ScrollToTop />

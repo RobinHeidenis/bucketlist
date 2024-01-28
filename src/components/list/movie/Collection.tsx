@@ -49,7 +49,7 @@ const Collection = memo(
         style={style}
       >
         <div
-          className="collapse-title flex flex-row items-start justify-between p-0 after:!right-[0.85rem]"
+          className="collapse-title flex flex-row items-start justify-between p-0 after:!right-[0.85rem] after:!top-16"
           onClick={() => void setOpen(!open)}
         >
           <div className="flex flex-row items-start">

@@ -8,6 +8,7 @@ import { TextArea } from '../form/TextArea';
 import { ModalHeader } from './ModalHeader';
 import { showErrorToast } from '~/utils/showErrorToast';
 import { PlusIcon } from '@heroicons/react/24/outline';
+import type { BucketList } from '~/types/List';
 
 interface CreateItemModalProps {
   listId: string;
@@ -28,6 +29,23 @@ export const CreateItemModal = NiceModal.create(
     const { mutate, isLoading } = api.bucketList.createItem.useMutation({
       onSuccess: () => {
         void modal.remove();
+        utils.lists.getList.setData({ id: listId }, (prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            bucketListItems: [
+              ...(prev as BucketList).bucketListItems,
+              {
+                title: form.values.title,
+                description: form.values.description ?? null,
+                id: 'temp',
+                listId,
+                updatedAt: new Date(),
+                checked: false,
+              },
+            ].sort((a, b) => (a.title > b.title ? 1 : -1)),
+          };
+        });
         void utils.lists.getList.invalidate({ id: listId });
       },
       onError: showErrorToast,

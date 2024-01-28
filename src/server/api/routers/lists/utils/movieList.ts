@@ -4,8 +4,8 @@ import {
   type MovieListCollection,
   type MovieListMovie,
 } from '~/types/List';
-import { convertImageHash } from '~/server/api/routers/utils/getList/convertImageHash';
-import { type ListBase } from '~/server/api/routers/utils/getList/list';
+import { convertImageHash } from '~/server/api/routers/utils/convertImageHash';
+import { type ListBase } from '~/server/api/routers/lists/utils/getListBase';
 import { type prisma } from '~/server/db';
 
 export const getMovieList = (db: typeof prisma, id: string) =>

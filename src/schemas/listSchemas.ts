@@ -38,3 +38,7 @@ export const zNewMovieSchema = zExternalIdSchema.extend({
 export const zSetIsPublicSchema = zIdSchema.extend({
   isPublic: z.boolean(),
 });
+
+export const zListIdSchema = z.object({
+  listId: z.string().uuid(),
+});

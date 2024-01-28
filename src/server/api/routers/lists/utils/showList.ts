@@ -3,8 +3,8 @@ import {
   type ShowListSeason,
   type ShowListShow,
 } from '~/types/List';
-import { type ListBase } from '~/server/api/routers/utils/getList/list';
-import { convertImageHash } from '~/server/api/routers/utils/getList/convertImageHash';
+import { type ListBase } from '~/server/api/routers/lists/utils/getListBase';
+import { convertImageHash } from '~/server/api/routers/utils/convertImageHash';
 import { type prisma } from '~/server/db';
 
 export const getShowList = (db: typeof prisma, id: string) =>
@@ -92,6 +92,12 @@ export const formatShowList = (list: ShowList, base: ListBase): ShowList => {
       amountChecked: showTotalChecked,
     };
   });
+
+  console.log(
+    shows
+      .map((show) => show.seasons.map((season) => season.id).join(', '))
+      .join(', '),
+  );
 
   return {
     ...base,

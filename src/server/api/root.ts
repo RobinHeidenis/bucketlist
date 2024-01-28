@@ -1,14 +1,11 @@
-import {
-    authRouter,
-    bucketListRouter,
-    inviteRouter,
-    listsRouter,
-    movieListRouter,
-    searchRouter,
-    showListRouter,
-} from './routers';
+import {bucketListRouter} from './routers/bucketList/bucketListRouter';
+import {inviteRouter} from './routers/invite/inviteRouter';
+import {listsRouter} from './routers/lists/listsRouter';
+import {movieListRouter} from './routers/movieList/movieListRouter';
+import {showListRouter} from './routers/showList/showListRouter';
+import {searchRouter} from './routers/search/searchRouter';
+import {watchedRouter} from './routers/watched/watchedRouter';
 import {createTRPCRouter} from './trpc';
-import {watchedRouter} from '~/server/api/routers/watched';
 
 /**
  * This is the primary router for your server.
@@ -16,7 +13,6 @@ import {watchedRouter} from '~/server/api/routers/watched';
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  auth: authRouter,
   lists: listsRouter,
   invite: inviteRouter,
   movieList: movieListRouter,

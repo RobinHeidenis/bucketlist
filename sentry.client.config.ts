@@ -19,5 +19,5 @@ Sentry.init({
   // in development and sample at a lower rate in production
   replaysSessionSampleRate: 0.1,
 
-  integrations: [new Sentry.Replay(), new Sentry.BrowserTracing()],
+  integrations: [new Sentry.BrowserTracing()],
 });

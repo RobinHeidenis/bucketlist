@@ -1,7 +1,11 @@
 import { useMemo } from 'react';
-import { type List as ListType } from '@prisma/client';
 
-type List = ListType & { amount: number; amountChecked: number };
+interface List {
+  title: string;
+  updatedAt: Date;
+  amount: number;
+  amountChecked: number;
+}
 
 const sortDefault = (a: List, b: List) => {
   return a.title > b.title ? 1 : -1;
@@ -51,8 +55,8 @@ export const sortMap = {
   amountCheckedReverse: sortAmountCheckedReverse,
 };
 
-export const useSortedLists = (
-  lists: List[] | undefined,
+export const useSortedLists = <TListArray extends List[]>(
+  lists: TListArray | undefined,
   sort: keyof typeof sortMap = 'default',
 ) => {
   return useMemo(() => {

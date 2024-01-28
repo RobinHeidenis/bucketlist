@@ -1,3 +1,4 @@
+import type { ShowList } from '~/types/List';
 import { type ShowListEpisode } from '~/types/List';
 import { useState } from 'react';
 import { api } from '~/utils/api';
@@ -16,7 +17,32 @@ export const Episode = ({
   const [showDescription, setShowDescription] = useState(false);
   const context = api.useUtils();
   const { mutate, isLoading } = api.showList.setEpisodeWatched.useMutation({
-    onSuccess: () => context.lists.getList.invalidate({ id: listId }),
+    onSuccess: async () => {
+      await context.lists.getList.cancel({ id: listId });
+      context.lists.getList.setData({ id: listId }, (prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          shows: (prev as ShowList).shows.map((show) => {
+            return {
+              ...show,
+              seasons: show.seasons.map((season) => {
+                return {
+                  ...season,
+                  episodes: season.episodes.map((ep) => {
+                    if (ep.id === episode.id) {
+                      return { ...ep, checked: !ep.checked };
+                    }
+                    return ep;
+                  }),
+                };
+              }),
+            };
+          }),
+        };
+      });
+      void context.lists.getList.invalidate({ id: listId });
+    },
     onError: showErrorToast,
   });
 

@@ -1,13 +1,12 @@
 import { ListCardWrapper } from './ListCardWrapper';
 import React from 'react';
 import { UsersIcon } from '@heroicons/react/24/outline';
-import { useAuth } from '@clerk/nextjs';
 
 interface ListCardProps {
   id: string;
   title: string;
   description: string | null;
-  collaborators?: { id: string }[];
+  role: 'owner' | 'contributor';
   amount: number;
   amountChecked: number;
 }
@@ -16,12 +15,10 @@ export const ListCard = ({
   id,
   title,
   description,
-  collaborators,
+  role,
   amount,
   amountChecked,
 }: ListCardProps) => {
-  const { userId } = useAuth();
-
   return (
     <ListCardWrapper href={`/lists/${id}`}>
       <div className="flex h-full flex-col justify-between">
@@ -35,9 +32,7 @@ export const ListCard = ({
           <p className="line-clamp-3">
             {amount} items • {amountChecked} checked
           </p>
-          {collaborators?.some(
-            (collaborator) => collaborator.id === userId,
-          ) && (
+          {role === 'contributor' && (
             <div className="tooltip" data-tip="Collaborator">
               <UsersIcon className="ml-2 h-6 w-6" />
             </div>

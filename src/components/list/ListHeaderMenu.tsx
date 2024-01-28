@@ -48,7 +48,14 @@ export const ListHeaderMenu = ({ list }: PropsWithList) => {
     api.lists.setPublic.useMutation({
       onSuccess: () => {
         toast.custom(<SuccessToast message="Visibility updated!" />);
-        return context.lists.getList.invalidate({ id });
+        context.lists.getList.setData({ id }, (prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            isPublic: !prev.isPublic,
+          };
+        });
+        void context.lists.getList.invalidate({ id });
       },
       onError: showErrorToast,
     });
@@ -84,8 +91,8 @@ export const ListHeaderMenu = ({ list }: PropsWithList) => {
           {type === 'BUCKET'
             ? "to-do's"
             : type === 'MOVIE'
-            ? 'movies'
-            : 'shows'}
+              ? 'movies'
+              : 'shows'}
         </FlexRowCenter>
         <span className="ml-3 mr-3 hidden sm:block">•</span>
         <FlexRowCenter>

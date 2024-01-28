@@ -36,7 +36,7 @@ export const InviteLinkRow = ({ invite }: InviteLinkRowProps) => {
             className={`tooltip tooltip-bottom ${
               clipboard.copied ? 'open' : ''
             }`}
-            data-tip={`${clipboard.copied ? 'Copied!' : 'Copy to clipboard'}`}
+            data-tip={clipboard.copied ? 'Copied!' : 'Copy to clipboard'}
           >
             <ClipboardIcon
               onClick={() => void clipboard.copy(invite.url)}
