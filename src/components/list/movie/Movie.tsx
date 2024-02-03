@@ -139,7 +139,7 @@ const Movie = memo(
                         isSetWatchedLoading ? 'loading' : ''
                       }`}
                     />{' '}
-                    mark as seen
+                    Mark as seen
                   </>
                 )}
               </DropdownItem>

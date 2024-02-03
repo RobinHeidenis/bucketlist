@@ -113,7 +113,7 @@ const Collection = memo(
                         isSetCollectionWatchedLoading ? 'loading' : ''
                       } h-6 w-6`}
                     />{' '}
-                    mark as seen
+                    Mark as seen
                   </>
                 )}
               </DropdownItem>
