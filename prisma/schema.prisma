@@ -29,7 +29,7 @@ model Movie {
   runtime     Int?           @db.SmallInt
   genres      String?        @db.VarChar(200)
   posterUrl   String?        @db.VarChar(200)
-  imageHash   Bytes?         @db.Binary(30)
+  imageHash   Bytes?         @db.Binary(50)
   updatedAt   DateTime       @default(now())
   etag        String?        @db.VarChar(100)
   lists       List[]
