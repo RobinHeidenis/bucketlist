@@ -92,7 +92,7 @@ const Movie = memo(
                 </FlexRowCenter>
                 <FlexRowCenter sx="whitespace-nowrap">
                   <CalendarIcon className="mr-1 h-5 w-5 flex-shrink-0 sm:ml-2" />
-                  {movie.releaseDate || 'unknown'}
+                  {movie.releaseDate ?? 'unknown'}
                 </FlexRowCenter>
                 {movie.genres ? (
                   <div
