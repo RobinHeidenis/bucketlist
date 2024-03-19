@@ -19,8 +19,6 @@
     "@mantine/form": "^7.5.1",
     "@mantine/hooks": "^7.5.1",
     "@napi-rs/canvas": "^0.1.44",
-    "@planetscale/database": "^1.14.0",
-    "@prisma/adapter-planetscale": "^5.9.1",
     "@prisma/client": "^5.9.1",
     "@sentry/integrations": "^7.99.0",
     "@sentry/nextjs": "^7.99.0",
@@ -44,7 +42,6 @@
     "superjson": "2.2.1",
     "svix": "^1.16.0",
     "thumbhash": "^0.1.1",
-    "undici": "^6.6.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {

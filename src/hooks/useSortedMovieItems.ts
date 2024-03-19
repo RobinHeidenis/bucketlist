@@ -33,6 +33,8 @@ export const useSortedMovieItems = (
     const collections = Object.values(list.collections);
     return collections.map((collection) => {
       collection.movies = collection.movies.sort((a, b) => {
+        if (!a.releaseDate) return 1;
+        if (!b.releaseDate) return -1;
         if (a.releaseDate < b.releaseDate) return -1;
         if (a.releaseDate > b.releaseDate) return 1;
         return 0;

@@ -16,6 +16,9 @@ export const sortReleaseDate = (a: Item, b: Item) => {
     bReleaseDate = b.releaseDate;
   }
 
+  if (!aReleaseDate) return 1;
+  if (!bReleaseDate) return -1;
+
   if (aReleaseDate < bReleaseDate) return 1;
   if (aReleaseDate > bReleaseDate) return -1;
   return 0;
@@ -35,6 +38,9 @@ export const sortReleaseDateReverse = (a: Item, b: Item) => {
   } else {
     bReleaseDate = b.releaseDate;
   }
+
+  if (!aReleaseDate) return -1;
+  if (!bReleaseDate) return 1;
 
   if (aReleaseDate < bReleaseDate) return -1;
   if (aReleaseDate > bReleaseDate) return 1;
