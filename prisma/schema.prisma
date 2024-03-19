@@ -2,14 +2,13 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
-  relationMode = "prisma"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -24,12 +23,12 @@ model Movie {
   id          Int            @id
   title       String         @db.VarChar(200)
   description String?        @db.VarChar(1000)
-  releaseDate String         @db.VarChar(50)
+  releaseDate String?        @db.VarChar(50)
   rating      String?        @db.VarChar(10)
   runtime     Int?           @db.SmallInt
   genres      String?        @db.VarChar(200)
   posterUrl   String?        @db.VarChar(200)
-  imageHash   Bytes?         @db.Binary(70)
+  imageHash   Bytes?         @db.ByteA
   updatedAt   DateTime       @default(now())
   etag        String?        @db.VarChar(100)
   lists       List[]
@@ -69,7 +68,7 @@ model Collection {
   name      String   @db.VarChar(300)
   overview  String?  @db.VarChar(1000)
   posterUrl String?
-  imageHash Bytes?   @db.Binary(30)
+  imageHash Bytes?   @db.ByteA
   updatedAt DateTime @default(now()) @updatedAt
   etag      String?  @db.VarChar(100)
   movies    Movie[]
@@ -80,11 +79,11 @@ model Show {
   id          Int      @id
   title       String   @db.VarChar(200)
   description String?  @db.VarChar(1000)
-  releaseDate String   @db.VarChar(50)
+  releaseDate String?  @db.VarChar(50)
   rating      String?  @db.VarChar(10)
   genres      String?  @db.VarChar(200)
   posterUrl   String?  @db.VarChar(200)
-  imageHash   Bytes?   @db.VarBinary(64)
+  imageHash   Bytes?   @db.ByteA
   updatedAt   DateTime @default(now())
   etag        String?  @db.VarChar(100)
   seasons     Season[]
