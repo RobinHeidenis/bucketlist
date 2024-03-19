@@ -32,12 +32,6 @@ dependencies:
   '@napi-rs/canvas':
     specifier: ^0.1.44
     version: 0.1.44
-  '@planetscale/database':
-    specifier: ^1.14.0
-    version: 1.14.0
-  '@prisma/adapter-planetscale':
-    specifier: ^5.9.1
-    version: 5.9.1(@planetscale/database@1.14.0)
   '@prisma/client':
     specifier: ^5.9.1
     version: 5.9.1(prisma@5.9.1)
@@ -652,22 +646,6 @@ packages:
     dev: true
     optional: true
 
-  /@planetscale/database@1.14.0:
-    resolution: {integrity: sha512-7BB+iH6EH4YJuDeVeEbxpo60BFz3wIXJNXCmBGl40eC4HStRMGZ1COxKfiuPcINWwwrJhAhI9AEI97AOZYT7JQ==}
-    engines: {node: '>=16'}
-    dev: false
-
-  /@prisma/adapter-planetscale@5.9.1(@planetscale/database@1.14.0):
-    resolution: {integrity: sha512-c8gWjerrjIvYzFu08LccVhNoMe7/oEcRbAf7KzRgkzIVzRoSqv7zkRP0iseHWYueNMTWVCQ59sX9qjzld69/Fw==}
-    peerDependencies:
-      '@planetscale/database': ^1.14.0
-    dependencies:
-      '@planetscale/database': 1.14.0
-      '@prisma/driver-adapter-utils': 5.9.1
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
   /@prisma/client@5.9.1(prisma@5.9.1):
     resolution: {integrity: sha512-caSOnG4kxcSkhqC/2ShV7rEoWwd3XrftokxJqOCMVvia4NYV/TPtJlS9C2os3Igxw/Qyxumj9GBQzcStzECvtQ==}
     engines: {node: '>=16.13'}
@@ -683,14 +661,6 @@ packages:
 
   /@prisma/debug@5.9.1:
     resolution: {integrity: sha512-yAHFSFCg8KVoL0oRUno3m60GAjsUKYUDkQ+9BA2X2JfVR3kRVSJFc/GpQ2fSORi4pSHZR9orfM4UC9OVXIFFTA==}
-
-  /@prisma/driver-adapter-utils@5.9.1:
-    resolution: {integrity: sha512-1h1+6kU3PfsE2CvQoU49Jt7yrXybU0C/H/+W8Bh0pJefMAbTY8KoWssYXgwQp1PUKBtdh1GDQsMf9ojFeQ0RWg==}
-    dependencies:
-      debug: 4.3.4
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
 
   /@prisma/engines-version@5.9.0-32.23fdc5965b1e05fc54e5f26ed3de66776b93de64:
     resolution: {integrity: sha512-HFl7275yF0FWbdcNvcSRbbu9JCBSLMcurYwvWc8WGDnpu7APxQo2ONtZrUggU3WxLxUJ2uBX+0GOFIcJeVeOOQ==}
