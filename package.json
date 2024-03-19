@@ -42,7 +42,6 @@
     "superjson": "2.2.1",
     "svix": "^1.16.0",
     "thumbhash": "^0.1.1",
-    "undici": "^6.6.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
