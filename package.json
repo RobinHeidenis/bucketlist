@@ -21,7 +21,7 @@
     "@napi-rs/canvas": "^0.1.44",
     "@prisma/client": "^5.9.1",
     "@sentry/integrations": "^7.99.0",
-    "@sentry/nextjs": "^7.99.0",
+    "@sentry/nextjs": "^7.118.0",
     "@t3-oss/env-nextjs": "^0.8.0",
     "@tailwindcss/typography": "^0.5.10",
     "@tanstack/react-query": "^4.36.1",
@@ -64,5 +64,6 @@
   "ct3aMetadata": {
     "initVersion": "6.10.2"
   },
-  "ct3aUpdatedTo": "7.16.0"
+  "ct3aUpdatedTo": "7.16.0",
+  "packageManager": "pnpm@9.1.2+sha256.19c17528f9ca20bd442e4ca42f00f1b9808a9cb419383cd04ba32ef19322aba7"
 }
