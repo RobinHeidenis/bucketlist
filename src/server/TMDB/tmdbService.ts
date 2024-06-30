@@ -64,6 +64,23 @@ export class TmdbService {
     return collection;
   }
 
+  public async getUpdatedCollection(id: number, eTag: string) {
+    const { response, result } = await this.tmdbApi.checkCollectionETag(
+      id,
+      eTag,
+    );
+
+    if (response.status === 304) {
+      return false;
+    }
+
+    if (result) {
+      return this.parseAndCreateCollection(result, response, id);
+    }
+
+    return result;
+  }
+
   private async parseAndCreateCollection(
     result: unknown,
     response: Response,
@@ -80,11 +97,15 @@ export class TmdbService {
       throw new Error('Failed to parse TMDB collection response');
     }
 
-    const createdCollection = await this.prisma.collection.create({
-      data: {
-        ...(await this.transformTmdbCollection(parsedCollectionResult.data)),
-        etag: response.headers.get('etag') ?? '',
-      },
+    const upsertData = {
+      ...(await this.transformTmdbCollection(parsedCollectionResult.data)),
+      etag: response.headers.get('etag') ?? '',
+    };
+
+    const createdCollection = await this.prisma.collection.upsert({
+      where: { id: upsertData.id },
+      create: upsertData,
+      update: upsertData,
     });
 
     return {

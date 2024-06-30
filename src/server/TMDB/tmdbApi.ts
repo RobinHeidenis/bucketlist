@@ -18,4 +18,12 @@ export class TmdbApi {
   public async getCollectionById(id: number) {
     return this.client.get(`collection/${id}`);
   }
+
+  public async checkCollectionETag(id: number, eTag: string) {
+    return this.client.get(`collection/${id}`, {
+      headers: {
+        'If-None-Match': eTag,
+      },
+    });
+  }
 }
