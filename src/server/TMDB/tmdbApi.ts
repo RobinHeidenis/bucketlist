@@ -26,4 +26,12 @@ export class TmdbApi {
       },
     });
   }
+
+  public async getShowById(id: number) {
+    return this.client.get(`tv/${id}`);
+  }
+
+  public async getSeasonBySeasonNumber(showId: number, seasonNumber: number) {
+    return this.client.get(`tv/${showId}/season/${seasonNumber}`);
+  }
 }

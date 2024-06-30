@@ -1,10 +1,10 @@
 import { TmdbApi } from '~/server/TMDB/tmdbApi';
 import type { prisma as Prisma } from '~/server/db';
 import type { z } from 'zod';
-import { zTmdbCollection, zTmdbMovie } from '~/server/TMDB/schemas';
+import { zTmdbCollection, zTmdbMovie, zTmdbShow } from '~/server/TMDB/schemas';
 import { propOrUnknown } from '~/utils/propOrUnknown';
 import { convertImageToHash } from '~/utils/convertImageToHash';
-import type { Collection } from '@prisma/client';
+import type { Collection, Show } from '@prisma/client';
 import { type Movie } from '@prisma/client';
 import * as Sentry from '@sentry/nextjs';
 import { TmdbClient } from '~/server/TMDB/tmdbClient';
@@ -81,6 +81,20 @@ export class TmdbService {
     return result;
   }
 
+  public async findOrCreateShow(id: number) {
+    const collection = await this.prisma.show.findUnique({
+      where: { id },
+    });
+
+    if (!collection) {
+      const { result, response } = await this.tmdbApi.getShowById(id);
+
+      return await this.parseAndCreateShow(result, response, id);
+    }
+
+    return collection;
+  }
+
   private async parseAndCreateCollection(
     result: unknown,
     response: Response,
@@ -111,6 +125,47 @@ export class TmdbService {
     return {
       collection: createdCollection,
       parts: parsedCollectionResult.data.parts,
+    };
+  }
+
+  private async parseAndCreateShow(
+    result: unknown,
+    response: Response,
+    id: number,
+  ) {
+    const parsedShowResult = zTmdbShow.safeParse(result);
+
+    if (!parsedShowResult.success) {
+      Sentry.setContext('TMDB Response', {
+        id,
+        type: 'SHOW',
+        response: result,
+      });
+      throw new Error('Failed to parse TMDB show response');
+    }
+
+    return this.prisma.show.create({
+      data: {
+        ...(await this.transformTmdbShow(parsedShowResult.data)),
+        etag: response.headers.get('etag') ?? '',
+      },
+    });
+  }
+
+  // TODO: add methods for seasons
+
+  private async transformTmdbShow(
+    show: z.infer<typeof zTmdbShow>,
+  ): Promise<Omit<Show, 'updatedAt' | 'etag'>> {
+    return {
+      id: show.id,
+      title: show.name,
+      description: show.overview ?? null,
+      posterUrl: show.poster_path,
+      rating: show.vote_average.toString(),
+      releaseDate: show.first_air_date ?? null,
+      genres: show.genres?.map((genre) => genre.name).join(', ') ?? 'Unknown',
+      imageHash: await convertImageToHash(show.poster_path),
     };
   }
 

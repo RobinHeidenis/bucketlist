@@ -98,7 +98,6 @@ model Season {
   seasonNumber Int       @db.SmallInt
   title        String    @db.VarChar(200)
   overview     String?   @db.VarChar(1000)
-  posterUrl    String?   @db.VarChar(200)
   releaseDate  String    @db.VarChar(50)
   updatedAt    DateTime  @default(now())
   episodes     Episode[]
