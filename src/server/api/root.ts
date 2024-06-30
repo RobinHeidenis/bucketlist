@@ -1,11 +1,11 @@
-import {bucketListRouter} from './routers/bucketList/bucketListRouter';
-import {inviteRouter} from './routers/invite/inviteRouter';
-import {listsRouter} from './routers/lists/listsRouter';
-import {movieListRouter} from './routers/movieList/movieListRouter';
-import {showListRouter} from './routers/showList/showListRouter';
-import {searchRouter} from './routers/search/searchRouter';
-import {watchedRouter} from './routers/watched/watchedRouter';
-import {createTRPCRouter} from './trpc';
+import { bucketListRouter } from './routers/bucketList/bucketListRouter';
+import { inviteRouter } from './routers/invite/inviteRouter';
+import { listsRouter } from './routers/lists/listsRouter';
+import { movieListRouter } from './routers/movieList/movieListRouter';
+import { showListRouter } from './routers/showList/showListRouter';
+import { searchRouter } from './routers/search/searchRouter';
+import { watchedRouter } from './routers/watched/watchedRouter';
+import { createTRPCRouter } from './trpc';
 
 /**
  * This is the primary router for your server.

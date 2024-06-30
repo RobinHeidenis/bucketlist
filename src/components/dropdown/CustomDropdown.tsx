@@ -25,7 +25,7 @@ export const CustomDropdown = ({
       {label}
     </label>
     <ul
-      className="menu dropdown-content rounded-box mt-4 bg-base-100 p-2 font-semibold"
+      className="menu dropdown-content mt-4 rounded-box bg-base-100 p-2 font-semibold"
       tabIndex={0}
     >
       {items.map((item, index) => (

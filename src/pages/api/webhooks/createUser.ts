@@ -1,11 +1,11 @@
 // Disable the bodyParser so we can access the raw
 // request body for verification.
-import {type NextApiRequest, type NextApiResponse} from 'next';
-import {Webhook, type WebhookRequiredHeaders} from 'svix';
-import {buffer} from 'micro';
-import {type IncomingHttpHeaders} from 'http';
-import {prisma} from '~/server/db';
-import {type WebhookEvent} from '@clerk/clerk-sdk-node';
+import { type NextApiRequest, type NextApiResponse } from 'next';
+import { Webhook, type WebhookRequiredHeaders } from 'svix';
+import { buffer } from 'micro';
+import { type IncomingHttpHeaders } from 'http';
+import { prisma } from '~/server/db';
+import { type WebhookEvent } from '@clerk/clerk-sdk-node';
 
 export const config = {
   api: {

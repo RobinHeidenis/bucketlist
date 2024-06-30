@@ -84,7 +84,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 });
 
 const sentryMiddleware = t.middleware(
-  Sentry.Handlers.trpcMiddleware({
+  Sentry.trpcMiddleware({
     attachRpcInput: true,
   }),
 );
