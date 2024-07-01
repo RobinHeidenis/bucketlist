@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["tracing"]
 }
 
 datasource db {
@@ -97,8 +98,8 @@ model Season {
   seasonNumber Int       @db.SmallInt
   title        String    @db.VarChar(200)
   overview     String?   @db.VarChar(1000)
-  posterUrl    String?   @db.VarChar(200)
   releaseDate  String    @db.VarChar(50)
+  etag         String?   @db.VarChar(100)
   updatedAt    DateTime  @default(now())
   episodes     Episode[]
 

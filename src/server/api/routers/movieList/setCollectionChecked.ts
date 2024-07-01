@@ -23,46 +23,52 @@ export const setCollectionChecked = async ({
 
   checkIfExistsAndAccess(ctx, list, 'MOVIE');
 
-  return await ctx.prisma.$transaction(async (prisma) => {
+  const alreadyCheckedMovies = input.checked
+    ? (
+        await ctx.prisma.checkedMovie.findMany({
+          where: {
+            listId: input.listId,
+            movieId: {
+              in: list.collections.at(0)?.movies.map((movie) => movie.id),
+            },
+          },
+        })
+      ).map((m) => m.movieId)
+    : null;
+  const newCheckedItemsData = input.checked
+    ? list.collections
+        .at(0)
+        ?.movies.filter(
+          (movie) => !alreadyCheckedMovies?.find((id) => id === movie.id),
+        )
+        .map((movie) => ({
+          listId: input.listId,
+          movieId: movie.id,
+        })) ?? []
+    : null;
+
+  return ctx.prisma.$transaction(async (prisma) => {
     await prisma.list.update({
       where: { id: input.listId },
       data: { updatedAt: new Date() },
     });
 
-    if (!list.collections[0]?.movies.length)
+    if (!list.collections.at(0)?.movies.length)
       throw new TRPCError({
         code: 'NOT_FOUND',
         message: 'That collection does not exist.',
       });
 
     if (input.checked) {
-      const alreadyCheckedMovies = (
-        await prisma.checkedMovie.findMany({
-          where: {
-            listId: input.listId,
-            movieId: {
-              in: list.collections[0].movies.map((movie) => movie.id),
-            },
-          },
-        })
-      ).map((m) => m.movieId);
-
-      return ctx.prisma.checkedMovie.createMany({
-        data: list.collections[0].movies
-          .filter(
-            (movie) => !alreadyCheckedMovies.find((id) => id === movie.id),
-          )
-          .map((movie) => ({
-            listId: input.listId,
-            movieId: movie.id,
-          })),
+      return prisma.checkedMovie.createMany({
+        data: newCheckedItemsData ?? [],
       });
     } else {
-      return ctx.prisma.checkedMovie.deleteMany({
+      return prisma.checkedMovie.deleteMany({
         where: {
           listId: input.listId,
           movieId: {
-            in: list.collections[0].movies.map((movie) => movie.id),
+            in: list.collections.at(0)?.movies.map((movie) => movie.id),
           },
         },
       });

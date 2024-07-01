@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { checkIfExistsAndAccess } from '~/server/utils/checkIfExistsAndAccess';
 import { TRPCError } from '@trpc/server';
-import { getAndUpdateOrCreateShow } from './utils/getAndUpdateOrCreateShow';
 import { type AuthedTRPCContext, protectedProcedure } from '~/server/api/trpc';
+import { createTmdbService } from '~/server/TMDB/tmdbService';
 
 const zCreateShowSchema = z.object({
   showId: z.number(),
@@ -35,20 +35,14 @@ export const createShow = async ({
     });
   }
 
-  const show = await ctx.prisma.show.findUnique({
-    where: { id: input.showId },
-    select: { id: true, updatedAt: true },
-  });
-
-  if (!show || show.updatedAt < new Date(Date.now() - 1000 * 60 * 60 * 24)) {
-    await getAndUpdateOrCreateShow(ctx.prisma, input.showId);
-  }
+  const tmdbService = createTmdbService(ctx.prisma);
+  const show = await tmdbService.findOrCreateShow(input.showId);
 
   return ctx.prisma.list.update({
     where: { id: input.listId },
     data: {
       shows: {
-        connect: { id: input.showId },
+        connect: { id: show.id },
       },
       updatedAt: new Date(),
     },

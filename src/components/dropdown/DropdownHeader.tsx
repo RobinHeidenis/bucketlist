@@ -17,7 +17,7 @@ export const DropdownHeader = ({
     </label>
     <ul
       tabIndex={0}
-      className="menu dropdown-content rounded-box z-50 w-56 items-start bg-base-100 p-2 shadow"
+      className="menu dropdown-content z-50 w-56 items-start rounded-box bg-base-100 p-2 shadow"
     >
       {children}
     </ul>
