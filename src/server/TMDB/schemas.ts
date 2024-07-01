@@ -42,7 +42,7 @@ export const zTmdbEpisode = z.object({
 });
 
 export const zTmdbSeason = z.object({
-  _id: z.string(),
+  id: z.number(),
   season_number: z.number().int(),
   name: z.string(),
   overview: z.string().nullish().transform(maxLengthTransform),

@@ -32,7 +32,6 @@ export const createMovie = async ({
   }
 
   const tmdbService = createTmdbService(ctx.prisma);
-
   const movie = await tmdbService.findOrCreateMovie(input.externalId);
 
   return ctx.prisma.list.update({

@@ -21,7 +21,7 @@ export const setEpisodeWatched = async ({
 
   checkIfExistsAndAccess(ctx, list, 'SHOW');
 
-  return await ctx.prisma.$transaction(async (prisma) => {
+  return ctx.prisma.$transaction(async (prisma) => {
     await prisma.list.update({
       where: { id: input.listId },
       data: { updatedAt: new Date() },

@@ -1,14 +1,20 @@
 import { TmdbApi } from '~/server/TMDB/tmdbApi';
 import type { prisma as Prisma } from '~/server/db';
 import type { z } from 'zod';
-import { zTmdbCollection, zTmdbMovie, zTmdbShow } from '~/server/TMDB/schemas';
+import {
+  zTmdbCollection,
+  zTmdbMovie,
+  zTmdbSeason,
+  zTmdbShow,
+} from '~/server/TMDB/schemas';
 import { propOrUnknown } from '~/utils/propOrUnknown';
 import { convertImageToHash } from '~/utils/convertImageToHash';
-import type { Collection, Show } from '@prisma/client';
+import type { Collection, Episode, Season, Show } from '@prisma/client';
 import { type Movie } from '@prisma/client';
 import * as Sentry from '@sentry/nextjs';
 import { TmdbClient } from '~/server/TMDB/tmdbClient';
 import { env } from '~/env.mjs';
+import { TRPCError } from '@trpc/server';
 
 export const createTmdbService = (prisma: typeof Prisma) => {
   const tmdbClient = new TmdbClient(env.TMDB_API_KEY);
@@ -50,6 +56,42 @@ export class TmdbService {
     return result;
   }
 
+  public async getUpdatedShow(id: number, eTag: string) {
+    const { response, result } = await this.tmdbApi.checkShowETag(id, eTag);
+
+    if (response.status === 304) {
+      return false;
+    }
+
+    if (result) {
+      return this.parseAndCreateShow(result, response, id);
+    }
+
+    return result;
+  }
+
+  public async getUpdatedSeason(
+    showId: number,
+    seasonNumber: number,
+    eTag: string,
+  ) {
+    const { response, result } = await this.tmdbApi.checkSeasonETag(
+      showId,
+      seasonNumber,
+      eTag,
+    );
+
+    if (response.status === 304) {
+      return false;
+    }
+
+    if (result) {
+      return this.parseAndCreateSeason(result, response, showId, seasonNumber);
+    }
+
+    return result;
+  }
+
   public async findOrCreateCollection(id: number) {
     const collection = await this.prisma.collection.findUnique({
       where: { id },
@@ -58,7 +100,7 @@ export class TmdbService {
     if (!collection) {
       const { result, response } = await this.tmdbApi.getCollectionById(id);
 
-      return await this.parseAndCreateCollection(result, response, id);
+      return this.parseAndCreateCollection(result, response, id);
     }
 
     return collection;
@@ -89,10 +131,104 @@ export class TmdbService {
     if (!collection) {
       const { result, response } = await this.tmdbApi.getShowById(id);
 
-      return await this.parseAndCreateShow(result, response, id);
+      return this.parseAndCreateShow(result, response, id);
     }
 
     return collection;
+  }
+
+  public async findOrCreateSeason(
+    showOrSeasonId: number,
+    seasonNumber?: number,
+  ) {
+    let where: Parameters<
+      (typeof this.prisma)['season']['findUnique']
+    >[0]['where'] = { id: showOrSeasonId };
+    if (seasonNumber) {
+      where = {
+        showId_seasonNumber: {
+          showId: showOrSeasonId,
+          seasonNumber: seasonNumber,
+        },
+      };
+    }
+
+    const season = await this.prisma.season.findUnique({
+      where,
+    });
+
+    if (!season) {
+      if (!seasonNumber)
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Cannot get a season from TMDB without a seasonNumber',
+        });
+
+      const { result, response } = await this.tmdbApi.getSeasonBySeasonNumber(
+        showOrSeasonId,
+        seasonNumber,
+      );
+
+      return this.parseAndCreateSeason(
+        result,
+        response,
+        showOrSeasonId,
+        seasonNumber,
+      );
+    }
+
+    return season;
+  }
+
+  private async parseAndCreateSeason(
+    result: unknown,
+    response: Response,
+    showId: number,
+    seasonNumber: number,
+  ) {
+    const parsedSeasonResult = zTmdbSeason.safeParse(result);
+
+    if (!parsedSeasonResult.success) {
+      Sentry.setContext('TMDB Response', {
+        showId,
+        seasonNumber,
+        type: 'SEASON',
+        response: result,
+      });
+      throw new Error('Failed to parse TMDB season response');
+    }
+
+    const { season, episodes } = this.transformTmdbSeason(
+      parsedSeasonResult.data,
+      showId,
+    );
+
+    const upsertData = {
+      ...season,
+      etag: response.headers.get('etag') ?? '',
+    };
+
+    return this.prisma.season.upsert({
+      where: { showId_seasonNumber: { showId, seasonNumber } },
+      create: {
+        ...upsertData,
+        episodes: {
+          createMany: {
+            data: episodes,
+          },
+        },
+      },
+      update: {
+        ...upsertData,
+        episodes: {
+          upsert: episodes.map((episode) => ({
+            where: { id: episode.id },
+            create: episode,
+            update: episode,
+          })),
+        },
+      },
+    });
   }
 
   private async parseAndCreateCollection(
@@ -144,15 +280,32 @@ export class TmdbService {
       throw new Error('Failed to parse TMDB show response');
     }
 
-    return this.prisma.show.create({
+    const upsertData = {
+      ...(await this.transformTmdbShow(parsedShowResult.data)),
+      etag: response.headers.get('etag') ?? '',
+    };
+
+    const show = await this.prisma.show.upsert({
+      where: { id: parsedShowResult.data.id },
+      create: upsertData,
+      update: upsertData,
+    });
+
+    const seasons = await Promise.all(
+      parsedShowResult.data.seasons.map((season) =>
+        this.findOrCreateSeason(id, season.season_number),
+      ),
+    );
+
+    return this.prisma.show.update({
+      where: { id: show.id },
       data: {
-        ...(await this.transformTmdbShow(parsedShowResult.data)),
-        etag: response.headers.get('etag') ?? '',
+        seasons: {
+          connect: seasons.map(({ id }) => ({ id })),
+        },
       },
     });
   }
-
-  // TODO: add methods for seasons
 
   private async transformTmdbShow(
     show: z.infer<typeof zTmdbShow>,
@@ -166,6 +319,32 @@ export class TmdbService {
       releaseDate: show.first_air_date ?? null,
       genres: show.genres?.map((genre) => genre.name).join(', ') ?? 'Unknown',
       imageHash: await convertImageToHash(show.poster_path),
+    };
+  }
+
+  private transformTmdbSeason(
+    season: z.infer<typeof zTmdbSeason>,
+    showId: number,
+  ): {
+    season: Omit<Season, 'updatedAt' | 'etag'>;
+    episodes: Omit<Episode, 'updatedAt' | 'seasonId'>[];
+  } {
+    return {
+      season: {
+        id: season.id,
+        seasonNumber: season.season_number,
+        showId,
+        title: season.name,
+        overview: season.overview ?? null,
+        releaseDate: season.air_date,
+      },
+      episodes: season.episodes.map((episode) => ({
+        id: episode.id,
+        title: episode.name,
+        overview: episode.overview ?? null,
+        episodeNumber: episode.episode_number,
+        releaseDate: episode.air_date ?? 'Unknown',
+      })),
     };
   }
 
@@ -185,11 +364,15 @@ export class TmdbService {
       throw new Error('Failed to parse TMDB movie response');
     }
 
-    return this.prisma.movie.create({
-      data: {
-        ...(await this.transformTmdbMovie(parsedMovieResult.data)),
-        etag: response.headers.get('etag') ?? '',
-      },
+    const upsertData = {
+      ...(await this.transformTmdbMovie(parsedMovieResult.data)),
+      etag: response.headers.get('etag') ?? '',
+    };
+
+    return this.prisma.movie.upsert({
+      where: { id: parsedMovieResult.data.id },
+      create: upsertData,
+      update: upsertData,
     });
   }
 

@@ -31,7 +31,27 @@ export class TmdbApi {
     return this.client.get(`tv/${id}`);
   }
 
+  public async checkShowETag(id: number, eTag: string) {
+    return this.client.get(`tv/${id}`, {
+      headers: {
+        'If-None-Match': eTag,
+      },
+    });
+  }
+
   public async getSeasonBySeasonNumber(showId: number, seasonNumber: number) {
     return this.client.get(`tv/${showId}/season/${seasonNumber}`);
+  }
+
+  public async checkSeasonETag(
+    showId: number,
+    seasonNumber: number,
+    eTag: string,
+  ) {
+    return this.client.get(`tv/${showId}/season/${seasonNumber}`, {
+      headers: {
+        'If-None-Match': eTag,
+      },
+    });
   }
 }

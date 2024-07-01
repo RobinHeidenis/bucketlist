@@ -99,6 +99,7 @@ model Season {
   title        String    @db.VarChar(200)
   overview     String?   @db.VarChar(1000)
   releaseDate  String    @db.VarChar(50)
+  etag         String?   @db.VarChar(100)
   updatedAt    DateTime  @default(now())
   episodes     Episode[]
 

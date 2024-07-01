@@ -35,7 +35,6 @@ export const createCollection = async ({
   }
 
   const tmdbService = createTmdbService(ctx.prisma);
-
   const collection = await tmdbService.findOrCreateCollection(input.externalId);
 
   if ('parts' in collection) {
