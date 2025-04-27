@@ -19,7 +19,7 @@ import type {CreateNextContextOptions} from '@trpc/server/adapters/next';
 import {prisma} from '../db';
 import superjson from 'superjson';
 import {ZodError} from 'zod';
-import type {SignedInAuthObject, SignedOutAuthObject,} from '@clerk/nextjs/api';
+import type {SignedInAuthObject, SignedOutAuthObject} from '@clerk/nextjs/server';
 import {getAuth} from '@clerk/nextjs/server';
 import * as Sentry from '@sentry/nextjs';
 import {type NextApiRequest, type NextApiResponse} from 'next';

@@ -3,8 +3,7 @@ import { appRouter } from '~/server/api/root';
 import { createTRPCContext } from '~/server/api/trpc';
 import { captureException, setUser, type User } from '@sentry/nextjs';
 import { env } from '~/env.mjs';
-import { getAuth } from '@clerk/nextjs/server';
-import { clerkClient } from '@clerk/nextjs';
+import { getAuth, clerkClient } from '@clerk/nextjs/server';
 
 // export API handler
 export default createNextApiHandler({
@@ -15,7 +14,8 @@ export default createNextApiHandler({
     if (error.code === 'INTERNAL_SERVER_ERROR') {
       const auth = getAuth(req, {});
       if (auth.userId) {
-        const clerkUser = await clerkClient.users.getUser(auth.userId);
+        const client = await clerkClient();
+        const clerkUser = await client.users.getUser(auth.userId);
         const sentryUser = {
           id: auth.userId,
           username: `${clerkUser.firstName ?? ''}${

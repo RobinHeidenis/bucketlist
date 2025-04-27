@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { clerkClient } from '@clerk/nextjs';
+import { clerkClient } from '@clerk/nextjs/server';
 import { type AuthedTRPCContext, protectedProcedure } from '~/server/api/trpc';
 
 const zGetInviteByCodeSchema = z.object({ code: z.string() });
@@ -48,8 +48,9 @@ export const getInviteByCode = async ({
       message: 'You are already a collaborator on this list.',
     });
 
+  const client = await clerkClient();
   const { firstName, lastName, externalAccounts } =
-    await clerkClient.users.getUser(invite.list.owner.id);
+    await client.users.getUser(invite.list.owner.id);
 
   return {
     ...invite,

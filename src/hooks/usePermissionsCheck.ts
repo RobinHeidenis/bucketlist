@@ -26,3 +26,4 @@ export const usePermissionsCheck = (
     hasPermissions: isOwner || isCollaborator,
   };
 };
+
