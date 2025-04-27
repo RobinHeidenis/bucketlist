@@ -19,5 +19,7 @@ Sentry.init({
   // in development and sample at a lower rate in production
   replaysSessionSampleRate: 0.1,
 
-  integrations: [Sentry.browserTracingIntegration()],
+  integrations: [],
 });
+
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
