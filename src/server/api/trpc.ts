@@ -14,15 +14,39 @@
  * errors on the backend.
  */
 
-import {initTRPC, TRPCError, type Unwrap} from '@trpc/server';
-import type {CreateNextContextOptions} from '@trpc/server/adapters/next';
-import {prisma} from '../db';
+import { initTRPC, TRPCError } from '@trpc/server';
+import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
+import { db } from '../db';
 import superjson from 'superjson';
-import {ZodError} from 'zod';
-import type {SignedInAuthObject, SignedOutAuthObject} from '@clerk/nextjs/server';
-import {getAuth} from '@clerk/nextjs/server';
+import { ZodError } from 'zod';
+import { getAuth } from '@clerk/nextjs/server';
 import * as Sentry from '@sentry/nextjs';
-import {type NextApiRequest, type NextApiResponse} from 'next';
+import { type NextApiRequest, type NextApiResponse } from 'next';
+import type {
+  CheckAuthorizationFromSessionClaims,
+  ServerGetToken,
+  SharedSignedInAuthObjectProperties,
+} from '@clerk/types';
+
+export interface SignedOutAuthObject {
+  sessionClaims: null;
+  sessionId: null;
+  sessionStatus: null;
+  actor: null;
+  userId: null;
+  orgId: null;
+  orgRole: null;
+  orgSlug: null;
+  orgPermissions: null;
+  factorVerificationAge: null;
+  getToken: ServerGetToken;
+  has: CheckAuthorizationFromSessionClaims;
+}
+
+export type SignedInAuthObject = SharedSignedInAuthObjectProperties & {
+  getToken: ServerGetToken;
+  has: CheckAuthorizationFromSessionClaims;
+};
 
 /**
  * 1. CONTEXT
@@ -51,7 +75,7 @@ interface AuthContext {
 const createInnerTRPCContext = ({ auth, req, res }: AuthContext) => {
   return {
     auth,
-    prisma,
+    prisma: db,
     req,
     res,
   };
@@ -66,7 +90,7 @@ export const createTRPCContext = ({ req, res }: CreateNextContextOptions) => {
   return createInnerTRPCContext({ auth: getAuth(req), req, res });
 };
 
-export type TRPCContext = Unwrap<typeof createTRPCContext>;
+export type TRPCContext = Awaited<ReturnType<typeof createTRPCContext>>;
 export type AuthedTRPCContext = TRPCContext & { auth: SignedInAuthObject };
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
@@ -88,6 +112,13 @@ const sentryMiddleware = t.middleware(
     attachRpcInput: true,
   }),
 );
+
+/**
+ * Create a server-side caller.
+ *
+ * @see https://trpc.io/docs/server/server-side-calls
+ */
+export const createCallerFactory = t.createCallerFactory;
 
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
