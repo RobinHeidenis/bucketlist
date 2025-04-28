@@ -14,7 +14,7 @@ const InvitePage = () => {
     { enabled: !!code, retry: false },
   );
 
-  const { mutate, isLoading } = api.invite.joinList.useMutation({
+  const { mutate, isPending } = api.invite.joinList.useMutation({
     onSuccess: (data) => {
       toast.custom(<SuccessToast message="Successfully joined list!" />);
       void router.push(`/lists/${data.id}`);
@@ -83,7 +83,7 @@ const InvitePage = () => {
             mutate({ id: data.id });
           }}
         >
-          <CheckIcon className={`h-5 w-5 ${isLoading ? 'loading' : ''}`} />
+          <CheckIcon className={`h-5 w-5 ${isPending ? 'loading' : ''}`} />
           Accept invite
         </button>
       </div>

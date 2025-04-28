@@ -14,6 +14,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
       appearance={{
         baseTheme: dark,
       }}
+      dynamic
       {...pageProps}
     >
       <Toaster position="bottom-right" toastOptions={{ duration: 10000 }} />

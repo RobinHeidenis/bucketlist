@@ -8,7 +8,7 @@ import {
   formatShowList,
   getShowList,
 } from '~/server/api/routers/lists/utils/showList';
-import { clerkClient } from '@clerk/nextjs';
+import { clerkClient } from '@clerk/nextjs/server';
 import { getListBase } from '~/server/api/routers/lists/utils/getListBase';
 import {
   type BucketList,
@@ -85,13 +85,12 @@ export const getList = async ({
       message: 'You do not have access to view this list.',
     });
 
-  const clerkOwner = await clerkClient.users
-    .getUser(list.ownerId)
-    .catch(() => ({
-      firstName: null,
-      lastName: null,
-      externalAccounts: [],
-    }));
+  const client = await clerkClient();
+  const clerkOwner = await client.users.getUser(list.ownerId).catch(() => ({
+    firstName: null,
+    lastName: null,
+    externalAccounts: [],
+  }));
 
   const base = getListBase(list, clerkOwner);
 

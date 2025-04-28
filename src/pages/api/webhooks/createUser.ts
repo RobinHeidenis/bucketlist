@@ -4,8 +4,8 @@ import { type NextApiRequest, type NextApiResponse } from 'next';
 import { Webhook, type WebhookRequiredHeaders } from 'svix';
 import { buffer } from 'micro';
 import { type IncomingHttpHeaders } from 'http';
-import { prisma } from '~/server/db';
-import { type WebhookEvent } from '@clerk/clerk-sdk-node';
+import { db as prisma } from '~/server/db';
+import { type WebhookEvent } from '@clerk/nextjs/server';
 
 export const config = {
   api: {

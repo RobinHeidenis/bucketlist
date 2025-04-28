@@ -80,7 +80,7 @@ export const ListItem = ({
           type="checkbox"
           defaultChecked={checked}
           className={`checkbox mr-3 mt-2 ${
-            setItemCheckedMutation.isLoading ? 'loading' : ''
+            setItemCheckedMutation.isPending ? 'loading' : ''
           }`}
           onChange={(event) => {
             if (!permissions.hasPermissions) {
@@ -115,7 +115,7 @@ export const ListItem = ({
         <DropdownMenu
           editOnClick={openEditItemModal}
           deleteOnClick={() => void deleteItemMutation.mutate({ id })}
-          isDeleteLoading={deleteItemMutation.isLoading}
+          isDeleteLoading={deleteItemMutation.isPending}
           className="self-center"
         />
       )}

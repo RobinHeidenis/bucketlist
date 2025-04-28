@@ -1,4 +1,4 @@
-import {withSentryConfig} from '@sentry/nextjs';
+import { withSentryConfig } from '@sentry/nextjs';
 
 /**
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
@@ -8,6 +8,7 @@ await import('./src/env.mjs');
 
 /** @type {import("next").NextConfig} */
 const config = {
+  serverExternalPackages: ['require-in-the-middle', 'import-in-the-middle'],
   reactStrictMode: true,
   /**
    * If you have `experimental: { appDir: true }` set, then you must comment the below `i18n` config out
@@ -28,21 +29,17 @@ const config = {
   },
 };
 
-export default withSentryConfig(
-  config,
-  {
-    // For all available options, see:
-    // https://github.com/getsentry/sentry-webpack-plugin#options
+export default withSentryConfig(config, {
+  // For all available options, see:
+  // https://github.com/getsentry/sentry-webpack-plugin#options
 
-    // Suppresses source map uploading logs during build
-    silent: true,
+  // Suppresses source map uploading logs during build
+  silent: true,
 
-    widenClientFileUpload: true,
-    tunnelRoute: '/monitoring',
-    hideSourceMaps: true,
-    disableLogger: true,
+  widenClientFileUpload: true,
+  tunnelRoute: '/monitoring',
+  disableLogger: true,
 
-    org: 'fractum',
-    project: 'bucketlist',
-  },
-);
+  org: 'fractum',
+  project: 'bucketlist',
+});

@@ -36,14 +36,14 @@ const Movie = memo(
   ({ listId, permissions, hideDivider, inCollection, movie }: MovieProps) => {
     const [showDescription, setShowDescription] = useState(false);
     const context = api.useUtils();
-    const { mutate: setWatched, isLoading: isSetWatchedLoading } =
+    const { mutate: setWatched, isPending: isSetWatchedLoading } =
       api.movieList.setMovieWatched.useMutation({
         onSuccess: () => {
           void context.lists.getList.invalidate({ id: listId });
         },
         onError: showErrorToast,
       });
-    const { mutate: deleteMovie, isLoading: isDeleteMovieLoading } =
+    const { mutate: deleteMovie, isPending: isDeleteMovieLoading } =
       api.movieList.deleteMovie.useMutation({
         onSuccess: () => {
           void context.lists.getList.invalidate({ id: listId });

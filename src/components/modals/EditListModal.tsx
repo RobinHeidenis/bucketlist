@@ -29,7 +29,7 @@ export const EditListModal = NiceModal.create(
       },
       validate: zodResolver(zEditListSchema),
     });
-    const { mutate, isLoading } = api.lists.updateList.useMutation({
+    const { mutate, isPending } = api.lists.updateList.useMutation({
       onSuccess: () => {
         void modal.remove();
         void utils.lists.getList.invalidate({ id: listId });
@@ -68,7 +68,7 @@ export const EditListModal = NiceModal.create(
             {...form.getInputProps('description')}
           />
           <button className="btn btn-primary mt-5 self-end" type="submit">
-            <CheckIcon className={`h-5 w-5 ${isLoading ? 'loading' : ''}`} />
+            <CheckIcon className={`h-5 w-5 ${isPending ? 'loading' : ''}`} />
             Save
           </button>
         </form>

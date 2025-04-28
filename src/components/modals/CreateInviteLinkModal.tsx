@@ -13,7 +13,7 @@ export const CreateInviteLinkModal = NiceModal.create(
   ({ listId }: CreateInviteLinkModalProps) => {
     const modal = useModal();
     const utils = api.useUtils();
-    const { mutate, isLoading } = api.invite.createInvite.useMutation({
+    const { mutate, isPending } = api.invite.createInvite.useMutation({
       onSuccess: () => {
         void utils.invite.getInvitesByListId.invalidate({ id: listId });
       },
@@ -52,7 +52,7 @@ export const CreateInviteLinkModal = NiceModal.create(
             filteredInvites && filteredInvites.length > 0
               ? 'self-end'
               : 'self-center'
-          } ${isLoading ? 'loading' : ''}`}
+          } ${isPending ? 'loading' : ''}`}
           type="button"
           onClick={() => void mutate({ listId })}
         >

@@ -1,9 +1,6 @@
 import { StandardPage } from '~/components/page/StandardPage';
-import { api } from '~/utils/api';
 
 const Watched = () => {
-  const { data } = api.watched.getAllWatchInstances.useQuery();
-
   return (
     <StandardPage>
       <div className="prose alert flex flex-col shadow-xl">

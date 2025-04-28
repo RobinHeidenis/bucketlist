@@ -1,6 +1,6 @@
-import { type prisma } from '~/server/db';
+import { type db as Prisma } from '~/server/db';
 
-export const getBucketList = (db: typeof prisma, id: string) =>
+export const getBucketList = (db: typeof Prisma, id: string) =>
   db.list.findUnique({
     where: { id },
     include: {

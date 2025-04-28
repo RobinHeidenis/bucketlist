@@ -1,5 +1,6 @@
 import { StarIcon } from '@heroicons/react/24/solid';
 import {
+  ArrowPathIcon,
   CalendarIcon,
   CheckIcon,
   TagIcon,
@@ -28,7 +29,7 @@ const Show = memo(({ listId, permissions, hideDivider, show }: ShowProps) => {
   const [open, setOpen] = useState(false);
 
   const context = api.useUtils();
-  const { mutate: deleteShow, isLoading } = api.showList.deleteShow.useMutation(
+  const { mutate: deleteShow, isPending } = api.showList.deleteShow.useMutation(
     {
       onSuccess: () => {
         void context.lists.getList.invalidate({ id: listId });
@@ -36,6 +37,13 @@ const Show = memo(({ listId, permissions, hideDivider, show }: ShowProps) => {
       onError: showErrorToast,
     },
   );
+  const { mutate: revalidateShow, isPending: isRevalidating } =
+    api.revalidation.revalidateShow.useMutation({
+      onSuccess: () => {
+        void context.lists.getList.invalidate({ id: listId });
+      },
+      onError: showErrorToast,
+    });
 
   return (
     <div
@@ -111,10 +119,18 @@ const Show = memo(({ listId, permissions, hideDivider, show }: ShowProps) => {
         {permissions.hasPermissions && (
           <DropdownHeader>
             <DropdownItem
+              onClick={() => void revalidateShow({ showId: show.id })}
+            >
+              <ArrowPathIcon
+                className={`${isRevalidating ? 'loading' : ''} h-6 w-6`}
+              />
+              Revalidate
+            </DropdownItem>
+            <DropdownItem
               onClick={() => void deleteShow({ showId: show.id, listId })}
               danger
             >
-              <TrashIcon className={`${isLoading ? 'loading' : ''} h-6 w-6`} />
+              <TrashIcon className={`${isPending ? 'loading' : ''} h-6 w-6`} />
               Delete
             </DropdownItem>
           </DropdownHeader>

@@ -23,7 +23,7 @@ export const ShowListHeader = ({ list }: PropsWithShowList) => {
     { enabled: !!searchValue && searchValue.length > 2 },
   );
 
-  const { mutate: createShow, isLoading } = api.showList.createShow.useMutation(
+  const { mutate: createShow, isPending } = api.showList.createShow.useMutation(
     {
       onSuccess: () => {
         setSearchValue('');
@@ -87,7 +87,7 @@ export const ShowListHeader = ({ list }: PropsWithShowList) => {
                 createShow({ listId: list.id, showId: selectedResult.id });
               }}
             >
-              <PlusIcon className={`h-5 w-5 ${isLoading ? 'loading' : ''}`} />
+              <PlusIcon className={`h-5 w-5 ${isPending ? 'loading' : ''}`} />
               Add show
             </button>
           </div>

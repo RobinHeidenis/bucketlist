@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { type ReactElement } from 'react';
 
 interface CustomDropdownProps {
-  items: { label: string; value: string; icon?: ReactElement }[];
-  label: string | ReactElement;
+  items: { label: string; value: string; icon?: ReactElement<any> }[];
+  label: string | ReactElement<any>;
   selected: string;
   setSelected: (value: string) => void;
   justifyStart?: boolean;

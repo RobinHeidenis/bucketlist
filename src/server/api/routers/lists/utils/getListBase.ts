@@ -1,6 +1,6 @@
 import { type List } from '@prisma/client';
 import { type Collaborator } from '~/types/List';
-import { type User } from '@clerk/clerk-sdk-node';
+import { type User } from '@clerk/nextjs/server';
 
 export const getListBase = (
   list: List & { collaborators: Collaborator[] },
