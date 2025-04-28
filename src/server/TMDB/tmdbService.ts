@@ -1,5 +1,5 @@
 import { TmdbApi } from '~/server/TMDB/tmdbApi';
-import type { prisma as Prisma } from '~/server/db';
+import type { db as Prisma } from '~/server/db';
 import type { z } from 'zod';
 import {
   zTmdbCollection,
@@ -139,16 +139,19 @@ export class TmdbService {
 
   public async findOrCreateSeason(
     showOrSeasonId: number,
-    seasonNumber?: number,
+    options?: {
+      seasonNumber?: number;
+      forceRevalidate?: boolean;
+    },
   ) {
     let where: Parameters<
       (typeof this.prisma)['season']['findUnique']
     >[0]['where'] = { id: showOrSeasonId };
-    if (seasonNumber) {
+    if (options?.seasonNumber) {
       where = {
         showId_seasonNumber: {
           showId: showOrSeasonId,
-          seasonNumber: seasonNumber,
+          seasonNumber: options.seasonNumber,
         },
       };
     }
@@ -157,8 +160,8 @@ export class TmdbService {
       where,
     });
 
-    if (!season) {
-      if (!seasonNumber)
+    if (!season || options?.forceRevalidate) {
+      if (!options?.seasonNumber)
         throw new TRPCError({
           code: 'BAD_REQUEST',
           message: 'Cannot get a season from TMDB without a seasonNumber',
@@ -166,21 +169,21 @@ export class TmdbService {
 
       const { result, response } = await this.tmdbApi.getSeasonBySeasonNumber(
         showOrSeasonId,
-        seasonNumber,
+        options.seasonNumber,
       );
 
       return this.parseAndCreateSeason(
         result,
         response,
         showOrSeasonId,
-        seasonNumber,
+        options.seasonNumber,
       );
     }
 
     return season;
   }
 
-  private async parseAndCreateSeason(
+  public async parseAndCreateSeason(
     result: unknown,
     response: Response,
     showId: number,
@@ -264,10 +267,11 @@ export class TmdbService {
     };
   }
 
-  private async parseAndCreateShow(
+  public async parseAndCreateShow(
     result: unknown,
     response: Response,
     id: number,
+    forceRevalidate = false,
   ) {
     const parsedShowResult = zTmdbShow.safeParse(result);
 
@@ -291,9 +295,14 @@ export class TmdbService {
       update: upsertData,
     });
 
+    console.log(parsedShowResult.data.seasons);
+
     const seasons = await Promise.all(
       parsedShowResult.data.seasons.map((season) =>
-        this.findOrCreateSeason(id, season.season_number),
+        this.findOrCreateSeason(id, {
+          seasonNumber: season.season_number,
+          forceRevalidate,
+        }),
       ),
     );
 

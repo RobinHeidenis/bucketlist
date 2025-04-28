@@ -5,6 +5,7 @@ import { movieListRouter } from './routers/movieList/movieListRouter';
 import { showListRouter } from './routers/showList/showListRouter';
 import { searchRouter } from './routers/search/searchRouter';
 import { watchedRouter } from './routers/watched/watchedRouter';
+import { revalidationRouter } from './routers/revalidation/revalidationRouter';
 import { createCallerFactory, createTRPCRouter } from './trpc';
 
 /**
@@ -20,6 +21,7 @@ export const appRouter = createTRPCRouter({
   bucketList: bucketListRouter,
   search: searchRouter,
   watched: watchedRouter,
+  revalidation: revalidationRouter,
 });
 
 // export type definition of API

@@ -27,7 +27,7 @@ const Collection = memo(
   ({ collection, permissions, listId, style }: CollectionProps) => {
     const context = api.useUtils();
     const [open, setOpen] = useState(false);
-    const { mutate: deleteCollection, isLoading: isDeleteCollectionLoading } =
+    const { mutate: deleteCollection, isPending: isDeleteCollectionLoading } =
       api.movieList.deleteCollection.useMutation({
         onSuccess: () => context.lists.getList.invalidate({ id: listId }),
         onError: showErrorToast,
@@ -35,7 +35,7 @@ const Collection = memo(
 
     const {
       mutate: setCollectionWatched,
-      isLoading: isSetCollectionWatchedLoading,
+      isPending: isSetCollectionWatchedLoading,
     } = api.movieList.setCollectionChecked.useMutation({
       onSuccess: () => context.lists.getList.invalidate({ id: listId }),
       onError: showErrorToast,

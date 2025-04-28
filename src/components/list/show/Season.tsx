@@ -18,7 +18,7 @@ export const Season = ({
 }) => {
   const [showChildren, setShowChildren] = useState(false);
   const context = api.useUtils();
-  const { mutate, isLoading } = api.showList.setSeasonWatched.useMutation({
+  const { mutate, isPending } = api.showList.setSeasonWatched.useMutation({
     onSuccess: () => context.lists.getList.invalidate({ id: listId }),
     onError: showErrorToast,
   });
@@ -30,7 +30,7 @@ export const Season = ({
           <input
             type="checkbox"
             checked={season.allChecked}
-            className={`checkbox mr-3 mt-2 ${isLoading ? 'loading' : ''}`}
+            className={`checkbox mr-3 mt-2 ${isPending ? 'loading' : ''}`}
             onChange={(event) => {
               if (!permissions.hasPermissions) {
                 event.preventDefault();

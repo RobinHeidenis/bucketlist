@@ -5,9 +5,9 @@ import {
 } from '~/types/List';
 import { type ListBase } from '~/server/api/routers/lists/utils/getListBase';
 import { convertImageHash } from '~/server/api/routers/utils/convertImageHash';
-import { type prisma } from '~/server/db';
+import { type db as Prisma } from '~/server/db';
 
-export const getShowList = (db: typeof prisma, id: string) =>
+export const getShowList = (db: typeof Prisma, id: string) =>
   db.list.findUnique({
     where: { id },
     include: {

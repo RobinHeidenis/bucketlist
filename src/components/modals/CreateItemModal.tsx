@@ -26,7 +26,7 @@ export const CreateItemModal = NiceModal.create(
       },
       validate: zodResolver(zNewListItemSchema),
     });
-    const { mutate, isLoading } = api.bucketList.createItem.useMutation({
+    const { mutate, isPending } = api.bucketList.createItem.useMutation({
       onSuccess: () => {
         void modal.remove();
         utils.lists.getList.setData({ id: listId }, (prev) => {
@@ -75,7 +75,7 @@ export const CreateItemModal = NiceModal.create(
             {...form.getInputProps('description')}
           />
           <button className={'btn btn-primary mt-5 self-end'} type="submit">
-            <PlusIcon className={`h-5 w-5 ${isLoading ? 'loading' : ''}`} />
+            <PlusIcon className={`h-5 w-5 ${isPending ? 'loading' : ''}`} />
             Add To-do
           </button>
         </form>

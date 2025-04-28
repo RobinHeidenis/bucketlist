@@ -36,7 +36,7 @@ export const ListHeaderMenu = ({ list }: PropsWithList) => {
   const { isOwner, isCollaborator } = usePermissionsCheck(list);
   const context = api.useUtils();
 
-  const { mutateAsync: deleteList, isLoading: isDeleteListLoading } =
+  const { mutateAsync: deleteList, isPending: isDeleteListLoading } =
     api.lists.deleteList.useMutation({
       onSuccess: () => {
         toast.custom(<SuccessToast message="List deleted!" />);
@@ -44,7 +44,7 @@ export const ListHeaderMenu = ({ list }: PropsWithList) => {
       },
       onError: showErrorToast,
     });
-  const { mutateAsync: togglePublic, isLoading: isTogglePublicLoading } =
+  const { mutateAsync: togglePublic, isPending: isTogglePublicLoading } =
     api.lists.setPublic.useMutation({
       onSuccess: () => {
         toast.custom(<SuccessToast message="Visibility updated!" />);
@@ -60,7 +60,7 @@ export const ListHeaderMenu = ({ list }: PropsWithList) => {
       onError: showErrorToast,
     });
 
-  const { mutateAsync: leaveList, isLoading: isLeaveListLoading } =
+  const { mutateAsync: leaveList, isPending: isLeaveListLoading } =
     api.lists.leaveList.useMutation({
       onSuccess: () => {
         toast.custom(<SuccessToast message="Successfully left list!" />);

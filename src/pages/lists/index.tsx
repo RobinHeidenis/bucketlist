@@ -65,7 +65,7 @@ const sortingModes = [
 
 const Lists = () => {
   const [sortingMode, setSortingMode] = useState('default');
-  const { data: lists, isLoading } = api.lists.getLists.useQuery();
+  const { data: lists, isPending } = api.lists.getLists.useQuery();
   const showCreateModal = () => {
     void NiceModal.show(CreateListModal);
   };
@@ -75,7 +75,7 @@ const Lists = () => {
   );
   const [parent] = useAutoAnimate();
 
-  if (!lists && isLoading) return <ListIndexSkeleton />;
+  if (!lists && isPending) return <ListIndexSkeleton />;
 
   return (
     <StandardPage>

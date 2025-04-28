@@ -4,7 +4,7 @@ import type { Nullable } from '~/types/utils';
 
 export const convertImageToHash = async (
   imageId: Nullable<string>,
-): Promise<null | Buffer> => {
+): Promise<null | Uint8Array> => {
   const maxSize = 100;
 
   if (!imageId) return null;
@@ -31,5 +31,5 @@ export const convertImageToHash = async (
 
   const imageData = ctx.getImageData(0, 0, resizedWidth, resizedHeight);
   const rgba = new Uint8Array(imageData.data.buffer);
-  return Buffer.from(rgbaToThumbHash(resizedWidth, resizedHeight, rgba));
+  return rgbaToThumbHash(resizedWidth, resizedHeight, rgba);
 };

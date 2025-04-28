@@ -27,7 +27,7 @@ export const MovieListHeader = ({ list }: PropsWithMovieList) => {
     { enabled: !!debouncedSearchValue && debouncedSearchValue.length > 2 },
   );
 
-  const { mutate: createMovie, isLoading: isCreateMovieLoading } =
+  const { mutate: createMovie, isPending: isCreateMovieLoading } =
     api.movieList.createMovie.useMutation({
       onSuccess: () => {
         setSearchValue('');
@@ -44,7 +44,7 @@ export const MovieListHeader = ({ list }: PropsWithMovieList) => {
         } else showErrorToast(error);
       },
     });
-  const { mutate: createCollection, isLoading: isCreateCollectionLoading } =
+  const { mutate: createCollection, isPending: isCreateCollectionLoading } =
     api.movieList.createCollection.useMutation({
       onSuccess: () => {
         setSearchValue('');

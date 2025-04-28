@@ -20,7 +20,7 @@ export const CreateListModal = NiceModal.create(() => {
     },
     validate: zodResolver(zNewListSchema),
   });
-  const { mutate, isLoading } = api.lists.createList.useMutation({
+  const { mutate, isPending } = api.lists.createList.useMutation({
     onSuccess: () => {
       void modal.remove();
       void utils.lists.getLists.invalidate();
@@ -67,7 +67,7 @@ export const CreateListModal = NiceModal.create(() => {
           {...form.getInputProps('description')}
         />
         <button className="btn btn-primary mr-3 mt-5 self-end" type="submit">
-          <PlusIcon className={`h-5 w-5 ${isLoading ? 'loading' : ''}`} />
+          <PlusIcon className={`h-5 w-5 ${isPending ? 'loading' : ''}`} />
           Create
         </button>
       </form>
